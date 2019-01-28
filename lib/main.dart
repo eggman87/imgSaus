@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
+import 'package:video_player/video_player.dart';
+import 'package:flutter/foundation.dart';
+
 
 void main() => runApp(MyApp());
 
@@ -38,6 +41,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  VideoPlayerController _controller;
   int _counter = 0;
   List<GalleryItem> _galleryItems = new List<GalleryItem>(0);
 
@@ -82,7 +86,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: PageView.builder(itemBuilder: (context, position){
-          return Image.network(_galleryItems[position].pageUrl());
+          String imageUrl = _galleryItems[position].pageUrl();
+          if (imageUrl.contains(".mp4")) {
+            _controller = VideoPlayerController.network(imageUrl);
+            VideoPlayer player = VideoPlayer(_controller);
+            _controller.setLooping(true);
+            _controller.initialize().then((_){
+              _controller.play();
+            });
+
+            return player;
+          } else {
+            return Image.network(imageUrl);
+          }
         }, itemCount: _galleryItems.length),
       ),
       floatingActionButton: FloatingActionButton(

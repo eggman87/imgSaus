@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -29,6 +30,8 @@ class GalleryRepository {
     for (dynamic itemJson in list) {
       items.add(GalleryItem.fromJson(itemJson));
     }
+
+    log("loaded data: $items");
     return ParsedResponse(response.statusCode, items);
   }
 }
