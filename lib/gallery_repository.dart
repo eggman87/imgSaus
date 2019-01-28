@@ -18,7 +18,7 @@ class GalleryRepository {
     String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?showViral=true&mature=false";
     http.Response response = await http.get(url, headers: headers);
 
-    if (response.statusCode < 200 || response.statusCode > 300) {
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
     }
 
@@ -39,6 +39,11 @@ class ParsedResponse<T> {
   final T body;
 
   bool isOk() {
-    return statusCode >= 200 && statusCode < 300;
+    return isOkCode(statusCode);
+  }
+
+  static isOkCode(int code) {
+    return code >= 200 && code < 300;
   }
 }
+
