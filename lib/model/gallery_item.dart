@@ -5,7 +5,7 @@ part 'gallery_item.g.dart';
 @JsonSerializable()
 class GalleryItem {
 
-  GalleryItem({this.id, this.title, this.type, this.animated, this.isAlbum, this.link, this.images});
+  GalleryItem({this.id, this.title, this.type, this.animated, this.isAlbum, this.link, this.images, this.mp4});
 
   final String id;
   final String title;
@@ -15,6 +15,7 @@ class GalleryItem {
   final bool isAlbum;
   final String link;
   final List<GalleryItem> images;
+  final String mp4;
 
 
   factory GalleryItem.fromJson(Map<String, dynamic> json) => _$GalleryItemFromJson(json);
@@ -22,6 +23,10 @@ class GalleryItem {
   Map<String, dynamic>toJson() => _$GalleryItemToJson(this);
 
   String pageUrl() {
+    if (mp4 != null) {
+      return mp4;
+    }
+
     if (isAlbum) {
       return this.images[0].link;
     } else {

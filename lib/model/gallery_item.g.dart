@@ -18,7 +18,8 @@ GalleryItem _$GalleryItemFromJson(Map<String, dynamic> json) {
           ?.map((e) => e == null
               ? null
               : GalleryItem.fromJson(e as Map<String, dynamic>))
-          ?.toList());
+          ?.toList(),
+      mp4: json['mp4'] as String);
 }
 
 Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
@@ -29,5 +30,6 @@ Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
       'animated': instance.animated,
       'is_album': instance.isAlbum,
       'link': instance.link,
-      'images': instance.images
+      'images': instance.images,
+      'mp4': instance.mp4
     };
