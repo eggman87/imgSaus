@@ -12,7 +12,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MyHomePage(title: 'imgsrc'),
+      initialRoute: '/',
+      routes: {'/': (context) => MyHomePage(title: 'imgsrc',)},
     );
   }
 }

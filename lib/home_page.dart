@@ -166,15 +166,25 @@ class _MyHomePageState extends State<MyHomePage> {
         String imageUrl = _galleryItems[position].pageUrl();
 
         if (imageUrl.contains(".mp4")) {
-          VideoPlayerController controller =
-          VideoPlayerController.network(imageUrl);
-          _controllers[position] = controller;
-          VideoPlayer player = VideoPlayer(controller);
-          controller.setLooping(true);
-          controller.setVolume(0);
-          controller.initialize().then((_) {
-            controller.play();
-          });
+
+          VideoPlayer player;
+          VideoPlayerController controller = _controllers[position];
+
+          if (controller == null) {
+            VideoPlayerController controller = VideoPlayerController.network(
+                imageUrl);
+            _controllers[position] = controller;
+
+            player = VideoPlayer(controller);
+            controller.setLooping(true);
+            controller.setVolume(0);
+
+            controller.initialize().then((_) {
+              controller.play();
+            });
+          } else {
+            player = VideoPlayer(controller);
+          }
 
           return player;
         } else {
@@ -197,8 +207,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _controllers.forEach((key, controller) {
       if (key == position) {
         controller.play();
-      } else {
-        controller.pause();
+      } if (position - key > 4 || key - position > 4) {
+        //indicates this controller is for a video > 4 pages away
+        controller.dispose();
+        _controllers.remove(key);
       }
     });
   }
