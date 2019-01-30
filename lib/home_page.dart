@@ -43,11 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadGalleryItems();
   }
 
-  void _reloadGalleryFromSideMenu() {
-    //todo: diff selections to determine if should reset or not
-    _currentPage = 0;
-    _galleryItems = new List();
-  }
+//  void _reloadGalleryFromSideMenu() {
+//    //todo: diff selections to determine if should reset or not
+//    _currentPage = 0;
+//    _galleryItems = new List();
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,6 +214,4 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
   }
-
-  void _handleTap() {}
 }
