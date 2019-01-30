@@ -31,7 +31,6 @@ class GalleryRepository {
       items.add(GalleryItem.fromJson(itemJson));
     }
 
-    log("loaded data: $items");
     return ParsedResponse(response.statusCode, items);
   }
 }
