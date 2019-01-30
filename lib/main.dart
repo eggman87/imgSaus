@@ -8,12 +8,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'imgsrc',
+      title: 'imgSaus',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
       initialRoute: '/',
-      routes: {'/': (context) => MyHomePage(title: 'imgsrc',)},
+      routes: {'/': (context) => MyHomePage(title: 'imgSaus',)},
     );
   }
 }
