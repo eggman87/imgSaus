@@ -18,7 +18,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   GallerySection _currentSection = GallerySection.hot;
   GallerySort _currentSort = GallerySort.viral;
-  GalleryWindow _currentWindow = GalleryWindow.day;
+  GalleryWindow _currentWindow = GalleryWindow.all;
   int _currentPage = 1;
   int _currentPosition = 0;
 
@@ -114,11 +114,20 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
       body: Container(
           color: Colors.black,
-          child: Center(
-              child: GestureDetector(
-                onTap: _handleTap,
-                child: _pageView(),
-              ))),
+          child: Center (
+            child: Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: Text(_title(), maxLines: 6, style: TextStyle(color: Colors.white),),
+                ),
+                Expanded(
+                  child: _pageView(),
+                )
+              ],
+            ),
+          )
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _loadGalleryItems,
         tooltip: 'Upload Image',
@@ -141,6 +150,13 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return TextStyle(color: Colors.black);
     }
+  }
+
+  String _title(){
+    if (_galleryItems.length > 0) {
+      return _galleryItems[_currentPosition].title;
+    }
+    return "";
   }
 
   PageView _pageView() {

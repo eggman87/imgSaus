@@ -16,7 +16,7 @@ class GalleryRepository {
     String sortString = sort.toString().split('.').last;
     String windowString = window.toString().split('.').last;
 
-    String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?showViral=true&mature=false";
+    String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page";
     http.Response response = await http.get(url, headers: headers);
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
