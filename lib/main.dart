@@ -56,34 +56,82 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+      drawer: Container(
+          margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
+          color: Colors.white,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(color: Colors.green),
+                child: Text("eggman87"),
+              ),
+              ListTile(
+                title: Text(
+                  "SECTION",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  Text("hot"),
+                  Spacer(),
+                  Text("top"),
+                  Spacer(),
+                  Text("User"),
+                  Spacer(),
+                ],
+              ),
+              ListTile(
+                title: Text(
+                  "SORT",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  Text("viral"),
+                  Spacer(),
+                  Text("top"),
+                  Spacer(),
+                  Text("time"),
+                  Spacer(),
+                  Text("rising"),
+                  Spacer(),
+                ],
+              ),
+            ],
+          )),
       body: Container(
           color: Colors.black,
           child: Center(
               child: GestureDetector(
-              onTap: _handleTap,
-              child: PageView.builder(
-                pageSnapping: true,
-                itemBuilder: (context, position) {
-                  String imageUrl = _galleryItems[position].pageUrl();
+            onTap: _handleTap,
+            child: PageView.builder(
+              pageSnapping: true,
+              itemBuilder: (context, position) {
+                String imageUrl = _galleryItems[position].pageUrl();
 
-                  if (imageUrl.contains(".mp4")) {
-                    VideoPlayerController controller =
-                        VideoPlayerController.network(imageUrl);
-                    _controllers[position] = controller;
-                    VideoPlayer player = VideoPlayer(controller);
-                    controller.setLooping(true);
-                    controller.setVolume(0);
-                    controller.initialize().then((_) {
-                      controller.play();
-                    });
+                if (imageUrl.contains(".mp4")) {
+                  VideoPlayerController controller =
+                      VideoPlayerController.network(imageUrl);
+                  _controllers[position] = controller;
+                  VideoPlayer player = VideoPlayer(controller);
+                  controller.setLooping(true);
+                  controller.setVolume(0);
+                  controller.initialize().then((_) {
+                    controller.play();
+                  });
 
-                    return player;
-                  } else {
-                    return PhotoView(imageProvider: NetworkImage(imageUrl));
-                  }
-                },
-                itemCount: _galleryItems.length,
-                onPageChanged: _onPageChanged,
+                  return player;
+                } else {
+                  return PhotoView(imageProvider: NetworkImage(imageUrl));
+                }
+              },
+              itemCount: _galleryItems.length,
+              onPageChanged: _onPageChanged,
             ),
           ))),
       floatingActionButton: FloatingActionButton(
@@ -91,6 +139,14 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ),
+      bottomNavigationBar: BottomNavigationBar(items: [
+        BottomNavigationBarItem(
+            icon: new Icon(Icons.album), title: Text("Gallery")),
+        BottomNavigationBarItem(
+            icon: new Icon(Icons.photo), title: Text("My Stuff")),
+        BottomNavigationBarItem(
+            icon: new Icon(Icons.person), title: Text("Social"))
+      ]),
     );
   }
 
