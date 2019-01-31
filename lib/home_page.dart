@@ -67,12 +67,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(color: Colors.green),
                 child: Text("eggman87"),
               ),
-              Row(children: <Widget>[
-                Visibility(
-                  visible: _galleryItems.length > 0,
-                  child: Text("  Currently viewing ${_currentPosition + 1}/${_galleryItems.length}")
-                )
-              ],),
+              Row(
+                children: <Widget>[
+                  Visibility(
+                      visible: _galleryItems.length > 0,
+                      child: Text(
+                          "  Currently viewing ${_currentPosition + 1}/${_galleryItems.length}"))
+                ],
+              ),
               ListTile(
                 title: Text(
                   "SECTION",
@@ -82,12 +84,23 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 children: <Widget>[
                   Spacer(),
-                  Text("hot", style: _selectableStyle(_currentSection == GallerySection.hot),
+                  Text(
+                    "hot",
+                    style:
+                        _selectableStyle(_currentSection == GallerySection.hot),
                   ),
                   Spacer(),
-                  Text("top", style: _selectableStyle(_currentSection == GallerySection.top),),
+                  Text(
+                    "top",
+                    style:
+                        _selectableStyle(_currentSection == GallerySection.top),
+                  ),
                   Spacer(),
-                  Text("User", style: _selectableStyle(_currentSection == GallerySection.user),),
+                  Text(
+                    "User",
+                    style: _selectableStyle(
+                        _currentSection == GallerySection.user),
+                  ),
                   Spacer(),
                 ],
               ),
@@ -114,32 +127,37 @@ class _MyHomePageState extends State<MyHomePage> {
           )),
       body: Container(
           color: Colors.black,
-          child: Center (
+          child: Center(
             child: Column(
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.all(15),
-                  child: Text(_title(), maxLines: 6, style: TextStyle(color: Colors.white),),
+                  child: Text(
+                    _title(),
+                    maxLines: 6,
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Expanded(
                   child: _pageView(),
                 )
               ],
             ),
-          )
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _loadGalleryItems,
-        tooltip: 'Upload Image',
-        child: Icon(Icons.add),
-      ),
+          )),
+      floatingActionButton: Builder(builder: (BuildContext context) {
+        return FloatingActionButton(
+          onPressed: () => this._onAddTapped(context),
+          tooltip: 'Upload Image',
+          child: Icon(Icons.add),
+        );
+      }),
       bottomNavigationBar: BottomNavigationBar(items: [
         BottomNavigationBarItem(
             icon: new Icon(Icons.album), title: Text("Gallery")),
         BottomNavigationBarItem(
-            icon: new Icon(Icons.photo), title: Text("My Stuff")),
+            icon: new Icon(Icons.photo), title: Text("My Saus")),
         BottomNavigationBarItem(
-            icon: new Icon(Icons.person), title: Text("Social"))
+            icon: new Icon(Icons.person), title: Text("Social Saus"))
       ]),
     );
   }
@@ -152,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  String _title(){
+  String _title() {
     if (_galleryItems.length > 0) {
       return _galleryItems[_currentPosition].title;
     }
@@ -166,13 +184,12 @@ class _MyHomePageState extends State<MyHomePage> {
         String imageUrl = _galleryItems[position].pageUrl();
 
         if (imageUrl.contains(".mp4")) {
-
           VideoPlayer player;
           VideoPlayerController controller = _controllers[position];
 
           if (controller == null) {
-            VideoPlayerController controller = VideoPlayerController.network(
-                imageUrl);
+            VideoPlayerController controller =
+                VideoPlayerController.network(imageUrl);
             _controllers[position] = controller;
 
             player = VideoPlayer(controller);
@@ -196,6 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _onAddTapped(BuildContext context) {
+    final snackBar = SnackBar(content: Text('Add image is under construction'));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
   void _onPageChanged(int position) {
     setState(() {
       _currentPosition = position;
@@ -207,11 +229,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _controllers.forEach((key, controller) {
       if (key == position) {
         controller.play();
-      } if (position - key > 4 || key - position > 4) {
+      }
+      if (position - key > 4 || key - position > 4) {
         //indicates this controller is for a video > 4 pages away
         controller.dispose();
         _controllers.remove(key);
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadGalleryItems();
   }
 }
