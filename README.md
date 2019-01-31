@@ -1,6 +1,6 @@
-# imgsrc
+# imgSaus 
 
-A new Flutter application.
+imgSaus is a Flutter application that consumes the imgur api. This is a project being used to learn flutter and hopefully build a useful imgur client for iOS and Android. 
 
 ## Getting Started
 
