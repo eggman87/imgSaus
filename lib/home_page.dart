@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imgsrc/gallery_repository.dart';
+import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:video_player/video_player.dart';
@@ -24,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
+  Map<String, List<Comment>> _itemComments = new Map();
 
   void _loadGalleryItems() {
     GalleryRepository repostiory = new GalleryRepository();
@@ -35,6 +37,22 @@ class _MyHomePageState extends State<MyHomePage> {
           _galleryItems.addAll(it.body);
         }
       });
+    });
+  }
+
+  void _loadItemComments(String id) {
+    if (_itemComments.containsKey(id)) {
+      return;
+    }
+
+    GalleryRepository repository = new GalleryRepository();
+    repository.getComments(id, CommentSort.best)
+    .then((it) {
+      if (it.isOk()) {
+        setState(() {
+          _itemComments[id] = it.body;
+        });
+      }
     });
   }
 
@@ -147,8 +165,8 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Builder(builder: (BuildContext context) {
         return FloatingActionButton(
           onPressed: () => this._onAddTapped(context),
-          tooltip: 'Upload Image',
-          child: Icon(Icons.add),
+          tooltip: 'View Comments',
+          child: Icon(Icons.message),
         );
       }),
       bottomNavigationBar: BottomNavigationBar(items: [
@@ -214,8 +232,42 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onAddTapped(BuildContext context) {
-    final snackBar = SnackBar(content: Text('Add image is under construction'));
-    Scaffold.of(context).showSnackBar(snackBar);
+    _loadItemComments(_galleryItems[_currentPosition].id);
+    showModalBottomSheet<void>(context: context,
+        builder: (BuildContext context) {
+         return new ListView.builder(itemBuilder: (context, index) {
+           List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+           if (comments != null) {
+             Comment comment = comments[index];
+             return Column(
+               children: <Widget>[
+                 Container(
+                   child: Text(comment.comment),
+                   padding: EdgeInsets.all(8),
+                   alignment: Alignment(-1.0, -1.0),
+                 ),
+                 Container(
+                   child: Text(comment.author, style: TextStyle(color: Colors.green)),
+                    padding: EdgeInsets.all(8),
+                   alignment: Alignment(-1.0, 0),
+                 )],
+             );
+           } else {
+             return Text("loading comments...");
+           }
+         }, itemCount:_commentsLength(),
+         );
+
+    });
+  }
+
+  int _commentsLength() {
+    List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+    if (comments != null) {
+      return comments.length;
+    } else {
+      return 1;
+    }
   }
 
   void _onPageChanged(int position) {

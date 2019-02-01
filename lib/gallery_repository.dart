@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:http/http.dart' as http;
@@ -28,6 +29,25 @@ class GalleryRepository {
 
     for (dynamic itemJson in list) {
       items.add(GalleryItem.fromJson(itemJson));
+    }
+
+    return ParsedResponse(response.statusCode, items);
+  }
+
+  Future<ParsedResponse<List<Comment>>> getComments(String galleryId, CommentSort sort) async {
+    String commentSort = sort.toString().split('.').last;
+    String url = "https://api.imgur.com/3/gallery/$galleryId/comments/$commentSort";
+    http.Response response = await http.get(url, headers: headers);
+
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
+      return ParsedResponse(response.statusCode, null);
+    }
+
+    List<dynamic> list = jsonDecode(response.body)['data'];
+    List<Comment> items = new List();
+
+    for (dynamic commentJson in list) {
+      items.add(Comment.fromJson(commentJson));
     }
 
     return ParsedResponse(response.statusCode, items);
