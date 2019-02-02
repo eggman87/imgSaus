@@ -6,6 +6,8 @@ import 'package:imgsrc/model/gallery_models.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -29,9 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _loadGalleryItems() {
     GalleryRepository repostiory = new GalleryRepository();
-    repostiory
-        .getItems(_currentSection, _currentSort, _currentWindow, _currentPage)
-        .then((it) {
+    repostiory.getItems(_currentSection, _currentSort, _currentWindow, _currentPage).then((it) {
       setState(() {
         if (it.isOk()) {
           _galleryItems.addAll(it.body);
@@ -46,8 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     GalleryRepository repository = new GalleryRepository();
-    repository.getComments(id, CommentSort.best)
-    .then((it) {
+    repository.getComments(id, CommentSort.best).then((it) {
       if (it.isOk()) {
         setState(() {
           _itemComments[id] = it.body;
@@ -89,8 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   Visibility(
                       visible: _galleryItems.length > 0,
-                      child: Text(
-                          "  Currently viewing ${_currentPosition + 1}/${_galleryItems.length}"))
+                      child: Text("  Currently viewing ${_currentPosition + 1}/${_galleryItems.length}"))
                 ],
               ),
               ListTile(
@@ -104,20 +102,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   Spacer(),
                   Text(
                     "hot",
-                    style:
-                        _selectableStyle(_currentSection == GallerySection.hot),
+                    style: _selectableStyle(_currentSection == GallerySection.hot),
                   ),
                   Spacer(),
                   Text(
                     "top",
-                    style:
-                        _selectableStyle(_currentSection == GallerySection.top),
+                    style: _selectableStyle(_currentSection == GallerySection.top),
                   ),
                   Spacer(),
                   Text(
                     "User",
-                    style: _selectableStyle(
-                        _currentSection == GallerySection.user),
+                    style: _selectableStyle(_currentSection == GallerySection.user),
                   ),
                   Spacer(),
                 ],
@@ -170,12 +165,9 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }),
       bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.album), title: Text("Gallery")),
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.photo), title: Text("My Saus")),
-        BottomNavigationBarItem(
-            icon: new Icon(Icons.person), title: Text("Social Saus"))
+        BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
+        BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
+        BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
       ]),
     );
   }
@@ -206,8 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
           VideoPlayerController controller = _controllers[position];
 
           if (controller == null) {
-            VideoPlayerController controller =
-                VideoPlayerController.network(imageUrl);
+            VideoPlayerController controller = VideoPlayerController.network(imageUrl);
             _controllers[position] = controller;
 
             player = VideoPlayer(controller);
@@ -233,32 +224,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onAddTapped(BuildContext context) {
     _loadItemComments(_galleryItems[_currentPosition].id);
-    showModalBottomSheet<void>(context: context,
+    showModalBottomSheet<void>(
+        context: context,
         builder: (BuildContext context) {
-         return new ListView.builder(itemBuilder: (context, index) {
-           List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
-           if (comments != null) {
-             Comment comment = comments[index];
-             return Column(
-               children: <Widget>[
-                 Container(
-                   child: Text(comment.comment),
-                   padding: EdgeInsets.all(8),
-                   alignment: Alignment(-1.0, -1.0),
-                 ),
-                 Container(
-                   child: Text(comment.author, style: TextStyle(color: Colors.green)),
-                    padding: EdgeInsets.all(8),
-                   alignment: Alignment(-1.0, 0),
-                 )],
-             );
-           } else {
-             return Text("loading comments...");
-           }
-         }, itemCount:_commentsLength(),
-         );
-
-    });
+          return new ListView.builder(
+            itemBuilder: (context, index) {
+              List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+              if (comments != null) {
+                Comment comment = comments[index];
+                return Column(
+                  children: <Widget>[
+                    Container(
+                      child: Linkify(
+                        text: (comment.comment),
+                        onOpen: (url) => _onUrlTapped(context, url),
+                      ),
+                      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                      alignment: Alignment(-1.0, -1.0),
+                    ),
+                    Container(
+                      child: Text(comment.author, style: TextStyle(color: Colors.green)),
+                      padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
+                      alignment: Alignment(-1.0, 0),
+                    )
+                  ],
+                );
+              } else {
+                return Container(
+                  child: Column(children: <Widget>[
+                    CircularProgressIndicator(),
+                  ]),
+                  padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
+                );
+              }
+            },
+            itemCount: _commentsLength(),
+          );
+        });
   }
 
   int _commentsLength() {
@@ -267,6 +269,35 @@ class _MyHomePageState extends State<MyHomePage> {
       return comments.length;
     } else {
       return 1;
+    }
+  }
+
+  void _onUrlTapped(BuildContext context, String url) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) => SimpleDialog(
+              contentPadding: EdgeInsets.zero,
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
+                  child: Container(
+                    color: Colors.black,
+                    child: _photoOrWebView(url),
+                  ),
+                ),
+              ],
+            ));
+  }
+
+  Widget _photoOrWebView(String url) {
+    String lowerUrl = url.toLowerCase();
+    if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
+      return PhotoView(imageProvider: NetworkImage(url));
+    } else {
+      return WebView(
+        initialUrl: url,
+      );
     }
   }
 

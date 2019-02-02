@@ -2,6 +2,7 @@ package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugins.videoplayer.VideoPlayerPlugin;
+import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 
 /**
  * Generated file. Do not edit.
@@ -12,6 +13,7 @@ public final class GeneratedPluginRegistrant {
       return;
     }
     VideoPlayerPlugin.registerWith(registry.registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
+    WebViewFlutterPlugin.registerWith(registry.registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
   }
 
   private static boolean alreadyRegisteredWith(PluginRegistry registry) {
