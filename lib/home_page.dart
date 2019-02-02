@@ -228,40 +228,40 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         builder: (BuildContext context) {
           return new GestureDetector(
-            onTap: ()=> {},
+              onTap: () => {},
               child: ListView.builder(
-            itemBuilder: (context, index) {
-              List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
-              if (comments != null) {
-                Comment comment = comments[index];
-                return Column(
-                  children: <Widget>[
-                    Container(
-                      child: Linkify(
-                        text: (comment.comment),
-                        onOpen: (url) => _onUrlTapped(context, url),
-                      ),
-                      padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                      alignment: Alignment(-1.0, -1.0),
-                    ),
-                    Container(
-                      child: Text(comment.author, style: TextStyle(color: Colors.green)),
-                      padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
-                      alignment: Alignment(-1.0, 0),
-                    )
-                  ],
-                );
-              } else {
-                return Container(
-                  child: Column(children: <Widget>[
-                    CircularProgressIndicator(),
-                  ]),
-                  padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
-                );
-              }
-            },
-            itemCount: _commentsLength(),
-          ));
+                itemBuilder: (context, index) {
+                  List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+                  if (comments != null) {
+                    Comment comment = comments[index];
+                    return Column(
+                      children: <Widget>[
+                        Container(
+                          child: Linkify(
+                            text: (comment.comment),
+                            onOpen: (url) => _onUrlTapped(context, url),
+                          ),
+                          padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                          alignment: Alignment(-1.0, -1.0),
+                        ),
+                        Container(
+                          child: Text(comment.author, style: TextStyle(color: Colors.green)),
+                          padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
+                          alignment: Alignment(-1.0, 0),
+                        )
+                      ],
+                    );
+                  } else {
+                    return Container(
+                      child: Column(children: <Widget>[
+                        CircularProgressIndicator(),
+                      ]),
+                      padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
+                    );
+                  }
+                },
+                itemCount: _commentsLength(),
+              ));
         });
   }
 
