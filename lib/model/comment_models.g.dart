@@ -14,6 +14,7 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
       authorId: json['author_id'] as int,
       ups: json['ups'] as int,
       downs: json['downs'] as int,
+      points: json['points'] as int,
       vote: json['vote'] as String);
 }
 
@@ -24,5 +25,6 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'author_id': instance.authorId,
       'ups': instance.ups,
       'downs': instance.downs,
+      'points': instance.points,
       'vote': instance.vote
     };

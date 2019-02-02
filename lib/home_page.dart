@@ -250,7 +250,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           alignment: Alignment(-1.0, -1.0),
                         ),
                         Container(
-                          child: Text(comment.author, style: TextStyle(color: Colors.green)),
+                          child: Row(children: <Widget>[
+                            Text(comment.author, style: TextStyle(color: Colors.green)),
+                            Spacer(),
+                            Text(
+                              comment.points.toString(),
+                              textAlign: TextAlign.right,
+                              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
+                            )
+                          ]),
                           padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
                           alignment: Alignment(-1.0, 0),
                         )
