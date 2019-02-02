@@ -21,7 +21,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   GallerySection _currentSection = GallerySection.hot;
   GallerySort _currentSort = GallerySort.viral;
-  GalleryWindow _currentWindow = GalleryWindow.all;
+  GalleryWindow _currentWindow = GalleryWindow.day;
   int _currentPage = 1;
   int _currentPosition = 0;
 
@@ -43,6 +43,11 @@ class _MyHomePageState extends State<MyHomePage> {
   void _loadItemComments(String id) {
     if (_itemComments.containsKey(id)) {
       return;
+    }
+
+    //clear comments from memory so the mem cache does not grow too big
+    if (_itemComments.length > 5) {
+      _itemComments.clear();
     }
 
     GalleryRepository repository = new GalleryRepository();
