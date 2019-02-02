@@ -227,7 +227,9 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
-          return new ListView.builder(
+          return new GestureDetector(
+            onTap: ()=> {},
+              child: ListView.builder(
             itemBuilder: (context, index) {
               List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
               if (comments != null) {
@@ -259,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
               }
             },
             itemCount: _commentsLength(),
-          );
+          ));
         });
   }
 
