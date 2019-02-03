@@ -163,6 +163,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: _pageView(),
                     onSwipeUp: _onSwipeUp,
                     onSwipeDown: _onSwipeDown,
+                    swipeConfiguration: SwipeConfiguration(
+                      verticalSwipeMinVelocity: 10.0,
+                      verticalSwipeMinDisplacement: 10.0,
+                    ),
                   ),
                 ),
               ],
