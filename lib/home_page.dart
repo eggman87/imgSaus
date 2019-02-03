@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:imgsrc/comments_bottom_sheet.dart';
 import 'package:imgsrc/gallery_album_index_state.dart';
 import 'package:imgsrc/gallery_repository.dart';
-import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:swipedetector/swipedetector.dart';
-import 'package:zoomable_image/zoomable_image.dart';
-
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -35,6 +31,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
 
+  @override
+  void initState() {
+    super.initState();
+
+    _loadGalleryItems();
+  }
+
   void _loadGalleryItems() {
     GalleryRepository repostiory = new GalleryRepository();
     repostiory.getItems(_currentSection, _currentSort, _currentWindow, _currentPage).then((it) {
@@ -50,12 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _currentPage++;
     _loadGalleryItems();
   }
-
-//  void _reloadGalleryFromSideMenu() {
-//    //todo: diff selections to determine if should reset or not
-//    _currentPage = 0;
-//    _galleryItems = new List();
-//  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +141,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Expanded(
                   child: SwipeDetector(
-                    child: _pageView(),
+                    child: GestureDetector(
+                      child: _pageView(),
+                      onLongPress: _onLongPress,
+                    ),
                     onSwipeUp: _onSwipeUp,
                     onSwipeDown: _onSwipeDown,
                     swipeConfiguration: SwipeConfiguration(
@@ -223,7 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return player;
         } else {
-          return ZoomableImage(NetworkImage(imageUrl), minScale: 1.0, key: Key(imageUrl),);
+          return Image.network(imageUrl);
         }
       },
       itemCount: _galleryItems.length,
@@ -236,14 +236,18 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
-          return CommentsSheet(galleryItemId: currentItem.id, key: Key(currentItem.id),);
+          return CommentsSheet(
+            galleryItemId: currentItem.id,
+            key: Key(currentItem.id),
+          );
         });
   }
 
   void _onSwipeUp() {
     GalleryItem item = _currentGalleryItem();
 
-    if (item.isAlbumWithMoreThanOneImage() && _pageAlbumState.albumPositionForIndex(_pagePosition) < item.images.length - 1) {
+    if (item.isAlbumWithMoreThanOneImage() &&
+        _pageAlbumState.albumPositionForIndex(_pagePosition) < item.images.length - 1) {
       setState(() {
         _pageAlbumState.incrementPositionForIndex(_pagePosition);
       });
@@ -258,6 +262,10 @@ class _MyHomePageState extends State<MyHomePage> {
         _pageAlbumState.decrementPositionForIndex(_pagePosition);
       });
     }
+  }
+
+  void _onLongPress() {
+
   }
 
   GalleryItem _currentGalleryItem() {
@@ -289,138 +297,5 @@ class _MyHomePageState extends State<MyHomePage> {
         _controllers.remove(key);
       }
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadGalleryItems();
-  }
-}
-
-class CommentsSheet extends StatefulWidget {
-
-  CommentsSheet({Key key, this.galleryItemId}) : super(key: key);
-
-  final String galleryItemId;
-
-  @override
-  _CommentsSheetState createState() => _CommentsSheetState();
-}
-
-class _CommentsSheetState extends State<CommentsSheet> {
-  Map<String, List<Comment>> _itemComments = new Map();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _loadItemComments();
-  }
-
-  void _loadItemComments() {
-    if (_itemComments.containsKey(widget.galleryItemId)) {
-      return;
-    }
-
-    //clear comments from memory so the mem cache does not grow too big
-    if (_itemComments.length > 5) {
-      _itemComments.clear();
-    }
-
-    GalleryRepository repository = new GalleryRepository();
-    repository.getComments(widget.galleryItemId, CommentSort.best).then((it) {
-      if (it.isOk()) {
-        setState(() {
-          _itemComments[widget.galleryItemId] = it.body;
-        });
-      }
-    });
-  }
-
-  int _commentsLength() {
-    List<Comment> comments = _itemComments[widget.galleryItemId];
-    if (comments != null) {
-      return comments.length;
-    } else {
-      return 1;
-    }
-  }
-
-  Widget _photoOrWebView(String url) {
-    String lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
-      return Image.network(url);
-    } else {
-      return WebView(
-        initialUrl: url,
-      );
-    }
-  }
-
-  void _onUrlTapped(BuildContext context, String url) {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => SimpleDialog(
-          contentPadding: EdgeInsets.zero,
-          children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
-              child: Container(
-                color: Colors.black,
-                child: _photoOrWebView(url),
-              ),
-            ),
-          ],
-        ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new GestureDetector(
-        onTap: () => {},
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            List<Comment> comments = _itemComments[ widget.galleryItemId];
-            if (comments != null) {
-              Comment comment = comments[index];
-              return Column(
-                children: <Widget>[
-                  Container(
-                    child: Linkify(
-                      text: (comment.comment),
-                      onOpen: (url) => _onUrlTapped(context, url),
-                    ),
-                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                    alignment: Alignment(-1.0, -1.0),
-                  ),
-                  Container(
-                    child: Row(children: <Widget>[
-                      Text(comment.author, style: TextStyle(color: Colors.green)),
-                      Spacer(),
-                      Text(
-                        comment.points.toString(),
-                        textAlign: TextAlign.right,
-                        style: TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
-                      )
-                    ]),
-                    padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
-                    alignment: Alignment(-1.0, 0),
-                  )
-                ],
-              );
-            } else {
-              return Container(
-                child: Column(children: <Widget>[
-                  CircularProgressIndicator(),
-                ]),
-                padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
-              );
-            }
-          },
-          itemCount: _commentsLength(),
-        ));
   }
 }
