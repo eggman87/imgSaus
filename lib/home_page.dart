@@ -238,7 +238,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return player;
         } else {
-          return PhotoView(imageProvider: NetworkImage(imageUrl));
+          //PhotoView(imageProvider: NetworkImage(imageUrl));
+          return Image.network(imageUrl);
         }
       },
       itemCount: _galleryItems.length,
