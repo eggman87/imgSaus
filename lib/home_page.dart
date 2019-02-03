@@ -6,10 +6,11 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:swipedetector/swipedetector.dart';
+import 'package:zoomable_image/zoomable_image.dart';
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -243,8 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           return player;
         } else {
-          //PhotoView(imageProvider: NetworkImage(imageUrl));
-          return Image.network(imageUrl);
+          return ZoomableImage(NetworkImage(imageUrl), minScale: 1.0, key: Key(imageUrl),);
         }
       },
       itemCount: _galleryItems.length,
@@ -335,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _photoOrWebView(String url) {
     String lowerUrl = url.toLowerCase();
     if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
-      return PhotoView(imageProvider: NetworkImage(url));
+      return ZoomableImage(NetworkImage(url), key: Key(url));
     } else {
       return WebView(
         initialUrl: url,

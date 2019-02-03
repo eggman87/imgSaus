@@ -1,3 +1,5 @@
+
+//TODO: we can probably forget about indexes of albums eventually (as the user continues to swipe away).
 class GalleryAlbumIndexState {
   GalleryAlbumIndexState() {
     _albumPositionsForIndex[0] = 0;
