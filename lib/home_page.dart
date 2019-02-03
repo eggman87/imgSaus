@@ -162,6 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: SwipeDetector(
                     child: _pageView(),
                     onSwipeUp: _onSwipeUp,
+                    onSwipeDown: _onSwipeDown,
                   ),
                 ),
               ],
@@ -342,6 +343,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onSwipeDown() {
+    GalleryItem item = _currentGalleryItem();
+
+    if (item.isAlbumWithMoreThanOneImage() && _currentAlbumPosition > 0) {
+      setState(() {
+        _currentAlbumPosition--;
+      });
+    }
+  }
+
   GalleryItem _currentGalleryItem() {
     if (_galleryItems.length > 0) {
       return _galleryItems[_currentPosition];
@@ -351,8 +362,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onPageChanged(int position) {
     setState(() {
-      _currentPosition = position;
       _currentAlbumPosition = 0;
+      _currentPosition = position;
     });
     if (position == _galleryItems.length) {
       _loadNextPage();
