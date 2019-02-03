@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:swipedetector/swipedetector.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -24,6 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   GalleryWindow _currentWindow = GalleryWindow.day;
   int _currentPage = 1;
   int _currentPosition = 0;
+  int _currentAlbumPosition = 0;
 
   Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
@@ -151,20 +153,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   padding: EdgeInsets.all(15),
                   child: Text(
-                    _title(),
+                    _galleryItemTitle(),
                     maxLines: 6,
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 Expanded(
-                  child: _pageView(),
-                )
+                  child: SwipeDetector(
+                    child: _pageView(),
+                    onSwipeUp: _onSwipeUp,
+                  ),
+                ),
               ],
             ),
           )),
       floatingActionButton: Builder(builder: (BuildContext context) {
         return FloatingActionButton(
-          onPressed: () => this._onAddTapped(context),
+          onPressed: () => this._onCommentsTapped(context),
           tooltip: 'View Comments',
           child: Icon(Icons.message),
         );
@@ -185,9 +190,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  String _title() {
+  String _galleryItemTitle() {
     if (_galleryItems.length > 0) {
-      return _galleryItems[_currentPosition].title;
+      GalleryItem item = _currentGalleryItem();
+      String title = item.title;
+      if (item.isAlbumWithMoreThanOneImage()) {
+        title += " (${_currentAlbumPosition + 1}/${item.images.length})";
+      }
+      return title;
     }
     return "";
   }
@@ -196,7 +206,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return PageView.builder(
       pageSnapping: true,
       itemBuilder: (context, position) {
-        String imageUrl = _galleryItems[position].pageUrl();
+        GalleryItem currentItem = _galleryItems[position];
+        String imageUrl = currentItem.pageUrl();
+        if (currentItem.isAlbumWithMoreThanOneImage()) {
+          imageUrl = currentItem.images[_currentAlbumPosition].pageUrl();
+        }
 
         if (imageUrl.contains(".mp4")) {
           VideoPlayer player;
@@ -227,8 +241,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _onAddTapped(BuildContext context) {
-    _loadItemComments(_galleryItems[_currentPosition].id);
+  void _onCommentsTapped(BuildContext context) {
+    GalleryItem currentItem = _currentGalleryItem();
+    _loadItemComments(currentItem.id);
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -236,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () => {},
               child: ListView.builder(
                 itemBuilder: (context, index) {
-                  List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+                  List<Comment> comments = _itemComments[currentItem.id];
                   if (comments != null) {
                     Comment comment = comments[index];
                     return Column(
@@ -279,7 +294,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   int _commentsLength() {
-    List<Comment> comments = _itemComments[_galleryItems[_currentPosition].id];
+    GalleryItem currentItem = _currentGalleryItem();
+    List<Comment> comments = _itemComments[currentItem.id];
     if (comments != null) {
       return comments.length;
     } else {
@@ -316,9 +332,27 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onSwipeUp() {
+    GalleryItem item = _currentGalleryItem();
+
+    if (item.isAlbumWithMoreThanOneImage() && _currentAlbumPosition < item.images.length - 1) {
+      setState(() {
+        _currentAlbumPosition++;
+      });
+    }
+  }
+
+  GalleryItem _currentGalleryItem() {
+    if (_galleryItems.length > 0) {
+      return _galleryItems[_currentPosition];
+    }
+    return null;
+  }
+
   void _onPageChanged(int position) {
     setState(() {
       _currentPosition = position;
+      _currentAlbumPosition = 0;
     });
     if (position == _galleryItems.length) {
       _loadNextPage();

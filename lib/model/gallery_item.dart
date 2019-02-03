@@ -11,6 +11,7 @@ class GalleryItem {
   final String title;
   final String type;
   final bool animated;
+  //this field is misleading, a album can have 1 image only
   @JsonKey(name: "is_album")
   final bool isAlbum;
   final String link;
@@ -27,10 +28,15 @@ class GalleryItem {
       return mp4;
     }
 
-    if (isAlbum) {
+    //isAlbum can be null for sub images which is not actually a galleryitem model (might create new model soon).
+    if (isAlbum != null && isAlbum) {
       return this.images[0].link;
     } else {
       return link;
     }
+  }
+
+  bool isAlbumWithMoreThanOneImage() {
+    return isAlbum != null && isAlbum && images.length > 1;
   }
 }
