@@ -34,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
-  Map<String, List<Comment>> _itemComments = new Map();
 
   void _loadGalleryItems() {
     GalleryRepository repostiory = new GalleryRepository();
@@ -44,26 +43,6 @@ class _MyHomePageState extends State<MyHomePage> {
           _galleryItems.addAll(it.body);
         }
       });
-    });
-  }
-
-  void _loadItemComments(String id) {
-    if (_itemComments.containsKey(id)) {
-      return;
-    }
-
-    //clear comments from memory so the mem cache does not grow too big
-    if (_itemComments.length > 5) {
-      _itemComments.clear();
-    }
-
-    GalleryRepository repository = new GalleryRepository();
-    repository.getComments(id, CommentSort.best).then((it) {
-      if (it.isOk()) {
-        setState(() {
-          _itemComments[id] = it.body;
-        });
-      }
     });
   }
 
@@ -254,93 +233,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onCommentsTapped(BuildContext context) {
     GalleryItem currentItem = _currentGalleryItem();
-    _loadItemComments(currentItem.id);
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
-          return new GestureDetector(
-              onTap: () => {},
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  List<Comment> comments = _itemComments[currentItem.id];
-                  if (comments != null) {
-                    Comment comment = comments[index];
-                    return Column(
-                      children: <Widget>[
-                        Container(
-                          child: Linkify(
-                            text: (comment.comment),
-                            onOpen: (url) => _onUrlTapped(context, url),
-                          ),
-                          padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
-                          alignment: Alignment(-1.0, -1.0),
-                        ),
-                        Container(
-                          child: Row(children: <Widget>[
-                            Text(comment.author, style: TextStyle(color: Colors.green)),
-                            Spacer(),
-                            Text(
-                              comment.points.toString(),
-                              textAlign: TextAlign.right,
-                              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
-                            )
-                          ]),
-                          padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
-                          alignment: Alignment(-1.0, 0),
-                        )
-                      ],
-                    );
-                  } else {
-                    return Container(
-                      child: Column(children: <Widget>[
-                        CircularProgressIndicator(),
-                      ]),
-                      padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
-                    );
-                  }
-                },
-                itemCount: _commentsLength(),
-              ));
+          return CommentsSheet(galleryItemId: currentItem.id, key: Key(currentItem.id),);
         });
-  }
-
-  int _commentsLength() {
-    GalleryItem currentItem = _currentGalleryItem();
-    List<Comment> comments = _itemComments[currentItem.id];
-    if (comments != null) {
-      return comments.length;
-    } else {
-      return 1;
-    }
-  }
-
-  void _onUrlTapped(BuildContext context, String url) {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => SimpleDialog(
-              contentPadding: EdgeInsets.zero,
-              children: <Widget>[
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
-                  child: Container(
-                    color: Colors.black,
-                    child: _photoOrWebView(url),
-                  ),
-                ),
-              ],
-            ));
-  }
-
-  Widget _photoOrWebView(String url) {
-    String lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
-      return Image.network(url);
-    } else {
-      return WebView(
-        initialUrl: url,
-      );
-    }
   }
 
   void _onSwipeUp() {
@@ -399,5 +296,131 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _loadGalleryItems();
+  }
+}
+
+class CommentsSheet extends StatefulWidget {
+
+  CommentsSheet({Key key, this.galleryItemId}) : super(key: key);
+
+  final String galleryItemId;
+
+  @override
+  _CommentsSheetState createState() => _CommentsSheetState();
+}
+
+class _CommentsSheetState extends State<CommentsSheet> {
+  Map<String, List<Comment>> _itemComments = new Map();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _loadItemComments();
+  }
+
+  void _loadItemComments() {
+    if (_itemComments.containsKey(widget.galleryItemId)) {
+      return;
+    }
+
+    //clear comments from memory so the mem cache does not grow too big
+    if (_itemComments.length > 5) {
+      _itemComments.clear();
+    }
+
+    GalleryRepository repository = new GalleryRepository();
+    repository.getComments(widget.galleryItemId, CommentSort.best).then((it) {
+      if (it.isOk()) {
+        setState(() {
+          _itemComments[widget.galleryItemId] = it.body;
+        });
+      }
+    });
+  }
+
+  int _commentsLength() {
+    List<Comment> comments = _itemComments[widget.galleryItemId];
+    if (comments != null) {
+      return comments.length;
+    } else {
+      return 1;
+    }
+  }
+
+  Widget _photoOrWebView(String url) {
+    String lowerUrl = url.toLowerCase();
+    if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
+      return Image.network(url);
+    } else {
+      return WebView(
+        initialUrl: url,
+      );
+    }
+  }
+
+  void _onUrlTapped(BuildContext context, String url) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) => SimpleDialog(
+          contentPadding: EdgeInsets.zero,
+          children: <Widget>[
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
+              child: Container(
+                color: Colors.black,
+                child: _photoOrWebView(url),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new GestureDetector(
+        onTap: () => {},
+        child: ListView.builder(
+          itemBuilder: (context, index) {
+            List<Comment> comments = _itemComments[ widget.galleryItemId];
+            if (comments != null) {
+              Comment comment = comments[index];
+              return Column(
+                children: <Widget>[
+                  Container(
+                    child: Linkify(
+                      text: (comment.comment),
+                      onOpen: (url) => _onUrlTapped(context, url),
+                    ),
+                    padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+                    alignment: Alignment(-1.0, -1.0),
+                  ),
+                  Container(
+                    child: Row(children: <Widget>[
+                      Text(comment.author, style: TextStyle(color: Colors.green)),
+                      Spacer(),
+                      Text(
+                        comment.points.toString(),
+                        textAlign: TextAlign.right,
+                        style: TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
+                      )
+                    ]),
+                    padding: EdgeInsets.fromLTRB(8, 2, 4, 4),
+                    alignment: Alignment(-1.0, 0),
+                  )
+                ],
+              );
+            } else {
+              return Container(
+                child: Column(children: <Widget>[
+                  CircularProgressIndicator(),
+                ]),
+                padding: EdgeInsets.fromLTRB(0, 72, 0, 0),
+              );
+            }
+          },
+          itemCount: _commentsLength(),
+        ));
   }
 }
