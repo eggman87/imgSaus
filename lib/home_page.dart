@@ -335,7 +335,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _photoOrWebView(String url) {
     String lowerUrl = url.toLowerCase();
     if (lowerUrl.contains(".jpg") || url.contains(".gif") || url.contains(".png")) {
-      return ZoomableImage(NetworkImage(url), key: Key(url));
+      return Image.network(url);
     } else {
       return WebView(
         initialUrl: url,
