@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imgsrc/gallery_album_index_state.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
@@ -20,12 +21,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //current state of gallery items.
   GallerySection _currentSection = GallerySection.hot;
   GallerySort _currentSort = GallerySort.viral;
   GalleryWindow _currentWindow = GalleryWindow.day;
   int _currentPage = 1;
-  int _currentPosition = 0;
-  int _currentAlbumPosition = 0;
+
+  //the below `_current` properties refer to state of the current index of the PageView
+  int _pagePosition = 0;
+  GalleryAlbumIndexState _pageAlbumState = GalleryAlbumIndexState();
 
   Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
@@ -95,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   Visibility(
                       visible: _galleryItems.length > 0,
-                      child: Text("  Currently viewing ${_currentPosition + 1}/${_galleryItems.length}"))
+                      child: Text("  Currently viewing ${_pagePosition + 1}/${_galleryItems.length}"))
                 ],
               ),
               ListTile(
@@ -200,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
       GalleryItem item = _currentGalleryItem();
       String title = item.title;
       if (item.isAlbumWithMoreThanOneImage()) {
-        title += " (${_currentAlbumPosition + 1}/${item.images.length})";
+        title += " (${_pageAlbumState.albumPositionForIndex(_pagePosition) + 1}/${item.images.length})";
       }
       return title;
     }
@@ -214,7 +218,8 @@ class _MyHomePageState extends State<MyHomePage> {
         GalleryItem currentItem = _galleryItems[position];
         String imageUrl = currentItem.pageUrl();
         if (currentItem.isAlbumWithMoreThanOneImage()) {
-          imageUrl = currentItem.images[_currentAlbumPosition].pageUrl();
+          //this loads items to left and right so we need to make sure our current album index is for this item when loading images.
+          imageUrl = currentItem.images[_pageAlbumState.albumPositionForIndex(position)].pageUrl();
         }
 
         if (imageUrl.contains(".mp4")) {
@@ -341,9 +346,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onSwipeUp() {
     GalleryItem item = _currentGalleryItem();
 
-    if (item.isAlbumWithMoreThanOneImage() && _currentAlbumPosition < item.images.length - 1) {
+    if (item.isAlbumWithMoreThanOneImage() && _pageAlbumState.albumPositionForIndex(_pagePosition) < item.images.length - 1) {
       setState(() {
-        _currentAlbumPosition++;
+        _pageAlbumState.incrementPositionForIndex(_pagePosition);
       });
     }
   }
@@ -351,24 +356,27 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onSwipeDown() {
     GalleryItem item = _currentGalleryItem();
 
-    if (item.isAlbumWithMoreThanOneImage() && _currentAlbumPosition > 0) {
+    if (item.isAlbumWithMoreThanOneImage() && _pageAlbumState.albumPositionForIndex(_pagePosition) > 0) {
       setState(() {
-        _currentAlbumPosition--;
+        _pageAlbumState.decrementPositionForIndex(_pagePosition);
       });
     }
   }
 
   GalleryItem _currentGalleryItem() {
     if (_galleryItems.length > 0) {
-      return _galleryItems[_currentPosition];
+      return _galleryItems[_pagePosition];
     }
     return null;
   }
 
   void _onPageChanged(int position) {
     setState(() {
-      _currentAlbumPosition = 0;
-      _currentPosition = position;
+      GalleryItem item = _galleryItems[position];
+      if (item.isAlbum) {
+        _pageAlbumState.startTrackingNewIndex(position);
+      }
+      _pagePosition = position;
     });
     if (position == _galleryItems.length) {
       _loadNextPage();
