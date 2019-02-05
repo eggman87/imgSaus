@@ -22,10 +22,8 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   @override
   void dispose() {
     if (_controller != null) {
-      _controller.pause();
       _controller.dispose();
       _controller = null;
-      print("[mateo] dispsosing single controller");
     }
     super.dispose();
   }
@@ -37,26 +35,26 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
     if (widget.item.isAlbum) {
       imageUrl = widget.item.images[0].pageUrl();
     }
-    print("[mateo] showing regular image $imageUrl}");
 
     if (!mounted) {
       return Container();
     }
 
+    if (_controller != null) {
+      _controller.dispose();
+    }
+
     if (imageUrl.contains(".mp4")) {
-      print("[mateo] making video controller}");
       _controller = VideoPlayerController.network(imageUrl);
       var player = VideoPlayer(_controller);
       _controller.setLooping(true);
       _controller.setVolume(0);
 
       _controller.initialize().then((_) {
-        print("[mateo] playing after initialization");
         _controller.play();
       });
       return player;
     } else {
-      print("[mateo] showing regular image");
       return Image.network(imageUrl);
     }
   }
@@ -97,9 +95,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   @override
   void dispose() {
     for (var controller in _controllers.values) {
-      controller.pause();
       controller.dispose();
-      print("[mateo] dispsosing one controller");
     }
 
     _controllers.clear();
@@ -124,21 +120,17 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("[mateo] building gallery item album");
     if (!mounted) {
       return Container();
     }
 
     String imageUrl = this._images[_position].pageUrl();
-    print("[mateo] showing album image $imageUrl}");
     Widget widgetToWrap;
     if (imageUrl.contains(".mp4")) {
-      print("[mateo] video found in album");
       VideoPlayerController controller = _controllers[_position];
       VideoPlayer player;
 
       if (controller == null) {
-        print("[mateo] controller is null, creating");
         _controllers[_position] = VideoPlayerController.network(imageUrl);
         player = VideoPlayer(_controllers[_position]);
         _controllers[_position].setLooping(true);
@@ -146,12 +138,10 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
         _controllers[_position].initialize().then((_) {
           setState(() {
-            print("[mateo] playing after initialization in album: $_position");
             _controllers[_position].play();
           });
         });
       } else {
-        print("[mateo] controller already exists attaching");
         player = new VideoPlayer(controller);
       }
       widgetToWrap = player;
