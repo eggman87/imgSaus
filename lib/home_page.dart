@@ -1,15 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:imgsrc/comments_bottom_sheet.dart';
-import 'package:imgsrc/gallery_album_index_state.dart';
 import 'package:imgsrc/gallery_item_page.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/foundation.dart';
-import 'package:swipedetector/swipedetector.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -27,26 +22,18 @@ class _MyHomePageState extends State<MyHomePage> {
   var _currentWindow = GalleryWindow.day;
   int _currentPage = 1;
 
-  final StreamController<String> swipeNotifier = StreamController.broadcast();
-
   //the below `_current` properties refer to state of the current index of the PageView
   int _pagePosition = 0;
-  GalleryAlbumIndexState _pageAlbumState = GalleryAlbumIndexState();
-
-  Map<int, VideoPlayerController> _controllers = new Map();
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
+
+  int currentAlbumPosition = 0;
+  int currentAlbumLength = 0;
 
   @override
   void initState() {
     super.initState();
 
     _loadGalleryItems();
-  }
-
-  @override
-  void dispose() {
-    swipeNotifier.close();
-    super.dispose();
   }
 
   void _loadGalleryItems() {
@@ -151,15 +138,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: SwipeDetector(
                     child: GestureDetector(
                       child: _pageView(),
                       onLongPress: _onLongPress,
+                      behavior: HitTestBehavior.translucent,
                     ),
-                    onSwipeUp: _onSwipeUp,
-                    onSwipeDown: _onSwipeDown,
                   ),
-                ),
               ],
             ),
           )),
@@ -191,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
       GalleryItem item = _currentGalleryItem();
       String title = item.title;
       if (item.isAlbumWithMoreThanOneImage()) {
-        title += " (${_pageAlbumState.albumPositionForIndex(_pagePosition) + 1}/${item.images.length})";
+        title += " (${currentAlbumPosition + 1}/$currentAlbumLength)";
       }
       return title;
     }
@@ -204,38 +188,11 @@ class _MyHomePageState extends State<MyHomePage> {
       controller: PageController( ),
       itemBuilder: (context, position) {
         GalleryItem currentItem = _galleryItems[position];
-//        String imageUrl = currentItem.pageUrl();
         if (currentItem.isAlbumWithMoreThanOneImage()) {
-          //this loads items to left and right so we need to make sure our current album index is for this item when loading images.
-//          imageUrl = currentItem.images[_pageAlbumState.albumPositionForIndex(position)].pageUrl();
-          return GalleryAlbumPage(currentItem);
+          return GalleryAlbumPage(currentItem, _onAlbumCountChanged);
         } else {
           return GalleryImagePage(currentItem);
         }
-//
-//        if (imageUrl.contains(".mp4")) {
-//          VideoPlayer player;
-//          VideoPlayerController controller = _controllers[position];
-//
-//          if (controller == null) {
-//            VideoPlayerController controller = VideoPlayerController.network(imageUrl);
-//            _controllers[position] = controller;
-//
-//            player = VideoPlayer(controller);
-//            controller.setLooping(true);
-//            controller.setVolume(0);
-//
-//            controller.initialize().then((_) {
-//              controller.play();
-//            });
-//          } else {
-//            player = VideoPlayer(controller);
-//          }
-//
-//          return player;
-//        } else {
-//          return Image.network(imageUrl);
-//        }
       },
       itemCount: _galleryItems.length,
       onPageChanged: _onPageChanged,
@@ -254,29 +211,15 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
-  void _onSwipeUp() {
-    GalleryItem item = _currentGalleryItem();
-
-    if (item.isAlbumWithMoreThanOneImage() &&
-        _pageAlbumState.albumPositionForIndex(_pagePosition) < item.images.length - 1) {
-      setState(() {
-        _pageAlbumState.incrementPositionForIndex(_pagePosition);
-      });
-    }
-  }
-
-  void _onSwipeDown() {
-    GalleryItem item = _currentGalleryItem();
-
-    if (item.isAlbumWithMoreThanOneImage() && _pageAlbumState.albumPositionForIndex(_pagePosition) > 0) {
-      setState(() {
-        _pageAlbumState.decrementPositionForIndex(_pagePosition);
-      });
-    }
-  }
-
   void _onLongPress() {
 
+  }
+
+  void _onAlbumCountChanged(AlbumCount count) {
+    setState(() {
+      currentAlbumPosition = count.currentPosition;
+      currentAlbumLength = count.totalCount;
+    });
   }
 
   GalleryItem _currentGalleryItem() {
@@ -288,25 +231,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onPageChanged(int position) {
     setState(() {
-      GalleryItem item = _galleryItems[position];
-      if (item.isAlbum) {
-        _pageAlbumState.startTrackingNewIndex(position);
-      }
       _pagePosition = position;
     });
     if (position == _galleryItems.length) {
       _loadNextPage();
     }
-
-    _controllers.forEach((key, controller) {
-      if (key == position) {
-        controller.play();
-      }
-      if (position - key > 4 || key - position > 4) {
-        //indicates this controller is for a video > 4 pages away
-        controller.dispose();
-        _controllers.remove(key);
-      }
-    });
   }
 }

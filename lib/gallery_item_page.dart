@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
-import 'package:swipedetector/swipedetector.dart';
+import 'package:imgsrc/swipe_detector_plugin.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImagePage extends StatefulWidget {
@@ -55,10 +55,18 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   }
 }
 
+class AlbumCount {
+  final int currentPosition;
+  final int totalCount;
+
+  AlbumCount(this.currentPosition, this.totalCount);
+}
+
 class GalleryAlbumPage extends StatefulWidget {
-  GalleryAlbumPage(this.item, {Key key}) : super(key: key);
+  GalleryAlbumPage(this.item, this.onCountChanged, {Key key}) : super(key: key);
 
   final GalleryItem item;
+  final Function(AlbumCount) onCountChanged;
 
   @override
   _GalleryAlbumPageState createState() => _GalleryAlbumPageState();
@@ -84,15 +92,20 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     for (var controller in _controllers.values) {
       controller.dispose();
     }
+
     super.dispose();
   }
 
   void _loadAlbumDetails() {
     var repository = GalleryRepository();
     repository.getAlbumDetails(widget.item.id).then((it) {
+      if (!this.mounted) {
+        return;
+      }
       setState(() {
         if (it.isOk()) {
           this._images = it.body.images;
+          widget.onCountChanged(AlbumCount(_position, _images.length));
         }
       });
     });
@@ -102,6 +115,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   Widget build(BuildContext context) {
     String imageUrl = this._images[_position].pageUrl();
 
+    Widget widgetToWrap;
     if (imageUrl.contains(".mp4")) {
       VideoPlayerController controller = _controllers[_position];
       VideoPlayer player = new VideoPlayer(controller);
@@ -119,16 +133,18 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
           });
         });
       }
-      return player;
+      widgetToWrap = player;
     } else {
-      return Image.network(imageUrl);
+      widgetToWrap = Image.network(imageUrl);
     }
+    return VerticalSwipeDetector(child: widgetToWrap, onSwipeUp: _onSwipeUp, onSwipeDown: _onSwipeDown);
   }
 
   void _onSwipeUp() {
     if (_position < _images.length - 1) {
       setState(() {
         _position++;
+        widget.onCountChanged(AlbumCount(_position, _images.length));
       });
     }
   }
@@ -137,6 +153,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     if (_position > 0) {
       setState(() {
         _position--;
+        widget.onCountChanged(AlbumCount(_position, _images.length));
       });
     }
   }
