@@ -52,6 +52,20 @@ class GalleryRepository {
 
     return ParsedResponse(response.statusCode, items);
   }
+
+  Future<ParsedResponse<GalleryItem>> getAlbumDetails(String galleryItemId) async {
+    String url = "https://api.imgur.com/3/gallery/album/$galleryItemId";
+    http.Response response = await http.get(url, headers: headers);
+
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
+      return ParsedResponse(response.statusCode, null);
+    }
+
+    dynamic rawItem = jsonDecode(response.body)['data'];
+    GalleryItem item = GalleryItem.fromJson(rawItem);
+
+    return ParsedResponse(response.statusCode, item);
+  }
 }
 
 class ParsedResponse<T> {
