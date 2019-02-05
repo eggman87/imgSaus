@@ -37,9 +37,11 @@ class _CommentsSheetState extends State<CommentsSheet> {
     GalleryRepository repository = new GalleryRepository();
     repository.getComments(widget.galleryItemId, CommentSort.best).then((it) {
       if (it.isOk()) {
-        setState(() {
-          _itemComments[widget.galleryItemId] = it.body;
-        });
+        if (this.mounted) {
+          setState(() {
+            _itemComments[widget.galleryItemId] = it.body;
+          });
+        }
       }
     });
   }
