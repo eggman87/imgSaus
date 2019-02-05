@@ -27,7 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<GalleryItem> _galleryItems = new List<GalleryItem>();
 
   int currentAlbumPosition = 0;
-  int currentAlbumLength = 0;
+  int currentAlbumLength = 3; //default length...
 
   @override
   void initState() {
