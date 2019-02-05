@@ -30,6 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentAlbumPosition = 0;
   int currentAlbumLength = 3; //default length...
 
+  var _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -38,9 +40,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadGalleryItems() {
+    setState(() {
+      _isLoading = true;
+    });
     var repository = new GalleryRepository();
     repository.getItems(_currentSection, _currentSort, _currentWindow, _currentPage).then((it) {
       setState(() {
+        _isLoading = false;
         if (it.isOk()) {
           _galleryItems.addAll(it.body);
         }
@@ -125,29 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )),
-      body: Container(
-          color: Colors.black,
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    _galleryItemTitle(),
-                    maxLines: 6,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Expanded(
-                    child: GestureDetector(
-                      child: _pageView(),
-                      onLongPress: _onLongPress,
-                      behavior: HitTestBehavior.translucent,
-                    ),
-                  ),
-              ],
-            ),
-          )),
+      body:_body(),
       floatingActionButton: Builder(builder: (BuildContext context) {
         return FloatingActionButton(
           onPressed: () => this._onCommentsTapped(context),
@@ -161,6 +145,39 @@ class _MyHomePageState extends State<MyHomePage> {
         BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
       ]),
     );
+  }
+
+  //todo refactor to widget to avoid perf hit.
+  Widget _body() {
+    if (_isLoading) {
+      return Container(
+        color: Colors.black,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    } else {
+      return Container(
+          color: Colors.black,
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(15),
+                  child: Text(
+                    _galleryItemTitle(),
+                    maxLines: 6,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                Expanded(
+                  child: GestureDetector(
+                    child: _pageView(),
+                    onLongPress: _onLongPress,
+                  ),
+                ),
+              ],
+            ),
+          ));
+    }
   }
 
   TextStyle _selectableStyle(bool isSelected) {

@@ -53,7 +53,6 @@ class VerticalSwipeDetector extends StatelessWidget {
 
     return GestureDetector(
       child: child,
-      behavior: HitTestBehavior.opaque,
       onVerticalDragStart: (dragDetails) {
         startVerticalDragDetails = dragDetails;
       },

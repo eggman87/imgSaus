@@ -76,7 +76,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
       if (controller == null) {
         controller = VideoPlayerController.network(imageUrl);
-        player = VideoPlayer(_controllers[_position]);
+        player = VideoPlayer(controller);
         _controllers[_position] = controller;
         controller.setLooping(true);
         controller.setVolume(0);
