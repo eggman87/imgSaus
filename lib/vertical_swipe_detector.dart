@@ -11,18 +11,10 @@ class VerticalSwipeConfiguration {
   double verticalSwipeMinDisplacement = 100.0;
   double verticalSwipeMinVelocity = 300.0;
 
-  //Horizontal swipe configuration options
-  double horizontalSwipeMaxHeightThreshold = 50.0;
-  double horizontalSwipeMinDisplacement = 100.0;
-  double horizontalSwipeMinVelocity = 300.0;
-
   VerticalSwipeConfiguration({
     double verticalSwipeMaxWidthThreshold,
     double verticalSwipeMinDisplacement,
     double verticalSwipeMinVelocity,
-    double horizontalSwipeMaxHeightThreshold,
-    double horizontalSwipeMinDisplacement,
-    double horizontalSwipeMinVelocity,
   }) {
     if (verticalSwipeMaxWidthThreshold != null) {
       this.verticalSwipeMaxWidthThreshold = verticalSwipeMaxWidthThreshold;
@@ -34,18 +26,6 @@ class VerticalSwipeConfiguration {
 
     if (verticalSwipeMinVelocity != null) {
       this.verticalSwipeMinVelocity = verticalSwipeMinVelocity;
-    }
-
-    if (horizontalSwipeMaxHeightThreshold != null) {
-      this.horizontalSwipeMaxHeightThreshold = horizontalSwipeMaxHeightThreshold;
-    }
-
-    if (horizontalSwipeMinDisplacement != null) {
-      this.horizontalSwipeMinDisplacement = horizontalSwipeMinDisplacement;
-    }
-
-    if (horizontalSwipeMinVelocity != null) {
-      this.horizontalSwipeMinVelocity = horizontalSwipeMinVelocity;
     }
   }
 }

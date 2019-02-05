@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
-import 'package:imgsrc/swipe_detector_plugin.dart';
+import 'package:imgsrc/vertical_swipe_detector.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImagePage extends StatefulWidget {
