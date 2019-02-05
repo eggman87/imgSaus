@@ -4,62 +4,6 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/vertical_swipe_detector.dart';
 import 'package:video_player/video_player.dart';
 
-class GalleryImagePage extends StatefulWidget {
-  GalleryImagePage(
-    this.item, {
-    Key key,
-  }) : super(key: key);
-
-  final GalleryItem item;
-
-  @override
-  _GalleryImagePageState createState() => _GalleryImagePageState();
-}
-
-class _GalleryImagePageState extends State<GalleryImagePage> {
-  VideoPlayerController _controller;
-
-  @override
-  void dispose() {
-    if (_controller != null) {
-      _controller.dispose();
-      _controller = null;
-    }
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    String imageUrl = widget.item.link;
-
-    if (widget.item.isAlbum) {
-      imageUrl = widget.item.images[0].pageUrl();
-    }
-
-    if (!mounted) {
-      return Container();
-    }
-
-    if (_controller != null) {
-      _controller.dispose();
-    }
-
-    if (imageUrl.contains(".mp4")) {
-      _controller = VideoPlayerController.network(imageUrl);
-      var player = VideoPlayer(_controller);
-      _controller.setLooping(true);
-      _controller.setVolume(0);
-
-      _controller.initialize().then((_) {
-        _controller.play();
-      });
-      return player;
-    } else {
-      return Image.network(imageUrl);
-    }
-  }
-}
-
 class AlbumCount {
   final int currentPosition;
   final int totalCount;
@@ -131,14 +75,15 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       VideoPlayer player;
 
       if (controller == null) {
-        _controllers[_position] = VideoPlayerController.network(imageUrl);
+        controller = VideoPlayerController.network(imageUrl);
         player = VideoPlayer(_controllers[_position]);
-        _controllers[_position].setLooping(true);
-        _controllers[_position].setVolume(0);
+        _controllers[_position] = controller;
+        controller.setLooping(true);
+        controller.setVolume(0);
 
-        _controllers[_position].initialize().then((_) {
+        controller.initialize().then((_) {
           setState(() {
-            _controllers[_position].play();
+            controller.play();
           });
         });
       } else {

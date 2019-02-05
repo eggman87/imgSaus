@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imgsrc/comments_bottom_sheet.dart';
-import 'package:imgsrc/gallery_item_page.dart';
+import 'package:imgsrc/gallery_album_page.dart';
+import 'package:imgsrc/gallery_image_page.dart';
 import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
