@@ -24,6 +24,7 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
     if (_controller != null) {
       _controller.pause();
       _controller.dispose();
+      _controller = null;
     }
     super.dispose();
   }
@@ -38,15 +39,12 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
     if (imageUrl.contains(".mp4")) {
       var videoController = VideoPlayerController.network(imageUrl);
       var player = VideoPlayer(videoController);
+      _controller = videoController;
+      _controller.setLooping(true);
+      _controller.setVolume(0);
 
-      setState(() {
-        _controller = videoController;
-        _controller.setLooping(true);
-        _controller.setVolume(0);
-
-        _controller.initialize().then((_) {
-          _controller.play();
-        });
+      _controller.initialize().then((_) {
+        _controller.play();
       });
       return player;
     } else {
@@ -90,7 +88,9 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   @override
   void dispose() {
     for (var controller in _controllers.values) {
+      controller.pause();
       controller.dispose();
+      _controllers.remove(controller);
     }
 
     super.dispose();
@@ -118,20 +118,20 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     Widget widgetToWrap;
     if (imageUrl.contains(".mp4")) {
       VideoPlayerController controller = _controllers[_position];
-      VideoPlayer player = new VideoPlayer(controller);
+      VideoPlayer player;
 
       if (controller == null) {
         VideoPlayerController controller = VideoPlayerController.network(imageUrl);
         player = VideoPlayer(controller);
-        setState(() {
-          _controllers[_position] = controller;
-          controller.setLooping(true);
-          controller.setVolume(0);
+        _controllers[_position] = controller;
+        controller.setLooping(true);
+        controller.setVolume(0);
 
-          controller.initialize().then((_) {
-            controller.play();
-          });
+        controller.initialize().then((_) {
+          controller.play();
         });
+      } else {
+        player = new VideoPlayer(controller);
       }
       widgetToWrap = player;
     } else {
