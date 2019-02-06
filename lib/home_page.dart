@@ -53,8 +53,10 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _isLoading = false;
         if (it.isOk()) {
-          _galleryItems.addAll(it.body);
-          _setupCurrentVisibleItemIfNecessary();
+          if (it.body != null && it.body.length > 0) {
+            _galleryItems.addAll(it.body);
+            _setupCurrentVisibleItemIfNecessary(_pagePosition);
+          }
         }
       });
     });
@@ -268,20 +270,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onPageChanged(int position) {
     setState(() {
       _pagePosition = position;
-      currentAlbumLength = _galleryItems[position].images.length;
-      currentAlbumPosition = 0;
-      _setupCurrentVisibleItemIfNecessary();
+      _setupCurrentVisibleItemIfNecessary(position);
     });
+
     if (position == _galleryItems.length) {
       _loadNextPage();
     }
   }
 
-  void _setupCurrentVisibleItemIfNecessary() {
-    var newItem = _galleryItems[_pagePosition];
+  void _setupCurrentVisibleItemIfNecessary(int position) {
+    var newItem = _galleryItems[position];
 
-    //manually set this since we know it will be first up...
+    //albums widget makes api call to load all images, lets start in the known state though.
     if (newItem.isAlbum) {
+      currentAlbumPosition = 0;
+      currentAlbumLength = newItem.imagesCount;
       _currentAlbumVisibleItem = newItem.images[0];
     }
   }
