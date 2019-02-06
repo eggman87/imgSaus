@@ -4,26 +4,38 @@ part 'gallery_item.g.dart';
 
 @JsonSerializable()
 class GalleryItem {
-
-  GalleryItem({this.id, this.title, this.type, this.animated, this.isAlbum, this.link, this.images, this.mp4});
+  GalleryItem(
+      {this.id,
+      this.title,
+      this.type,
+      this.animated,
+      this.isAlbum,
+      this.link,
+      this.images,
+      this.mp4,
+      this.imagesCount});
 
   final String id;
   final String title;
   final String type;
   final bool animated;
+
   //this field is misleading, a album can have 1 image only
   @JsonKey(name: "is_album")
   final bool isAlbum;
+
   final String link;
   final List<GalleryItem> images;
   final String mp4;
+  @JsonKey(name: "images_count")
+  final int imagesCount;
 
+  factory GalleryItem.fromJson(Map<String, dynamic> json) =>
+      _$GalleryItemFromJson(json);
 
-  factory GalleryItem.fromJson(Map<String, dynamic> json) => _$GalleryItemFromJson(json);
+  Map<String, dynamic> toJson() => _$GalleryItemToJson(this);
 
-  Map<String, dynamic>toJson() => _$GalleryItemToJson(this);
-
-  String pageUrl() {
+  String imageUrl() {
     if (mp4 != null) {
       return mp4;
     }
@@ -38,5 +50,24 @@ class GalleryItem {
 
   bool isAlbumWithMoreThanOneImage() {
     return isAlbum != null && isAlbum && images.length > 1;
+  }
+
+  bool isVideo() {
+    if (mp4 != null) {
+      return true; 
+    }
+    return isLinkVideo(link);
+  }
+
+//  String videoLink() {
+//    if (isAlbum != null && isAlbum && this.images.length == 1) {
+//      return this.images[0].link;
+//    } else {
+//      return this.link;
+//    }
+//  }
+
+  static bool isLinkVideo(String link) {
+    return link.contains(".mp4");
   }
 }

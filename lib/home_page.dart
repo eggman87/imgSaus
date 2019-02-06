@@ -6,6 +6,7 @@ import 'package:imgsrc/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
+import 'package:share_extend/share_extend.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -30,6 +31,10 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentAlbumPosition = 0;
   int currentAlbumLength = 3; //default length...
 
+  //current visible item if current page is showing a album. The album widget
+  //internally loads all images from api
+  GalleryItem _currentAlbumVisibleItem;
+
   var _isLoading = true;
 
   @override
@@ -49,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _isLoading = false;
         if (it.isOk()) {
           _galleryItems.addAll(it.body);
+          _setupCurrentVisibleItemIfNecessary();
         }
       });
     });
@@ -206,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
       controller: PageController( ),
       itemBuilder: (context, position) {
         GalleryItem currentItem = _galleryItems[position];
-        if (currentItem.isAlbumWithMoreThanOneImage()) {
+        if (currentItem.isAlbum) {
           return GalleryAlbumPage(currentItem, _onAlbumCountChanged);
         } else {
           return GalleryImagePage(currentItem);
@@ -230,13 +236,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onLongPress() {
+    _shareCurrentItem();
+  }
 
+  void _shareCurrentItem() {
+    GalleryItem itemCurrentVisible = _galleryItems[_pagePosition];
+    if (itemCurrentVisible.isAlbum) {
+      itemCurrentVisible = _currentAlbumVisibleItem;
+    }
+
+    if (itemCurrentVisible.isVideo()) {
+      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _galleryItems[_pagePosition].title}: ${itemCurrentVisible.imageUrl()}", "text");
+    }
   }
 
   void _onAlbumCountChanged(AlbumCount count) {
     setState(() {
       currentAlbumPosition = count.currentPosition;
       currentAlbumLength = count.totalCount;
+      _currentAlbumVisibleItem = count.currentVisibleItem;
     });
   }
 
@@ -250,9 +268,21 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onPageChanged(int position) {
     setState(() {
       _pagePosition = position;
+      currentAlbumLength = _galleryItems[position].images.length;
+      currentAlbumPosition = 0;
+      _setupCurrentVisibleItemIfNecessary();
     });
     if (position == _galleryItems.length) {
       _loadNextPage();
+    }
+  }
+
+  void _setupCurrentVisibleItemIfNecessary() {
+    var newItem = _galleryItems[_pagePosition];
+
+    //manually set this since we know it will be first up...
+    if (newItem.isAlbum) {
+      _currentAlbumVisibleItem = newItem.images[0];
     }
   }
 }

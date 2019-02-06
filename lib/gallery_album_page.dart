@@ -7,8 +7,10 @@ import 'package:video_player/video_player.dart';
 class AlbumCount {
   final int currentPosition;
   final int totalCount;
+  //we manually pass the item up because we load ALL images from api here (only 3 returned on initial call).
+  final GalleryItem currentVisibleItem;
 
-  AlbumCount(this.currentPosition, this.totalCount);
+  AlbumCount(this.currentPosition, this.totalCount, this.currentVisibleItem);
 }
 
 class GalleryAlbumPage extends StatefulWidget {
@@ -33,7 +35,10 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     super.initState();
 
     this._images = widget.item.images;
-    _loadAlbumDetails();
+    //imgur api only returns 3 images max
+    if (this._images.length < widget.item.imagesCount) {
+      _loadAlbumDetails();
+    }
   }
 
   @override
@@ -56,7 +61,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       setState(() {
         if (it.isOk()) {
           this._images = it.body.images;
-          widget.onCountChanged(AlbumCount(_position, _images.length));
+          widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
         }
       });
     });
@@ -68,9 +73,9 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       return Container();
     }
 
-    String imageUrl = this._images[_position].pageUrl();
+    String imageUrl = this._images[_position].imageUrl();
     Widget widgetToWrap;
-    if (imageUrl.contains(".mp4")) {
+    if (GalleryItem.isLinkVideo(imageUrl)) {
       VideoPlayerController controller = _controllers[_position];
       VideoPlayer player;
 
@@ -100,7 +105,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     if (_position < _images.length - 1) {
       setState(() {
         _position++;
-        widget.onCountChanged(AlbumCount(_position, _images.length));
+        widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
       });
     }
   }
@@ -109,7 +114,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     if (_position > 0) {
       setState(() {
         _position--;
-        widget.onCountChanged(AlbumCount(_position, _images.length));
+        widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
       });
     }
   }

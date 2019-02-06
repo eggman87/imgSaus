@@ -28,10 +28,10 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
 
   @override
   Widget build(BuildContext context) {
-    String imageUrl = widget.item.link;
+    String imageUrl = widget.item.imageUrl();
 
     if (widget.item.isAlbum) {
-      imageUrl = widget.item.images[0].pageUrl();
+      imageUrl = widget.item.images[0].imageUrl();
     }
 
     if (!mounted) {
@@ -42,7 +42,7 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
       _controller.dispose();
     }
 
-    if (imageUrl.contains(".mp4")) {
+    if (GalleryItem.isLinkVideo(imageUrl)) {
       _controller = VideoPlayerController.network(imageUrl);
       var player = VideoPlayer(_controller);
       _controller.setLooping(true);
