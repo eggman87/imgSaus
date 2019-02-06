@@ -249,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (itemCurrentVisible.isVideo()) {
-      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _galleryItems[_pagePosition].title}: ${itemCurrentVisible.imageUrl()}", "text");
+      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _galleryItems[_pagePosition].title} ${itemCurrentVisible.imageUrl()}", "text");
     } else {
       _shareCurrentImage(itemCurrentVisible);
     }
