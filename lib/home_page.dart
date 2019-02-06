@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:imgsrc/comments_bottom_sheet.dart';
 import 'package:imgsrc/gallery_album_page.dart';
 import 'package:imgsrc/gallery_image_page.dart';
 import 'package:imgsrc/gallery_repository.dart';
+import 'package:imgsrc/image_file_utils.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
@@ -249,7 +252,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _galleryItems[_pagePosition].title}: ${itemCurrentVisible.imageUrl()}", "text");
+    } else {
+      _shareCurrentImage(itemCurrentVisible);
     }
+  }
+
+  void _shareCurrentImage(GalleryItem item) {
+    var imageFile = ImageFileUtils();
+    imageFile.writeImageToFile(item.imageUrl()).then((it) {
+      ShareExtend.share(it.path, "image");
+    });
   }
 
   void _onAlbumCountChanged(AlbumCount count) {
