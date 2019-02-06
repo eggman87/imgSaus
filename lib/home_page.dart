@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:imgsrc/comments_bottom_sheet.dart';
 import 'package:imgsrc/gallery_album_page.dart';
