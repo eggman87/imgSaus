@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _isLoading = false;
 
   //view model driven by store.
-  _HomeViewModel _vm = _HomeViewModel(items: List(), filter: GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0));
+  _HomeViewModel _vm;
 
   _MyHomePageState();
 
@@ -58,8 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _loadNextPage(BuildContext context) {
-//    StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(filter.copyWith(page: filter.page + 1)));
-//    _loadGalleryItems();
+    StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
   }
 
   @override
