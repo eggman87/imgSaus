@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:imgsrc/comments_bottom_sheet.dart';
-import 'package:imgsrc/gallery_album_page.dart';
-import 'package:imgsrc/gallery_image_page.dart';
-import 'package:imgsrc/gallery_repository.dart';
-import 'package:imgsrc/image_file_utils.dart';
+import 'package:imgsrc/data/gallery_repository.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
+import 'package:imgsrc/ui/comments_bottom_sheet.dart';
+import 'package:imgsrc/ui/gallery_album_page.dart';
+import 'package:imgsrc/ui/gallery_image_page.dart';
+import 'package:imgsrc/ui/image_file_utils.dart';
 import 'package:share_extend/share_extend.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var _currentSection = GallerySection.hot;
   var _currentSort = GallerySort.viral;
   var _currentWindow = GalleryWindow.day;
-  int _currentPage = 1;
+  int _currentPage = 0;
 
   //the below `_current` properties refer to state of the current index of the PageView
   int _pagePosition = 0;

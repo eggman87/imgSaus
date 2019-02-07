@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:imgsrc/gallery_repository.dart';
+import 'package:imgsrc/data/gallery_repository.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 

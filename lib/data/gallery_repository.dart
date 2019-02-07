@@ -16,15 +16,16 @@ class GalleryRepository {
     String sortString = sort.toString().split('.').last;
     String windowString = window.toString().split('.').last;
 
-    String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page";
+    String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?count=100";
+    print("making request to $url");
     http.Response response = await http.get(url, headers: headers);
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
     }
 
-
     List<dynamic> list = jsonDecode(response.body)['data'];
+    print("loaded ${list.length} gallery items from the api");
     List<GalleryItem> items = new List();
 
     for (dynamic itemJson in list) {
@@ -52,6 +53,8 @@ class GalleryRepository {
 
     return ParsedResponse(response.statusCode, items);
   }
+
+
 
   Future<ParsedResponse<GalleryItem>> getAlbumDetails(String galleryItemId) async {
     String url = "https://api.imgur.com/3/gallery/album/$galleryItemId";
