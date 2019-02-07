@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 class GalleryRepository {
 
+  const GalleryRepository();
+
   static const Map<String, String> headers = {"Authorization":"Client-ID b86d301956fea91"};
 
   Future<ParsedResponse<List<GalleryItem>>> getItems(GallerySection section, GallerySort sort, GalleryWindow window, int page) async {

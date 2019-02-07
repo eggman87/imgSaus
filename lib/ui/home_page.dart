@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:imgsrc/data/gallery_repository.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:imgsrc/action/actions.dart';
+import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
@@ -7,152 +9,154 @@ import 'package:imgsrc/ui/comments_bottom_sheet.dart';
 import 'package:imgsrc/ui/gallery_album_page.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
+import 'package:redux/redux.dart';
 import 'package:share_extend/share_extend.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key key}) : super(key: key);
 
-  final String title;
+  final String title = "imgSaus";
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  //current state of gallery items.
-  var _currentSection = GallerySection.hot;
-  var _currentSort = GallerySort.viral;
-  var _currentWindow = GalleryWindow.day;
-  int _currentPage = 0;
+class _HomeViewModel {
+  final List<GalleryItem> items;
+  final GalleryFilter filter;
 
+  _HomeViewModel({@required this.items, @required this.filter});
+
+  static _HomeViewModel fromStore(Store<AppState> store) {
+    return _HomeViewModel(
+      items: store.state.galleryItems,
+      filter: store.state.galleryFilter
+    );
+  }
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+//state driven by UI interaction
   //the below `_current` properties refer to state of the current index of the PageView
   int _pagePosition = 0;
-  List<GalleryItem> _galleryItems = new List<GalleryItem>();
-
   int currentAlbumPosition = 0;
   int currentAlbumLength = 3; //default length...
-
   //current visible item if current page is showing a album. The album widget
   //internally loads all images from api
   GalleryItem _currentAlbumVisibleItem;
 
-  var _isLoading = true;
+  var _isLoading = false;
+
+  //view model driven by store.
+  _HomeViewModel _vm = _HomeViewModel(items: List(), filter: GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0));
+
+  _MyHomePageState();
 
   @override
   void initState() {
     super.initState();
-
-    _loadGalleryItems();
   }
 
-  void _loadGalleryItems() {
-    setState(() {
-      _isLoading = true;
-    });
-    var repository = new GalleryRepository();
-    repository.getItems(_currentSection, _currentSort, _currentWindow, _currentPage).then((it) {
-      setState(() {
-        _isLoading = false;
-        if (it.isOk()) {
-          if (it.body != null && it.body.length > 0) {
-            _galleryItems.addAll(it.body);
-            _setupCurrentVisibleItemIfNecessary(_pagePosition);
-          }
-        }
-      });
-    });
-  }
-
-  void _loadNextPage() {
-    _currentPage++;
-    _loadGalleryItems();
+  void _loadNextPage(BuildContext context) {
+//    StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(filter.copyWith(page: filter.page + 1)));
+//    _loadGalleryItems();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      drawer: Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
-          color: Colors.white,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(color: Colors.green),
-                child: Text("eggman87"),
-              ),
-              Row(
+    return StoreConnector<AppState, _HomeViewModel>(
+      onInit: (store) {
+        store.dispatch(UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
+      },
+      converter: _HomeViewModel.fromStore,
+      builder: (BuildContext context, vm) {
+        _vm = vm;
+
+        return Scaffold(
+          appBar: AppBar(
+            // Here we take the value from the MyHomePage object that was created by
+            // the App.build method, and use it to set our appbar title.
+            title: Text(widget.title),
+          ),
+          drawer: Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
+              color: Colors.white,
+              child: ListView(
+                padding: EdgeInsets.zero,
                 children: <Widget>[
-                  Visibility(
-                      visible: _galleryItems.length > 0,
-                      child: Text("  Currently viewing ${_pagePosition + 1}/${_galleryItems.length}"))
-                ],
-              ),
-              ListTile(
-                title: Text(
-                  "SECTION",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Spacer(),
-                  Text(
-                    "hot",
-                    style: _selectableStyle(_currentSection == GallerySection.hot),
+                  DrawerHeader(
+                    decoration: BoxDecoration(color: Colors.green),
+                    child: Text("eggman87"),
                   ),
-                  Spacer(),
-                  Text(
-                    "top",
-                    style: _selectableStyle(_currentSection == GallerySection.top),
+                  Row(
+                    children: <Widget>[
+                      Visibility(
+                          visible: _vm.items.length > 0,
+                          child: Text("  Currently viewing ${_pagePosition + 1}/${_vm.items.length}"))
+                    ],
                   ),
-                  Spacer(),
-                  Text(
-                    "User",
-                    style: _selectableStyle(_currentSection == GallerySection.user),
+                  ListTile(
+                    title: Text(
+                      "SECTION",
+                      style: TextStyle(fontSize: 16),
+                    ),
                   ),
-                  Spacer(),
+                  Row(
+                    children: <Widget>[
+                      Spacer(),
+                      Text(
+                        "hot",
+                        style: _selectableStyle(_vm.filter.section == GallerySection.hot),
+                      ),
+                      Spacer(),
+                      Text(
+                        "top",
+                        style: _selectableStyle(_vm.filter.section == GallerySection.top),
+                      ),
+                      Spacer(),
+                      Text(
+                        "User",
+                        style: _selectableStyle(_vm.filter.section == GallerySection.user),
+                      ),
+                      Spacer(),
+                    ],
+                  ),
+                  ListTile(
+                    title: Text(
+                      "SORT",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Spacer(),
+                      Text("viral"),
+                      Spacer(),
+                      Text("top"),
+                      Spacer(),
+                      Text("time"),
+                      Spacer(),
+                      Text("rising"),
+                      Spacer(),
+                    ],
+                  ),
                 ],
-              ),
-              ListTile(
-                title: Text(
-                  "SORT",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Spacer(),
-                  Text("viral"),
-                  Spacer(),
-                  Text("top"),
-                  Spacer(),
-                  Text("time"),
-                  Spacer(),
-                  Text("rising"),
-                  Spacer(),
-                ],
-              ),
-            ],
-          )),
-      body:_body(),
-      floatingActionButton: Builder(builder: (BuildContext context) {
-        return FloatingActionButton(
-          onPressed: () => this._onCommentsTapped(context),
-          tooltip: 'View Comments',
-          child: Icon(Icons.message),
+              )),
+          body:_body(),
+          floatingActionButton: Builder(builder: (BuildContext context) {
+            return FloatingActionButton(
+              onPressed: () => this._onCommentsTapped(context),
+              tooltip: 'View Comments',
+              child: Icon(Icons.message),
+            );
+          }),
+          bottomNavigationBar: BottomNavigationBar(items: [
+            BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
+            BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
+            BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
+          ]),
         );
-      }),
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
-        BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
-        BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
-      ]),
+      },
     );
   }
 
@@ -179,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Expanded(
                   child: GestureDetector(
-                    child: _pageView(),
+                    child: _pageView(context),
                     onLongPress: _onLongPress,
                   ),
                 ),
@@ -198,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _galleryItemTitle() {
-    if (_galleryItems.length > 0) {
+    if (_vm.items.length > 0) {
       GalleryItem item = _currentGalleryItem();
       String title = item.title;
       if (item.isAlbumWithMoreThanOneImage()) {
@@ -209,20 +213,20 @@ class _MyHomePageState extends State<MyHomePage> {
     return "";
   }
 
-  PageView _pageView() {
+  PageView _pageView(BuildContext context) {
     return PageView.builder(
       pageSnapping: true,
       controller: PageController( ),
       itemBuilder: (context, position) {
-        GalleryItem currentItem = _galleryItems[position];
+        GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
           return GalleryAlbumPage(currentItem, _onAlbumCountChanged);
         } else {
           return GalleryImagePage(currentItem);
         }
       },
-      itemCount: _galleryItems.length,
-      onPageChanged: _onPageChanged,
+      itemCount: _vm.items.length,
+      onPageChanged:(it) => this._onPageChanged(context, it) ,
     );
   }
 
@@ -243,13 +247,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _shareCurrentItem() {
-    GalleryItem itemCurrentVisible = _galleryItems[_pagePosition];
+    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
     if (itemCurrentVisible.isAlbum) {
       itemCurrentVisible = _currentAlbumVisibleItem;
     }
 
     if (itemCurrentVisible.isVideo()) {
-      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _galleryItems[_pagePosition].title} ${itemCurrentVisible.imageUrl()}", "text");
+      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}", "text");
     } else {
       _shareCurrentImage(itemCurrentVisible);
     }
@@ -271,25 +275,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   GalleryItem _currentGalleryItem() {
-    if (_galleryItems.length > 0) {
-      return _galleryItems[_pagePosition];
+    if (_vm.items.length > 0) {
+      return _vm.items[_pagePosition];
     }
     return null;
   }
 
-  void _onPageChanged(int position) {
+  void _onPageChanged(BuildContext context, int position) {
     setState(() {
       _pagePosition = position;
       _setupCurrentVisibleItemIfNecessary(position);
     });
 
-    if (position == _galleryItems.length) {
-      _loadNextPage();
+    if (position == _vm.items.length) {
+      _loadNextPage(context);
     }
   }
 
   void _setupCurrentVisibleItemIfNecessary(int position) {
-    var newItem = _galleryItems[position];
+    var newItem = _vm.items[position];
 
     //albums widget makes api call to load all images, lets start in the known state though.
     if (newItem.isAlbum) {
