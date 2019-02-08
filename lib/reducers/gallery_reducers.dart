@@ -18,7 +18,7 @@ final activeFilterReducer = combineReducers<GalleryFilter>([
 ]);
 
 final itemDetailsReducer = combineReducers<Map<String, GalleryItem>>([
-  TypedReducer<Map<String, GalleryItem>, LoadAlbumDetailsAction>(_setPreloadItemDetails),
+  TypedReducer<Map<String, GalleryItem>, LoadAlbumImagesAction>(_setPreloadItemDetails),
   TypedReducer<Map<String, GalleryItem>, ItemDetailsLoadedAction>(_setLoadedItemDetails),
 ]);
 
@@ -49,7 +49,7 @@ Map<String, GalleryItem> _setLoadedItemDetails(Map<String, GalleryItem> existing
 }
 
 ///Sets item details before hitting middleware to load from api (images are present on the list item).
-Map<String, GalleryItem> _setPreloadItemDetails(Map<String, GalleryItem> existingDetails, LoadAlbumDetailsAction action) {
+Map<String, GalleryItem> _setPreloadItemDetails(Map<String, GalleryItem> existingDetails, LoadAlbumImagesAction action) {
   return Map.from(existingDetails)..addAll({action.item.id : action.item});
 }
 

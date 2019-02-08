@@ -16,7 +16,7 @@ class AlbumPageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AlbumDetailsViewModel>(
       onInit: (store) {
-        store.dispatch(LoadAlbumDetailsAction(item));
+        store.dispatch(LoadAlbumImagesAction(item));
       },
       converter: (store) => AlbumDetailsViewModel.fromStore(item.id, store),
       builder: (context, vm) {

@@ -16,7 +16,7 @@ List<Middleware<AppState>> createImgurMiddleware([
   return [
     TypedMiddleware<AppState, UpdateFilterAction>(filterItems),
     TypedMiddleware<AppState, LoadCommentsAction>(loadComments),
-    TypedMiddleware<AppState, LoadAlbumDetailsAction>(loadAlbumDetails),
+    TypedMiddleware<AppState, LoadAlbumImagesAction>(loadAlbumDetails),
   ];
 }
 
@@ -41,7 +41,7 @@ Middleware<AppState> _createFilterGallery(GalleryRepository repository) {
 Middleware<AppState> _loadAlbumForId(GalleryRepository repository) {
   return (Store<AppState> store, action, NextDispatcher next) {
 
-    LoadAlbumDetailsAction detailsAction = action;
+    LoadAlbumImagesAction detailsAction = action;
 
     if (store.state.itemDetails.containsKey(detailsAction.item.id)) {
       GalleryItem existingItem =  store.state.itemDetails[detailsAction.item.id];
@@ -49,6 +49,10 @@ Middleware<AppState> _loadAlbumForId(GalleryRepository repository) {
         store.dispatch(ItemDetailsLoadedAction(detailsAction.item.id, store.state.itemDetails[detailsAction.item.id]));
         return;
       }
+    } else if (detailsAction.item.images.length >= detailsAction.item.imagesCount) {
+      //only load details if we dont have every image we need.
+      store.dispatch(ItemDetailsLoadedAction(detailsAction.item.id, detailsAction.item));
+      return; 
     }
 
     repository.getAlbumDetails(detailsAction.item.id).then((response) {

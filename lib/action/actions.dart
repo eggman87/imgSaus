@@ -58,14 +58,14 @@ class ClearCommentsAction {
   }
 }
 
-class LoadAlbumDetailsAction {
+class LoadAlbumImagesAction {
   final GalleryItem item;
 
-  LoadAlbumDetailsAction(this.item);
+  LoadAlbumImagesAction(this.item);
 
   @override
   String toString() {
-    return 'LoadAlbumDetailsAction {itemId=${item.id}}';
+    return 'LoadAlbumImagesAction {itemId=${item.id}}';
   }
 }
 

@@ -72,20 +72,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void _fullScreen() {
     Navigator.pop(context);
 
+    var itemCurrentVisible = _currentVisibleItem();
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: _vm.items[_pagePosition])),
+      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: itemCurrentVisible)),
     );
   }
 
   void _shareCurrentItem() {
     Navigator.pop(context);
 
-    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
-    //todo: need to track current position too.
-    if (itemCurrentVisible.isAlbum) {
-      itemCurrentVisible = _vm.itemDetails[itemCurrentVisible.id].images[_vm.albumIndex[itemCurrentVisible.id]];
-    }
+    var itemCurrentVisible = _currentVisibleItem();
 
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share(
@@ -94,6 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       _shareCurrentImage(itemCurrentVisible);
     }
+  }
+
+  GalleryItem _currentVisibleItem() {
+    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
+    if (itemCurrentVisible.isAlbum) {
+      int albumIndex = _vm.albumIndex[itemCurrentVisible.id] ?? 0;
+      itemCurrentVisible = _vm.itemDetails[itemCurrentVisible.id].images[albumIndex];
+    }
+    return itemCurrentVisible;
   }
 
   void _shareCurrentImage(GalleryItem item) {

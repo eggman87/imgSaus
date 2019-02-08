@@ -30,10 +30,6 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   Widget build(BuildContext context) {
     String imageUrl = widget.item.imageUrl();
 
-    if (widget.item.isAlbum) {
-      imageUrl = widget.item.images[0].imageUrl();
-    }
-
     if (!mounted) {
       return Container();
     }
