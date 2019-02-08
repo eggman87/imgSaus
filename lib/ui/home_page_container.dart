@@ -29,13 +29,17 @@ class HomePageContainer extends StatelessWidget {
 class HomeViewModel {
   final List<GalleryItem> items;
   final GalleryFilter filter;
+  final Map<String, GalleryItem> itemDetails;
+  final Map<String, int> albumIndex;
 
-  HomeViewModel({@required this.items, @required this.filter});
+  HomeViewModel({@required this.items, @required this.filter, @required this.itemDetails, @required this.albumIndex});
 
   static HomeViewModel fromStore(Store<AppState> store) {
     return HomeViewModel(
       items: store.state.galleryItems,
       filter: store.state.galleryFilter,
+      itemDetails: store.state.itemDetails,
+      albumIndex: store.state.albumIndex
     );
   }
 }

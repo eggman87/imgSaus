@@ -8,5 +8,7 @@ AppState appReducer(AppState state, action) {
     galleryFilter: activeFilterReducer(state.galleryFilter, action),
     galleryItems: galleryReducer(state.galleryItems, action),
     itemComments: commentsReducer(state.itemComments, action),
+    itemDetails: itemDetailsReducer(state.itemDetails, action),
+    albumIndex:  albumIndexReducer(state.albumIndex, action),
   );
 }

@@ -7,17 +7,25 @@ class AppState {
   final GalleryFilter galleryFilter;
   final List<GalleryItem> galleryItems;
   final Map<String, List<Comment>> itemComments;
+  final Map<String, GalleryItem> itemDetails;
+  final Map<String, int> albumIndex;
 
   AppState(
       {this.isLoading = false,
+      this.itemDetails = const {},
       this.galleryItems = const [],
       this.galleryFilter = const GalleryFilter(GallerySection.hot, GallerySort.top, GalleryWindow.day, 0),
-      this.itemComments = const {}});
+      this.itemComments = const {},
+      this.albumIndex = const {}});
 
   factory AppState.loading() => AppState(isLoading: true);
 
   @override
   String toString() {
-    return '{isLoading=$isLoading, galleryItemCount=${galleryItems.length}, filter=$galleryFilter, itemCommentCount=${itemComments.length}}';
+    return '{isLoading=$isLoading, '
+        'galleryItemCount=${galleryItems.length}, '
+        'filter=$galleryFilter, '
+        'itemCommentCount=${itemComments.length}, '
+        'itemDetails=${itemDetails.length} ';
   }
 }
