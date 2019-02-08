@@ -15,4 +15,9 @@ class AppState {
       this.itemComments = const {}});
 
   factory AppState.loading() => AppState(isLoading: true);
+
+  @override
+  String toString() {
+    return '{isLoading=$isLoading, galleryItemCount=${galleryItems.length}, filter=$galleryFilter, itemCommentCount=${itemComments.length}}';
+  }
 }

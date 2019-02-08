@@ -28,5 +28,10 @@ class GalleryFilter {
       page ?? this.page
     );
   }
+
+  @override
+  String toString() {
+    return '{section=$section, sort=$sort, window=$window, page=$page}';
+  }
 }
 

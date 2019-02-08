@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if (_isLoading) {
+    if (_isLoading || _vm.items.length == 0) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),
