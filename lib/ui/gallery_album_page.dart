@@ -39,7 +39,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   Widget build(BuildContext context) {
     _vm = widget.viewModel;
 
-    if (!mounted || _vm.itemDetails == null) {
+    if (_vm.itemDetails == null) {
       return Container();
     }
     var images = _vm.itemDetails.images;
