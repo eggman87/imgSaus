@@ -20,7 +20,7 @@ class GalleryLoadedAction {
 
   @override
   String toString() {
-    return 'GalleryLoadedAction {items=$items}';
+    return 'GalleryLoadedAction {countLoaded=${items.length}}';
   }
 }
 
@@ -32,7 +32,7 @@ class CommentsLoadedAction {
 
   @override
   String toString() {
-    return "CommentsLoadedAction {items=$comments}";
+    return "CommentsLoadedAction {itemId=$itemId, countLoaded=${comments.length}}";
   }
 }
 
