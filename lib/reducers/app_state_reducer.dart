@@ -1,0 +1,12 @@
+
+import 'package:imgsrc/model/app_state.dart';
+import 'package:imgsrc/reducers/gallery_reducers.dart';
+
+AppState appReducer(AppState state, action) {
+  return AppState(
+    isLoading: false,
+    galleryFilter: activeFilterReducer(state.galleryFilter, action),
+    galleryItems: galleryReducer(state.galleryItems, action),
+    itemComments: commentsReducer(state.itemComments, action),
+  );
+}
