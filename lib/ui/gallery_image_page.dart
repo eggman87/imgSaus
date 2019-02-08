@@ -30,10 +30,6 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   Widget build(BuildContext context) {
     String imageUrl = widget.item.imageUrl();
 
-    if (!mounted) {
-      return Container();
-    }
-
     if (_controller != null) {
       _controller.dispose();
     }
