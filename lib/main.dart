@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imgsrc/middleware/imgur_middleware.dart';
 import 'package:imgsrc/reducers/app_state_reducer.dart';
 import 'package:imgsrc/model/app_state.dart';
-import 'package:imgsrc/ui/home_page.dart';
+import 'package:imgsrc/ui/home_page_container.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux_logging/redux_logging.dart';
@@ -41,7 +41,7 @@ class ReduxApp extends StatelessWidget {
           primarySwatch: Colors.blue
         ),
         initialRoute: '/',
-        routes: {'/': (context) => MyHomePage()}
+        routes: {'/': (context) => HomePageContainer(title: "imgSaus",)}
       ),
     );
   }

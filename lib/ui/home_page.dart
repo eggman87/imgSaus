@@ -8,31 +8,18 @@ import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
 import 'package:imgsrc/ui/gallery_album_page.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
+import 'package:imgsrc/ui/home_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
-import 'package:redux/redux.dart';
 import 'package:share_extend/share_extend.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+  MyHomePage(this.title, this.viewModel, {Key key}) : super(key: key);
 
-  final String title = "imgSaus";
+  final String title;
+  final HomeViewModel viewModel;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _HomeViewModel {
-  final List<GalleryItem> items;
-  final GalleryFilter filter;
-
-  _HomeViewModel({@required this.items, @required this.filter});
-
-  static _HomeViewModel fromStore(Store<AppState> store) {
-    return _HomeViewModel(
-      items: store.state.galleryItems,
-      filter: store.state.galleryFilter
-    );
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -48,14 +35,9 @@ class _MyHomePageState extends State<MyHomePage> {
   var _isLoading = false;
 
   //view model driven by store.
-  _HomeViewModel _vm;
+  HomeViewModel _vm;
 
   _MyHomePageState();
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
@@ -63,99 +45,91 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _HomeViewModel>(
-      onInit: (store) {
-        store.dispatch(UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
-      },
-      converter: _HomeViewModel.fromStore,
-      builder: (context, vm) {
-        _vm = vm;
+    _vm = widget.viewModel;
 
-        return Scaffold(
-          appBar: AppBar(
-            // Here we take the value from the MyHomePage object that was created by
-            // the App.build method, and use it to set our appbar title.
-            title: Text(widget.title),
-          ),
-          drawer: Container(
-              margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
-              color: Colors.white,
-              child: ListView(
-                padding: EdgeInsets.zero,
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      drawer: Container(
+          margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
+          color: Colors.white,
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              DrawerHeader(
+                decoration: BoxDecoration(color: Colors.green),
+                child: Text("eggman87"),
+              ),
+              Row(
                 children: <Widget>[
-                  DrawerHeader(
-                    decoration: BoxDecoration(color: Colors.green),
-                    child: Text("eggman87"),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Visibility(
-                          visible: _vm.items.length > 0,
-                          child: Text("  Currently viewing ${_pagePosition + 1}/${_vm.items.length}"))
-                    ],
-                  ),
-                  ListTile(
-                    title: Text(
-                      "SECTION",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Spacer(),
-                      Text(
-                        "hot",
-                        style: _selectableStyle(_vm.filter.section == GallerySection.hot),
-                      ),
-                      Spacer(),
-                      Text(
-                        "top",
-                        style: _selectableStyle(_vm.filter.section == GallerySection.top),
-                      ),
-                      Spacer(),
-                      Text(
-                        "User",
-                        style: _selectableStyle(_vm.filter.section == GallerySection.user),
-                      ),
-                      Spacer(),
-                    ],
-                  ),
-                  ListTile(
-                    title: Text(
-                      "SORT",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Spacer(),
-                      Text("viral"),
-                      Spacer(),
-                      Text("top"),
-                      Spacer(),
-                      Text("time"),
-                      Spacer(),
-                      Text("rising"),
-                      Spacer(),
-                    ],
-                  ),
+                  Visibility(
+                      visible: _vm.items.length > 0,
+                      child: Text("  Currently viewing ${_pagePosition + 1}/${_vm.items.length}"))
                 ],
-              )),
-          body:_body(),
-          floatingActionButton: Builder(builder: (BuildContext context) {
-            return FloatingActionButton(
-              onPressed: () => this._onCommentsTapped(context),
-              tooltip: 'View Comments',
-              child: Icon(Icons.message),
-            );
-          }),
-          bottomNavigationBar: BottomNavigationBar(items: [
-            BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
-            BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
-            BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
-          ]),
+              ),
+              ListTile(
+                title: Text(
+                  "SECTION",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  Text(
+                    "hot",
+                    style: _selectableStyle(_vm.filter.section == GallerySection.hot),
+                  ),
+                  Spacer(),
+                  Text(
+                    "top",
+                    style: _selectableStyle(_vm.filter.section == GallerySection.top),
+                  ),
+                  Spacer(),
+                  Text(
+                    "User",
+                    style: _selectableStyle(_vm.filter.section == GallerySection.user),
+                  ),
+                  Spacer(),
+                ],
+              ),
+              ListTile(
+                title: Text(
+                  "SORT",
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+              Row(
+                children: <Widget>[
+                  Spacer(),
+                  Text("viral"),
+                  Spacer(),
+                  Text("top"),
+                  Spacer(),
+                  Text("time"),
+                  Spacer(),
+                  Text("rising"),
+                  Spacer(),
+                ],
+              ),
+            ],
+          )),
+      body:_body(),
+      floatingActionButton: Builder(builder: (BuildContext context) {
+        return FloatingActionButton(
+          onPressed: () => this._onCommentsTapped(context),
+          tooltip: 'View Comments',
+          child: Icon(Icons.message),
         );
-      },
+      }),
+      bottomNavigationBar: BottomNavigationBar(items: [
+        BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
+        BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
+        BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
+      ]),
     );
   }
 
