@@ -83,9 +83,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
     //todo: need to track current position too.
-//    if (itemCurrentVisible.isAlbum) {
-//      itemCurrentVisible = _currentAlbumVisibleItem;
-//    }
+    if (itemCurrentVisible.isAlbum) {
+      itemCurrentVisible = _vm.itemDetails[itemCurrentVisible.id].images[_vm.albumIndex[itemCurrentVisible.id]];
+    }
 
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share(
@@ -275,7 +275,6 @@ class _MyHomePageState extends State<MyHomePage> {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
           return AlbumPageContainer(item: currentItem,);
-//          return GalleryAlbumPage(currentItem, _onAlbumCountChanged);
         } else {
           return GalleryImagePage(currentItem);
         }
