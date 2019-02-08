@@ -286,7 +286,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _setupCurrentVisibleItemIfNecessary(position);
     });
 
-    if (position == _vm.items.length) {
+    if (position == _vm.items.length - 1) {
       _loadNextPage(context);
     }
   }

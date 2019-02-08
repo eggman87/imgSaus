@@ -5,7 +5,7 @@ import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/ui/home_page.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-
+import 'package:redux_logging/redux_logging.dart';
 
 void main() => runApp(ReduxApp());
 
@@ -28,7 +28,7 @@ class ReduxApp extends StatelessWidget {
   final store = Store<AppState>(
     appReducer,
     initialState: AppState.loading(),
-    middleware: createImgurMiddleware(),
+    middleware:_middlewareList()
   );
 
   @override
@@ -45,6 +45,15 @@ class ReduxApp extends StatelessWidget {
       ),
     );
   }
+}
+
+dynamic _middlewareList() {
+  var middleWare = createImgurMiddleware();
+  assert(() {
+    middleWare.add(LoggingMiddleware.printer());
+    return true;
+  }());
+  return middleWare;
 }
 
 
