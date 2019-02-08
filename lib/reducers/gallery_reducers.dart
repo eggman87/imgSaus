@@ -26,8 +26,8 @@ GalleryFilter _activeFilterReducer(GalleryFilter activeFilter, UpdateFilterActio
 }
 
 Map<String, List<Comment>> _setLoadedComments(Map<String, List<Comment>> existingComments, CommentsLoadedAction action) {
-   existingComments.putIfAbsent(action.itemId, () =>  action.comments);
-   return existingComments;
+  existingComments = Map.from(existingComments)..addAll({action.itemId : action.comments});
+  return existingComments;
 }
 
 Map<String, List<Comment>> _clearLoadedComments(Map<String, List<Comment>> existingComments, ClearCommentsAction action) {

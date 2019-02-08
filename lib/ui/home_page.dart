@@ -5,7 +5,7 @@ import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
-import 'package:imgsrc/ui/comments_bottom_sheet.dart';
+import 'package:imgsrc/ui/comments_list_container.dart';
 import 'package:imgsrc/ui/gallery_album_page.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
         store.dispatch(UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
       },
       converter: _HomeViewModel.fromStore,
-      builder: (BuildContext context, vm) {
+      builder: (context, vm) {
         _vm = vm;
 
         return Scaffold(
@@ -234,7 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
-          return CommentsSheet(
+          return CommentsSheetContainer(
             galleryItemId: currentItem.id,
             key: Key(currentItem.id),
           );

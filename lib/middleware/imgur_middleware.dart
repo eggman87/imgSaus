@@ -36,6 +36,10 @@ Middleware<AppState> _loadCommentsForId(GalleryRepository repository) {
   return (Store<AppState> store, action, NextDispatcher next) {
     LoadCommentsAction commentsAction = action;
 
+    if (store.state.itemComments.containsKey(commentsAction.itemId)) {
+      store.dispatch(CommentsLoadedAction(commentsAction.itemId, store.state.itemComments[commentsAction.itemId]));
+    }
+
     repository.getComments(commentsAction.itemId, CommentSort.top).then((response) {
       if (response.isOk()) {
         store.dispatch(CommentsLoadedAction(commentsAction.itemId, response.body));
