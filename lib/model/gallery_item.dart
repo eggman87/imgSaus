@@ -30,6 +30,12 @@ class GalleryItem {
   @JsonKey(name: "images_count")
   final int imagesCount;
 
+
+  @override
+  String toString() {
+    return 'GalleryItem{$id}';
+  }
+
   factory GalleryItem.fromJson(Map<String, dynamic> json) =>
       _$GalleryItemFromJson(json);
 
@@ -58,14 +64,6 @@ class GalleryItem {
     }
     return isLinkVideo(link);
   }
-
-//  String videoLink() {
-//    if (isAlbum != null && isAlbum && this.images.length == 1) {
-//      return this.images[0].link;
-//    } else {
-//      return this.link;
-//    }
-//  }
 
   static bool isLinkVideo(String link) {
     return link.contains(".mp4");
