@@ -6,7 +6,7 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
-import 'package:imgsrc/ui/gallery_album_page.dart';
+import 'package:imgsrc/ui/gallery_album_page_container.dart';
 import 'package:imgsrc/ui/gallery_image_full_screen.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/home_page_container.dart';
@@ -24,24 +24,107 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-//state driven by UI interaction
   //the below `_current` properties refer to state of the current index of the PageView
   int _pagePosition = 0;
-  int currentAlbumPosition = 0;
-  int currentAlbumLength = 3; //default length...
-  //current visible item if current page is showing a album. The album widget
-  //internally loads all images from api
-  GalleryItem _currentAlbumVisibleItem;
 
   var _isLoading = false;
 
   //view model driven by store.
   HomeViewModel _vm;
 
-  _MyHomePageState();
-
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
+  }
+
+  void _onCommentsTapped(BuildContext context) {
+    GalleryItem currentItem = _currentGalleryItem();
+    showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return CommentsSheetContainer(
+            galleryItemId: currentItem.id,
+            key: Key(currentItem.id),
+          );
+        });
+  }
+
+  void _onLongPress() {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 25),
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: _fullScreen),
+                new ListTile(
+                  leading: new Icon(Icons.share),
+                  title: new Text('Share'),
+                  onTap: () => this._shareCurrentItem(),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void _fullScreen() {
+    Navigator.pop(context);
+
+    var itemCurrentVisible = _currentVisibleItem();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: itemCurrentVisible)),
+    );
+  }
+
+  void _shareCurrentItem() {
+    Navigator.pop(context);
+
+    var itemCurrentVisible = _currentVisibleItem();
+
+    if (itemCurrentVisible.isVideo()) {
+      ShareExtend.share(
+          "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
+          "text");
+    } else {
+      _shareCurrentImage(itemCurrentVisible);
+    }
+  }
+
+  GalleryItem _currentVisibleItem() {
+    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
+    if (itemCurrentVisible.isAlbum) {
+      int albumIndex = _vm.albumIndex[itemCurrentVisible.id] ?? 0;
+      itemCurrentVisible = _vm.itemDetails[itemCurrentVisible.id].images[albumIndex];
+    }
+    return itemCurrentVisible;
+  }
+
+  void _shareCurrentImage(GalleryItem item) {
+    var imageFile = ImageFileUtils();
+    imageFile.writeImageToFile(item.imageUrl()).then((it) {
+      ShareExtend.share(it.path, "image");
+    });
+  }
+
+  GalleryItem _currentGalleryItem() {
+    if (_vm.items.length > 0) {
+      return _vm.items[_pagePosition];
+    }
+    return null;
+  }
+
+  void _onPageChanged(BuildContext context, int position) {
+    setState(() {
+      _pagePosition = position;
+    });
+
+    if (position == _vm.items.length - 1) {
+      _loadNextPage(context);
+    }
   }
 
   @override
@@ -180,7 +263,11 @@ class _MyHomePageState extends State<MyHomePage> {
       GalleryItem item = _currentGalleryItem();
       String title = item.title;
       if (item.isAlbumWithMoreThanOneImage()) {
-        title += " (${currentAlbumPosition + 1}/$currentAlbumLength)";
+        GalleryItem itemDetails = _vm.itemDetails[item.id];
+        if (itemDetails != null) {
+          int currentPos = _vm.albumIndex[item.id] ?? 0;
+          title += " (${currentPos + 1}/${itemDetails.images.length})";
+        }
       }
       return title;
     }
@@ -194,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
-          return GalleryAlbumPage(currentItem, _onAlbumCountChanged);
+          return AlbumPageContainer(item: currentItem,);
         } else {
           return GalleryImagePage(currentItem);
         }
@@ -202,103 +289,5 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: _vm.items.length,
       onPageChanged: (it) => this._onPageChanged(context, it),
     );
-  }
-
-  void _onCommentsTapped(BuildContext context) {
-    GalleryItem currentItem = _currentGalleryItem();
-    showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) {
-          return CommentsSheetContainer(
-            galleryItemId: currentItem.id,
-            key: Key(currentItem.id),
-          );
-        });
-  }
-
-  void _onLongPress() {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: _fullScreen),
-                new ListTile(
-                  leading: new Icon(Icons.share),
-                  title: new Text('Share'),
-                  onTap: _shareCurrentItem,
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
-  void _fullScreen() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: _vm.items[_pagePosition])),
-    );
-  }
-
-  void _shareCurrentItem() {
-    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
-    if (itemCurrentVisible.isAlbum) {
-      itemCurrentVisible = _currentAlbumVisibleItem;
-    }
-
-    if (itemCurrentVisible.isVideo()) {
-      ShareExtend.share(
-          "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
-          "text");
-    } else {
-      _shareCurrentImage(itemCurrentVisible);
-    }
-  }
-
-  void _shareCurrentImage(GalleryItem item) {
-    var imageFile = ImageFileUtils();
-    imageFile.writeImageToFile(item.imageUrl()).then((it) {
-      ShareExtend.share(it.path, "image");
-    });
-  }
-
-  void _onAlbumCountChanged(AlbumCount count) {
-    setState(() {
-      currentAlbumPosition = count.currentPosition;
-      currentAlbumLength = count.totalCount;
-      _currentAlbumVisibleItem = count.currentVisibleItem;
-    });
-  }
-
-  GalleryItem _currentGalleryItem() {
-    if (_vm.items.length > 0) {
-      return _vm.items[_pagePosition];
-    }
-    return null;
-  }
-
-  void _onPageChanged(BuildContext context, int position) {
-    setState(() {
-      _pagePosition = position;
-      _setupCurrentVisibleItemIfNecessary(position);
-    });
-
-    if (position == _vm.items.length - 1) {
-      _loadNextPage(context);
-    }
-  }
-
-  void _setupCurrentVisibleItemIfNecessary(int position) {
-    var newItem = _vm.items[position];
-
-    //albums widget makes api call to load all images, lets start in the known state though.
-    if (newItem.isAlbum) {
-      currentAlbumPosition = 0;
-      currentAlbumLength = newItem.imagesCount;
-      _currentAlbumVisibleItem = newItem.images[0];
-    }
   }
 }

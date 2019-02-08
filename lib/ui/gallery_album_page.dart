@@ -1,45 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:imgsrc/data/gallery_repository.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:imgsrc/action/actions.dart';
+import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
+import 'package:imgsrc/ui/gallery_album_page_container.dart';
 import 'package:imgsrc/ui/vertical_swipe_detector.dart';
 import 'package:video_player/video_player.dart';
 
-class AlbumCount {
-  final int currentPosition;
-  final int totalCount;
-  //we manually pass the item up because we load ALL images from api here (only 3 returned on initial call).
-  final GalleryItem currentVisibleItem;
-
-  AlbumCount(this.currentPosition, this.totalCount, this.currentVisibleItem);
-}
 
 class GalleryAlbumPage extends StatefulWidget {
-  GalleryAlbumPage(this.item, this.onCountChanged, {Key key}) : super(key: key);
+  GalleryAlbumPage(this.viewModel, {Key key}) : super(key: key);
 
-  final GalleryItem item;
-  final Function(AlbumCount) onCountChanged;
+  final AlbumDetailsViewModel viewModel;
 
   @override
   _GalleryAlbumPageState createState() => _GalleryAlbumPageState();
 }
 
 class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
-  int _position = 0;
-  List<GalleryItem> _images;
-
   //note: if the album is large enough, we might have to manually dispose as user swipes through...
   Map<int, VideoPlayerController> _controllers = new Map();
 
-  @override
-  void initState() {
-    super.initState();
-
-    this._images = widget.item.images;
-    //imgur api only returns 3 images max
-    if (this._images.length < widget.item.imagesCount) {
-      _loadAlbumDetails();
-    }
-  }
+  //view model driven by store.
+  AlbumDetailsViewModel _vm;
 
   @override
   void dispose() {
@@ -52,37 +35,26 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
     super.dispose();
   }
 
-  void _loadAlbumDetails() {
-    var repository = GalleryRepository();
-    repository.getAlbumDetails(widget.item.id).then((it) {
-      if (!this.mounted) {
-        return;
-      }
-      setState(() {
-        if (it.isOk()) {
-          this._images = it.body.images;
-          widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
-        }
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (!mounted) {
+    _vm = widget.viewModel;
+
+    if (!mounted || _vm.itemDetails == null) {
       return Container();
     }
+    var images = _vm.itemDetails.images;
+    var albumPos = _vm.albumIndex;
 
-    String imageUrl = this._images[_position].imageUrl();
+    String imageUrl = images[albumPos].imageUrl();
     Widget widgetToWrap;
     if (GalleryItem.isLinkVideo(imageUrl)) {
-      VideoPlayerController controller = _controllers[_position];
+      VideoPlayerController controller = _controllers[albumPos];
       VideoPlayer player;
 
       if (controller == null) {
         controller = VideoPlayerController.network(imageUrl);
         player = VideoPlayer(controller);
-        _controllers[_position] = controller;
+        _controllers[albumPos] = controller;
         controller.setLooping(true);
         controller.setVolume(0);
 
@@ -102,19 +74,17 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   }
 
   void _onSwipeUp() {
-    if (_position < _images.length - 1) {
+    if (_vm.albumIndex < _vm.itemDetails.images.length - 1) {
       setState(() {
-        _position++;
-        widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
+        StoreProvider.of<AppState>(context).dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex + 1));
       });
     }
   }
 
   void _onSwipeDown() {
-    if (_position > 0) {
+    if (_vm.albumIndex > 0) {
       setState(() {
-        _position--;
-        widget.onCountChanged(AlbumCount(_position, _images.length, this._images[_position]));
+        StoreProvider.of<AppState>(context).dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex - 1));
       });
     }
   }

@@ -58,6 +58,40 @@ class ClearCommentsAction {
   }
 }
 
+class LoadAlbumImagesAction {
+  final GalleryItem item;
+
+  LoadAlbumImagesAction(this.item);
+
+  @override
+  String toString() {
+    return 'LoadAlbumImagesAction {itemId=${item.id}}';
+  }
+}
+
+class ItemDetailsLoadedAction {
+  final String itemId;
+  final GalleryItem item;
+
+  ItemDetailsLoadedAction(this.itemId, this.item);
+
+  @override
+  String toString() {
+    return 'ItemDetailsLoadedAction {itemId=$itemId, imageCount=${this.item.images.length}}';
+  }
+}
+
+class UpdateAlbumIndexAction {
+  final String itemId;
+  final int newPosition;
+
+  UpdateAlbumIndexAction(this.itemId, this.newPosition);
+
+  @override
+  String toString() {
+    return 'UpdateAlbumIndexAction {itemId=$itemId, newPosition=$newPosition}';
+  }
+}
 
 class ApiError {
   final String message;
