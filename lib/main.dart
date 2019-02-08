@@ -41,7 +41,9 @@ class ReduxApp extends StatelessWidget {
           primarySwatch: Colors.blue
         ),
         initialRoute: '/',
-        routes: {'/': (context) => HomePageContainer(title: "imgSaus",)}
+        routes: {
+          '/': (context) => HomePageContainer(title: "imgSaus",)
+        }
       ),
     );
   }

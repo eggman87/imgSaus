@@ -7,6 +7,7 @@ import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
 import 'package:imgsrc/ui/gallery_album_page.dart';
+import 'package:imgsrc/ui/gallery_image_full_screen.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/home_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
@@ -117,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ],
           )),
-      body:_body(),
+      body: _body(),
       floatingActionButton: Builder(builder: (BuildContext context) {
         return FloatingActionButton(
           onPressed: () => this._onCommentsTapped(context),
@@ -189,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
   PageView _pageView(BuildContext context) {
     return PageView.builder(
       pageSnapping: true,
-      controller: PageController( ),
+      controller: PageController(),
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
@@ -199,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
       itemCount: _vm.items.length,
-      onPageChanged:(it) => this._onPageChanged(context, it) ,
+      onPageChanged: (it) => this._onPageChanged(context, it),
     );
   }
 
@@ -216,7 +217,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onLongPress() {
-    _shareCurrentItem();
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Container(
+            child: new Wrap(
+              children: <Widget>[
+                new ListTile(
+                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: _fullScreen),
+                new ListTile(
+                  leading: new Icon(Icons.share),
+                  title: new Text('Share'),
+                  onTap: _shareCurrentItem,
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void _fullScreen() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: _vm.items[_pagePosition])),
+    );
   }
 
   void _shareCurrentItem() {
@@ -226,7 +250,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     if (itemCurrentVisible.isVideo()) {
-      ShareExtend.share("from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}", "text");
+      ShareExtend.share(
+          "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
+          "text");
     } else {
       _shareCurrentImage(itemCurrentVisible);
     }
