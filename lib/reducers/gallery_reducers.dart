@@ -27,7 +27,7 @@ final albumIndexReducer = combineReducers<Map<String, int>>([
 ]);
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {
-  return action.items;
+  return List.from(items)..addAll(action.items);
 }
 
 GalleryFilter _activeFilterReducer(GalleryFilter activeFilter, UpdateFilterAction action) {
