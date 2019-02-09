@@ -4,9 +4,9 @@ import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/ui/gallery_album_page_container.dart';
+import 'package:imgsrc/ui/gallery_image_view.dart';
 import 'package:imgsrc/ui/vertical_swipe_detector.dart';
 import 'package:video_player/video_player.dart';
-
 
 class GalleryAlbumPage extends StatefulWidget {
   GalleryAlbumPage(this.viewModel, {Key key}) : super(key: key);
@@ -68,7 +68,8 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       }
       widgetToWrap = player;
     } else {
-      widgetToWrap = Image.network(imageUrl);
+      //look into why we have to use keys here.
+      widgetToWrap = new GalleryImageView(imageUrl: imageUrl, key: Key(imageUrl),);
     }
     return VerticalSwipeDetector(child: widgetToWrap, onSwipeUp: _onSwipeUp, onSwipeDown: _onSwipeDown);
   }
@@ -76,7 +77,8 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   void _onSwipeUp() {
     if (_vm.albumIndex < _vm.itemDetails.images.length - 1) {
       setState(() {
-        StoreProvider.of<AppState>(context).dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex + 1));
+        StoreProvider.of<AppState>(context)
+            .dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex + 1));
       });
     }
   }
@@ -84,7 +86,8 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
   void _onSwipeDown() {
     if (_vm.albumIndex > 0) {
       setState(() {
-        StoreProvider.of<AppState>(context).dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex - 1));
+        StoreProvider.of<AppState>(context)
+            .dispatch(UpdateAlbumIndexAction(widget.viewModel.itemDetails.id, _vm.albumIndex - 1));
       });
     }
   }

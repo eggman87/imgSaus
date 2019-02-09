@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imgsrc/model/gallery_item.dart';
+import 'package:imgsrc/ui/gallery_image_view.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImagePage extends StatefulWidget {
@@ -45,7 +46,7 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
       });
       return player;
     } else {
-      return Image.network(imageUrl);
+      return GalleryImageView(imageUrl: imageUrl);
     }
   }
 }

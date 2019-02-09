@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/app_state.dart';
@@ -16,6 +17,8 @@ class HomePageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, HomeViewModel>(
       onInit: (store) {
+        DiskCache().maxEntries = 50;
+
         store.dispatch(UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
       },
       converter: (store) => HomeViewModel.fromStore(store),
