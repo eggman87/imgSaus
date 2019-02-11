@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_image/network.dart';
+
 
 class GalleryImageView extends StatefulWidget {
   final String imageUrl;
@@ -13,6 +15,7 @@ class GalleryImageViewState extends State<GalleryImageView> {
   final String imageUrl;
 
   bool isFailed = false;
+  int retryCount = 0;
 
   GalleryImageViewState(this.imageUrl);
 
@@ -34,7 +37,16 @@ class GalleryImageViewState extends State<GalleryImageView> {
         ),
       );
     } else {
-      return Image(image: NetworkImage(imageUrl),);
+      return Image(key: Key('$retryCount'),image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy:_imageFetchStrategy));
+    }
+  }
+
+  Future<FetchInstructions> _imageFetchStrategy(Uri uri, FetchFailure failure) {
+    if (failure != null) {
+      _loadFailed();
+      return new Future.value(FetchInstructions.giveUp(uri: null));
+    } else {
+      return FetchStrategyBuilder().build()(uri, failure);
     }
   }
 
@@ -44,8 +56,9 @@ class GalleryImageViewState extends State<GalleryImageView> {
     });
   }
 
-  void _retry() {
+    void _retry() {
     setState(() {
+      retryCount ++;
       isFailed = false;
     });
   }

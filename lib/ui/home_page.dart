@@ -127,14 +127,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  void _onTapLogin() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     _vm = widget.viewModel;
 
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       drawer: Container(
@@ -144,8 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.zero,
             children: <Widget>[
               DrawerHeader(
-                decoration: BoxDecoration(color: Colors.green),
-                child: Text("eggman87"),
+                decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
+                child: GestureDetector( child: Center( child: Text("TAP TO LOGIN")), onTap: _onTapLogin,),
               ),
               Row(
                 children: <Widget>[
@@ -189,13 +191,13 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 children: <Widget>[
                   Spacer(),
-                  Text("viral"),
+                  Text("viral", style: _selectableStyle(_vm.filter.sort == GallerySort.viral),),
                   Spacer(),
-                  Text("top"),
+                  Text("top", style: _selectableStyle(_vm.filter.sort == GallerySort.top),),
                   Spacer(),
-                  Text("time"),
+                  Text("time", style: _selectableStyle(_vm.filter.sort == GallerySort.time),),
                   Spacer(),
-                  Text("rising"),
+                  Text("rising", style: _selectableStyle(_vm.filter.sort == GallerySort.rising),),
                   Spacer(),
                 ],
               ),
