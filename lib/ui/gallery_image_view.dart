@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
-import 'package:flutter_advanced_networkimage/transition.dart';
 
 class GalleryImageView extends StatefulWidget {
   final String imageUrl;
@@ -36,19 +34,7 @@ class GalleryImageViewState extends State<GalleryImageView> {
         ),
       );
     } else {
-      return TransitionToImage(
-        disableMemoryCache: true,
-        image: AdvancedNetworkImage('$imageUrl',
-            useDiskCache: true,
-            retryLimit: 1,
-            printError: true,
-            loadFailedCallback: _loadFailed),
-        loadingWidgetBuilder: (progress) => Center(
-              child: CircularProgressIndicator(
-                backgroundColor: Colors.blue,
-              ),
-            ),
-      );
+      return Image(image: NetworkImage(imageUrl),);
     }
   }
 
