@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_image/network.dart';
 
-
 class GalleryImageView extends StatefulWidget {
   final String imageUrl;
 
@@ -18,6 +17,36 @@ class GalleryImageViewState extends State<GalleryImageView> {
   int retryCount = 0;
 
   GalleryImageViewState(this.imageUrl);
+
+  @override
+  void initState() {
+    super.initState();
+
+    retryCount = PageStorage.of(context)?.readState(context, identifier: "retryCount") ?? 0;
+  }
+
+  Future<FetchInstructions> _imageFetchStrategy(Uri uri, FetchFailure failure) {
+    if (failure != null) {
+      _loadFailed();
+      return new Future.value(FetchInstructions.giveUp(uri: null));
+    } else {
+      return FetchStrategyBuilder(maxAttempts: 1, totalFetchTimeout: Duration(seconds: 15)).build()(uri, failure);
+    }
+  }
+
+  void _loadFailed() {
+    setState(() {
+      retryCount++;
+      PageStorage.of(context)?.writeState(context, retryCount, identifier: "retryCount");
+      isFailed = true;
+    });
+  }
+
+  void _retry() {
+    setState(() {
+      isFailed = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,29 +66,9 @@ class GalleryImageViewState extends State<GalleryImageView> {
         ),
       );
     } else {
-      return Image(key: Key('$retryCount'),image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy:_imageFetchStrategy));
+      return Image(
+          key: Key('$retryCount'),
+          image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy: _imageFetchStrategy));
     }
-  }
-
-  Future<FetchInstructions> _imageFetchStrategy(Uri uri, FetchFailure failure) {
-    if (failure != null) {
-      _loadFailed();
-      return new Future.value(FetchInstructions.giveUp(uri: null));
-    } else {
-      return FetchStrategyBuilder().build()(uri, failure);
-    }
-  }
-
-  void _loadFailed() {
-    setState(() {
-      isFailed = true;
-    });
-  }
-
-    void _retry() {
-    setState(() {
-      retryCount ++;
-      isFailed = false;
-    });
   }
 }

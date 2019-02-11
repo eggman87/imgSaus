@@ -283,9 +283,9 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
-          return AlbumPageContainer(item: currentItem,);
+          return AlbumPageContainer(item: currentItem, key: PageStorageKey(currentItem.id),);
         } else {
-          return GalleryImagePage(currentItem);
+          return GalleryImagePage(currentItem, key: PageStorageKey(currentItem.id),);
         }
       },
       itemCount: _vm.items.length,
