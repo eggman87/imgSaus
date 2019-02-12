@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _fullScreen() {
     Navigator.pop(context);
 
-    var itemCurrentVisible = _currentVisibleItem();
+    var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     Navigator.push(
       context,
@@ -83,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _shareCurrentItem() {
     Navigator.pop(context);
 
-    var itemCurrentVisible = _currentVisibleItem();
+    var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share(
@@ -92,15 +92,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       _shareCurrentImage(itemCurrentVisible);
     }
-  }
-
-  GalleryItem _currentVisibleItem() {
-    GalleryItem itemCurrentVisible = _vm.items[_pagePosition];
-    if (itemCurrentVisible.isAlbum) {
-      int albumIndex = _vm.albumIndex[itemCurrentVisible.id] ?? 0;
-      itemCurrentVisible = _vm.itemDetails[itemCurrentVisible.id].images[albumIndex];
-    }
-    return itemCurrentVisible;
   }
 
   void _shareCurrentImage(GalleryItem item) {
@@ -122,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _pagePosition = position;
     });
 
-    if (position == _vm.items.length - 1) {
+    if (position == _vm.items.length - 5) {
       _loadNextPage(context);
     }
   }

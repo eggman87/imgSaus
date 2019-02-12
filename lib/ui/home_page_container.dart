@@ -42,4 +42,13 @@ class HomeViewModel {
       albumIndex: store.state.albumIndex
     );
   }
+
+  GalleryItem currentVisibleItem(int itemIndex) {
+    GalleryItem itemCurrentVisible = items[itemIndex];
+    if (itemCurrentVisible.isAlbum) {
+      int albumPosition = albumIndex[itemCurrentVisible.id] ?? 0;
+      itemCurrentVisible = itemDetails[itemCurrentVisible.id].images[albumPosition];
+    }
+    return itemCurrentVisible;
+  }
 }
