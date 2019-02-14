@@ -50,28 +50,32 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onLongPress() {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 25),
-            child: new Wrap(
-              children: <Widget>[
-                new ListTile(
-                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: _fullScreen),
-                new ListTile(
-                  leading: new Icon(Icons.share),
-                  title: new Text('Share'),
-                  onTap: () => this._shareCurrentItem(),
-                ),
-              ],
-            ),
-          );
-        });
+    this._shareCurrentItem(shouldPop: false);
+
+//    showModalBottomSheet(
+//        context: context,
+//        builder: (BuildContext bc) {
+//          return Container(
+//            margin: EdgeInsets.fromLTRB(0, 0, 0, 25),
+//            child: new Wrap(
+//              children: <Widget>[
+//                new ListTile(
+//                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: () { _fullScreen(shouldPop: true); }),
+//                new ListTile(
+//                  leading: new Icon(Icons.share),
+//                  title: new Text('Share'),
+//                  onTap: () => this._shareCurrentItem(shouldPop: true),
+//                ),
+//              ],
+//            ),
+//          );
+//        });
   }
 
-  void _fullScreen() {
-    Navigator.pop(context);
+  void _fullScreen({bool shouldPop = false}) {
+    if (shouldPop) {
+      Navigator.pop(context);
+    }
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
@@ -81,8 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _shareCurrentItem() {
-    Navigator.pop(context);
+  void _shareCurrentItem({bool shouldPop = false}) {
+    if (shouldPop) {
+      Navigator.pop(context);
+    }
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
@@ -131,6 +137,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: <Widget>[
+//          IconButton(icon: Icon(Icons.share), tooltip: 'Share', onPressed:() { this._shareCurrentItem();},),
+          IconButton(icon: Icon(Icons.zoom_out_map), onPressed:()=> _fullScreen(),)
+        ],
       ),
       drawer: Container(
           margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
@@ -197,17 +207,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           )),
       body: _body(),
-      floatingActionButton: Builder(builder: (BuildContext context) {
-        return FloatingActionButton(
-          onPressed: () => this._onCommentsTapped(context),
-          tooltip: 'View Comments',
-          child: Icon(Icons.message),
-        );
-      }),
+//      floatingActionButton: Builder(builder: (BuildContext context) {
+//        return FloatingActionButton(
+//          onPressed: () => this._onCommentsTapped(context),
+//          tooltip: 'View Comments',
+//          child: Icon(Icons.message),
+//        );
+//      }),
+
       bottomNavigationBar: BottomNavigationBar(items: [
         BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
         BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
-        BottomNavigationBarItem(icon: new Icon(Icons.person), title: Text("Social Saus"))
       ]),
     );
   }
@@ -237,6 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: GestureDetector(
                     child: _pageView(context),
                     onLongPress: _onLongPress,
+                    onTap: ()=> this._onCommentsTapped(context),
                   ),
                 ),
               ],

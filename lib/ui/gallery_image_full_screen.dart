@@ -12,16 +12,35 @@ class GalleryImageFullScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(item.title ?? this.parentTitle ?? ''),),
-        body: PhotoView.customChild(
-            child: GalleryImagePage(item),
-            childSize: Size(MediaQuery
-                .of(context)
-                .size
-                .width, MediaQuery
-                .of(context)
-                .size
-                .height))
-    );
+        backgroundColor: Colors.black,
+        body: Stack(
+          overflow: Overflow.visible,
+          children: <Widget>[
+            PhotoView.customChild(
+                child: GalleryImagePage(item),
+                childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
+            SafeArea(
+                child: Container(
+                width: MediaQuery.of(context).size.width,
+                height: kToolbarHeight,
+                child: AppBar(
+                  title: Text(item.title ?? this.parentTitle ?? ''),
+                  backgroundColor: Colors.transparent,
+            )))
+          ],
+        ));
   }
 }
+
+/*(
+ PhotoView.customChild(
+            child: GalleryImagePage(item),
+            childSize: Size(MediaQuery
+              .of(context)
+              .size
+              .width, MediaQuery
+              .of(context)
+              .size
+              .height))),
+      AppBar(title: Text(item.title ?? this.parentTitle ?? ''), toolbarOpacity: 1.0, backgroundColor: Colors.transparent,)
+ */
