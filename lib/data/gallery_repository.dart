@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -11,7 +12,7 @@ import 'package:http/http.dart' as http;
 class GalleryRepository {
   const GalleryRepository();
 
-  static const Map<String, String> headers = {"Authorization": "Client-ID b86d301956fea91"};
+  static Map<String, String> headers = {"Authorization": "Client-ID ${DotEnv().env['IMGUR_CLIENT_ID']}"};
 
   Future<ParsedResponse<List<GalleryItem>>> getItems(
       GallerySection section, GallerySort sort, GalleryWindow window, int page) async {
