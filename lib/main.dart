@@ -38,7 +38,7 @@ class ReduxApp extends StatelessWidget {
       child: MaterialApp(
         title: 'imgSaus',
         theme: ThemeData(
-          primarySwatch: Colors.blue
+          primarySwatch: Colors.red
         ),
         initialRoute: '/',
         routes: {

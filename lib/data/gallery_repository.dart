@@ -74,7 +74,10 @@ class ParsedResponse<T> {
 
 List<T> parseList<T>(Parsable<T> parsable) {
   List<dynamic> list = jsonDecode(parsable.response)['data'];
-  print("loaded ${list.length} ${parsable.className} from the api");
+  print("[parse] ${list.length} of ${parsable.className} from the api");
+  if (list.length > 0) {
+    print("[parse]firstItem: ${list[0]}");
+  }
   List<T> items = new List();
 
   for (dynamic itemJson in list) {
@@ -85,6 +88,7 @@ List<T> parseList<T>(Parsable<T> parsable) {
 
 T parseItem<T>(Parsable<T> parsable) {
   dynamic item = jsonDecode(parsable.response)['data'];
+  print('[parse] ${parsable.className} details: $item');
   return jsonToItem(parsable.className, item);
 }
 
