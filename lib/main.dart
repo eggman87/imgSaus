@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imgsrc/data/analytics.dart';
 import 'package:imgsrc/middleware/imgur_middleware.dart';
 import 'package:imgsrc/reducers/app_state_reducer.dart';
 import 'package:imgsrc/model/app_state.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 class ReduxApp extends StatelessWidget {
-  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalytics analytics = Analytics.instance();
   static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
 
   final store = Store<AppState>(

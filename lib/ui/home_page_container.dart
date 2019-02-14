@@ -16,7 +16,10 @@ class HomePageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, HomeViewModel>(
       onInit: (store) {
-        store.dispatch(UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
+        if (store.state.galleryItems.length < 1) {
+          store.dispatch(
+              UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
+        }
       },
       converter: (store) => HomeViewModel.fromStore(store),
       builder: (context, vm) {

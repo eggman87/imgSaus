@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
+import 'package:imgsrc/data/analytics.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -85,6 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
+    Analytics.instance().logEvent(name: "shareCurrentItem",parameters: {'url' : itemCurrentVisible.imageUrl()});
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share(
           "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
