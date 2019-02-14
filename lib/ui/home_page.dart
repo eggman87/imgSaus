@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: itemCurrentVisible)),
+      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: itemCurrentVisible, parentTitle: _vm.items[_pagePosition].title,)),
     );
   }
 

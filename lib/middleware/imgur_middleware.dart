@@ -29,12 +29,12 @@ Middleware<AppState> _createFilterGallery(GalleryRepository repository) {
 
     repository.getItems(filter.section, filter.sort, filter.window, filter.page).then((response) {
       if (response.isOk()) {
-        store.dispatch(GalleryLoadedAction(response.body));
+        next(GalleryLoadedAction(response.body));
       } else {
-        store.dispatch(ApiError(ERROR_BAD_RESPONSE));
+        next(ApiError(ERROR_BAD_RESPONSE));
       }
     }
-    ).catchError((error) => store.dispatch(ApiError(ERROR_UNKNOWN)));
+    ).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
   };
 }
 
@@ -46,22 +46,22 @@ Middleware<AppState> _loadAlbumForId(GalleryRepository repository) {
     if (store.state.itemDetails.containsKey(detailsAction.item.id)) {
       GalleryItem existingItem =  store.state.itemDetails[detailsAction.item.id];
       if (existingItem.images.length == existingItem.imagesCount) {
-        store.dispatch(ItemDetailsLoadedAction(detailsAction.item.id, store.state.itemDetails[detailsAction.item.id]));
+        next(ItemDetailsLoadedAction(detailsAction.item.id, store.state.itemDetails[detailsAction.item.id]));
         return;
       }
     } else if (detailsAction.item.images.length >= detailsAction.item.imagesCount) {
       //only load details if we dont have every image we need.
-      store.dispatch(ItemDetailsLoadedAction(detailsAction.item.id, detailsAction.item));
+      next(ItemDetailsLoadedAction(detailsAction.item.id, detailsAction.item));
       return; 
     }
 
     repository.getAlbumDetails(detailsAction.item.id).then((response) {
       if (response.isOk()) {
-        store.dispatch(ItemDetailsLoadedAction(detailsAction.item.id, response.body));
+        next(ItemDetailsLoadedAction(detailsAction.item.id, response.body));
       } else {
-        store.dispatch(ApiError(ERROR_BAD_RESPONSE));
+        next(ApiError(ERROR_BAD_RESPONSE));
       }
-    }).catchError((error) => store.dispatch(ApiError(ERROR_UNKNOWN)));
+    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
   };
 }
 
@@ -70,16 +70,16 @@ Middleware<AppState> _loadCommentsForId(GalleryRepository repository) {
     LoadCommentsAction commentsAction = action;
 
     if (store.state.itemComments.containsKey(commentsAction.itemId)) {
-      store.dispatch(CommentsLoadedAction(commentsAction.itemId, store.state.itemComments[commentsAction.itemId]));
+      next(CommentsLoadedAction(commentsAction.itemId, store.state.itemComments[commentsAction.itemId]));
       return;
     }
 
     repository.getComments(commentsAction.itemId, CommentSort.top).then((response) {
       if (response.isOk()) {
-        store.dispatch(CommentsLoadedAction(commentsAction.itemId, response.body));
+        next(CommentsLoadedAction(commentsAction.itemId, response.body));
       } else {
-        store.dispatch(ApiError(ERROR_BAD_RESPONSE));
+        next(ApiError(ERROR_BAD_RESPONSE));
       }
-    }).catchError((error) => store.dispatch(ApiError(ERROR_UNKNOWN)));
+    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
   };
 }
