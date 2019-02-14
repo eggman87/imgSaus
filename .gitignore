@@ -16,6 +16,8 @@
 *.iws
 .idea/
 
+.env
+
 # Visual Studio Code related
 .vscode/
 
