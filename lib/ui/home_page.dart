@@ -247,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: GestureDetector(
                     child: _pageView(context),
                     onLongPress: _onLongPress,
-                    onTap: ()=> this._onCommentsTapped(context),
+                    onDoubleTap: ()=> this._onCommentsTapped(context),
                   ),
                 ),
               ],
