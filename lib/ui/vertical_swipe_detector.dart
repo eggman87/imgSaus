@@ -2,9 +2,7 @@ library swipedetector;
 
 import 'package:flutter/material.dart';
 
-/**
- * Note: this code is taken from swipe detector plugin, and just modified for vertical only swipe detection.
- */
+/// Note: this code is taken from swipe detector plugin, and just modified for vertical only swipe detection.
 class VerticalSwipeConfiguration {
   //Vertical swipe configuration options
   double verticalSwipeMaxWidthThreshold = 50.0;

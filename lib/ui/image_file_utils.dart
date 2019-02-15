@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
-//this is temporary to understand flutter file utils, eventually we will not redownload a image before sharing.
+///this is temporary to understand flutter file utils, eventually we will not redownload a image before sharing.
 class ImageFileUtils {
   Future<String> get _localPath async {
     final directory = await getTemporaryDirectory();
