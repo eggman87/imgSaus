@@ -69,4 +69,5 @@ Map<String, VideoPlayerController> _setVideoController(Map<String, VideoPlayerCo
 
 Map<String, VideoPlayerController> _clearVideoController(Map<String, VideoPlayerController> existingControllers, ClearVideoControllerAction action) {
   existingControllers.remove(action.itemId);
+  return existingControllers;
 }

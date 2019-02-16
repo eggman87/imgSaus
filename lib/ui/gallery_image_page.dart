@@ -24,11 +24,12 @@ class GalleryImagePage extends StatefulWidget {
 class _GalleryImagePageState extends State<GalleryImagePage> {
   VideoPlayerController _controller;
   Store<AppState> _store;
+  //did we create the controller? if so we are responsible for destroying it.
+  bool _isVideoControllerOwner = false;
 
   @override
   void dispose() {
-    //this means we are the owner of this controller and we must destroy it, otherwise someone else owns it.
-    if (widget.controller == null) {
+    if (_isVideoControllerOwner) {
       if (_controller != null) {
         _controller.dispose();
         _controller = null;
@@ -45,16 +46,12 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   Widget build(BuildContext context) {
     String imageUrl = widget.item.imageUrl();
 
-    if (_controller != null) {
-      _controller.dispose();
-    }
-
-
     if (GalleryItem.isLinkVideo(imageUrl)) {
       if (widget.controller != null) {
         _controller = widget.controller;
       } else {
         _controller = VideoPlayerController.network(imageUrl);
+        _isVideoControllerOwner = true;
         _store = StoreProvider.of<AppState>(context);
         _store.dispatch(SetVideoControllerAction(widget.item.id, _controller));
         _controller.setLooping(true);

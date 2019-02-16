@@ -287,6 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return GalleryImagePage(
             currentItem,
             key: PageStorageKey(currentItem.id),
+            controller: _vm.videoControllers[currentItem.id],
           );
         }
       },

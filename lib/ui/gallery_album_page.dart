@@ -34,7 +34,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
     if (_store != null) {
       for (var image in _vm.itemDetails.images) {
-        StoreProvider.of<AppState>(context).dispatch(ClearVideoControllerAction(image.id));
+        _store.dispatch(ClearVideoControllerAction(image.id));
       }
     }
 
@@ -61,7 +61,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
       if (controller == null) {
         controller = VideoPlayerController.network(imageUrl);
-        _store = StoreProvider.of<AppState>(context)
+        _store = StoreProvider.of<AppState>(context);
         _store.dispatch(SetVideoControllerAction(images[albumPos].id, controller));
         player = VideoPlayer(controller);
         _controllers[albumPos] = controller;
