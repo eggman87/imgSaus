@@ -1,5 +1,7 @@
 # imgSaus 
 
+[![Build Status](https://app.bitrise.io/app/6f8200fc255cb116/status.svg?token=YHfqEYVbGhDFnx4udCfW_w)](https://app.bitrise.io/app/6f8200fc255cb116)
+
 imgSaus is a Flutter application that consumes the imgur api. This is a project being used to learn flutter and hopefully build a useful imgur client for iOS and Android. 
 
 ## Getting Started
