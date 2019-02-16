@@ -5,11 +5,12 @@ import 'package:photo_view/photo_view.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImageFullScreen extends StatelessWidget {
-  GalleryImageFullScreen({Key key, this.item, this.parentTitle, this.videoPlayerController}) : super(key: key);
+  GalleryImageFullScreen({Key key, this.item, this.parentTitle, this.videoPlayerController, this.onLongPress}) : super(key: key);
 
   final GalleryItem item;
   final String parentTitle;
   final VideoPlayerController videoPlayerController;
+  final Function onLongPress;
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +18,7 @@ class GalleryImageFullScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         body: GestureDetector(
             onTap: () => _onSingleTap(context),
+            onLongPress: ()=> this.onLongPress(),
             child: Stack(
               overflow: Overflow.visible,
               children: <Widget>[

@@ -68,8 +68,10 @@ class _MyHomePageState extends State<MyHomePage> {
         MaterialPageRoute(
             builder: (context) => GalleryImageFullScreen(
                 item: itemCurrentVisible,
+                onLongPress: this._shareCurrentItem,
                 parentTitle: _vm.items[_pagePosition].title,
-                videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])));
+                videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])),
+    );
   }
 
   void _shareCurrentItem({bool shouldPop = false}) {
