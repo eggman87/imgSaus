@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context) => GalleryImageFullScreen(
                 item: itemCurrentVisible,
                 onLongPress: this._shareCurrentItem,
+                parentId: _vm.items[_pagePosition].id,
                 parentTitle: _vm.items[_pagePosition].title,
                 videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])),
     );
