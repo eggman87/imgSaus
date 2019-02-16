@@ -65,12 +65,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.push(
         context,
-        ScaleRoute(
-            widget: GalleryImageFullScreen(
-          item: itemCurrentVisible,
-          parentTitle: _vm.items[_pagePosition].title,
-          videoPlayerController: _vm.videoControllers[itemCurrentVisible.id],
-        )));
+        MaterialPageRoute(
+            builder: (context) => GalleryImageFullScreen(
+                item: itemCurrentVisible,
+                parentTitle: _vm.items[_pagePosition].title,
+                videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])));
   }
 
   void _shareCurrentItem({bool shouldPop = false}) {
