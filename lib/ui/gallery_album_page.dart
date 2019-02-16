@@ -6,6 +6,7 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/ui/gallery_album_page_container.dart';
 import 'package:imgsrc/ui/gallery_image_view.dart';
 import 'package:imgsrc/ui/vertical_swipe_detector.dart';
+import 'package:redux/redux.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryAlbumPage extends StatefulWidget {
@@ -23,11 +24,18 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
   //view model driven by store.
   AlbumDetailsViewModel _vm;
+  Store<AppState> _store;
 
   @override
   void dispose() {
     for (var controller in _controllers.values) {
       controller.dispose();
+    }
+
+    if (_store != null) {
+      for (var image in _vm.itemDetails.images) {
+        StoreProvider.of<AppState>(context).dispatch(ClearVideoControllerAction(image.id));
+      }
     }
 
     _controllers.clear();
@@ -53,6 +61,8 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
 
       if (controller == null) {
         controller = VideoPlayerController.network(imageUrl);
+        _store = StoreProvider.of<AppState>(context)
+        _store.dispatch(SetVideoControllerAction(images[albumPos].id, controller));
         player = VideoPlayer(controller);
         _controllers[albumPos] = controller;
         controller.setLooping(true);

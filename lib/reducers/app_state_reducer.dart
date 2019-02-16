@@ -10,5 +10,6 @@ AppState appReducer(AppState state, action) {
     itemComments: commentsReducer(state.itemComments, action),
     itemDetails: itemDetailsReducer(state.itemDetails, action),
     albumIndex:  albumIndexReducer(state.albumIndex, action),
+    videoControllers: videoControllerReducer(state.videoControllers, action)
   );
 }

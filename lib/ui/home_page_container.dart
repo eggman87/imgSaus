@@ -6,6 +6,7 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:imgsrc/ui/home_page.dart';
 import 'package:redux/redux.dart';
+import 'package:video_player/video_player.dart';
 
 class HomePageContainer extends StatelessWidget {
   final String title;
@@ -34,15 +35,17 @@ class HomeViewModel {
   final GalleryFilter filter;
   final Map<String, GalleryItem> itemDetails;
   final Map<String, int> albumIndex;
+  final Map<String, VideoPlayerController> videoControllers;
 
-  HomeViewModel({@required this.items, @required this.filter, @required this.itemDetails, @required this.albumIndex});
+  HomeViewModel({@required this.items, @required this.filter, @required this.itemDetails, @required this.albumIndex, @required this.videoControllers});
 
   static HomeViewModel fromStore(Store<AppState> store) {
     return HomeViewModel(
       items: store.state.galleryItems,
       filter: store.state.galleryFilter,
       itemDetails: store.state.itemDetails,
-      albumIndex: store.state.albumIndex
+      albumIndex: store.state.albumIndex,
+      videoControllers: store.state.videoControllers
     );
   }
 

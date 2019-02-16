@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:video_player/video_player.dart';
 
 class GalleryImageFullScreen extends StatelessWidget {
-  GalleryImageFullScreen({Key key, this.item, this.parentTitle}) : super(key: key);
+  GalleryImageFullScreen({Key key, this.item, this.parentTitle, this.videoPlayerController}) : super(key: key);
 
   final GalleryItem item;
   final String parentTitle;
+  final VideoPlayerController videoPlayerController;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class GalleryImageFullScreen extends StatelessWidget {
               overflow: Overflow.visible,
               children: <Widget>[
                 PhotoView.customChild(
-                    child: GalleryImagePage(item),
+                    child: GalleryImagePage(item, controller: videoPlayerController,),
                     childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
                 SafeArea(
                     child: Container(

@@ -1,6 +1,7 @@
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
+import 'package:video_player/video_player.dart';
 
 class UpdateFilterAction {
   final GalleryFilter newFilter;
@@ -91,6 +92,19 @@ class UpdateAlbumIndexAction {
   String toString() {
     return 'UpdateAlbumIndexAction {itemId=$itemId, newPosition=$newPosition}';
   }
+}
+
+class SetVideoControllerAction {
+  final String itemId;
+  final VideoPlayerController controller;
+
+  SetVideoControllerAction(this.itemId, this.controller);
+}
+
+class ClearVideoControllerAction {
+  final String itemId;
+
+  ClearVideoControllerAction(this.itemId);
 }
 
 class ApiError {

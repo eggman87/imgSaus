@@ -3,6 +3,7 @@ import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:redux/redux.dart';
 import 'package:imgsrc/model/gallery_item.dart';
+import 'package:video_player/video_player.dart';
 
 final galleryReducer = combineReducers<List<GalleryItem>>([
   TypedReducer<List<GalleryItem>, GalleryLoadedAction>(_setLoadedGalleryItems),
@@ -24,6 +25,11 @@ final itemDetailsReducer = combineReducers<Map<String, GalleryItem>>([
 
 final albumIndexReducer = combineReducers<Map<String, int>>([
   TypedReducer<Map<String, int>, UpdateAlbumIndexAction>(_setAlbumIndex)
+]);
+
+final videoControllerReducer = combineReducers<Map<String, VideoPlayerController>>([
+  TypedReducer<Map<String, VideoPlayerController>, SetVideoControllerAction>(_setVideoController),
+  TypedReducer<Map<String, VideoPlayerController>, ClearVideoControllerAction>(_clearVideoController),
 ]);
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {
@@ -55,4 +61,12 @@ Map<String, GalleryItem> _setPreloadItemDetails(Map<String, GalleryItem> existin
 
 Map<String, int> _setAlbumIndex(Map<String, int> existingIndex, UpdateAlbumIndexAction action) {
   return Map.from(existingIndex)..addAll({action.itemId: action.newPosition});
+}
+
+Map<String, VideoPlayerController> _setVideoController(Map<String, VideoPlayerController> existingControllers, SetVideoControllerAction action) {
+  return Map.from(existingControllers)..addAll({action.itemId : action.controller});
+}
+
+Map<String, VideoPlayerController> _clearVideoController(Map<String, VideoPlayerController> existingControllers, ClearVideoControllerAction action) {
+  existingControllers.remove(action.itemId);
 }

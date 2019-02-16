@@ -54,9 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     this._shareCurrentItem(shouldPop: false);
   }
 
-  void _changeFilter() {
-
-  }
+  void _changeFilter() {}
 
   void _fullScreen({bool shouldPop = false}) {
     if (shouldPop) {
@@ -66,9 +64,13 @@ class _MyHomePageState extends State<MyHomePage> {
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     Navigator.push(
-      context,
-      ScaleRoute(widget: GalleryImageFullScreen(item: itemCurrentVisible, parentTitle: _vm.items[_pagePosition].title,))
-    );
+        context,
+        ScaleRoute(
+            widget: GalleryImageFullScreen(
+          item: itemCurrentVisible,
+          parentTitle: _vm.items[_pagePosition].title,
+          videoPlayerController: _vm.videoControllers[itemCurrentVisible.id],
+        )));
   }
 
   void _shareCurrentItem({bool shouldPop = false}) {
@@ -78,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
-    Analytics.instance().logEvent(name: "shareCurrentItem",parameters: {'url' : itemCurrentVisible.imageUrl()});
+    Analytics.instance().logEvent(name: "shareCurrentItem", parameters: {'url': itemCurrentVisible.imageUrl()});
     if (itemCurrentVisible.isVideo()) {
       ShareExtend.share(
           "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
@@ -112,9 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onTapLogin() {
-
-  }
+  void _onTapLogin() {}
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.filter_list), onPressed:()=> _changeFilter(),)
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: () => _changeFilter(),
+          )
         ],
       ),
       drawer: Container(
@@ -135,7 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               DrawerHeader(
                 decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
-                child: GestureDetector( child: Center( child: Text("TAP TO LOGIN")), onTap: _onTapLogin,),
+                child: GestureDetector(
+                  child: Center(child: Text("TAP TO LOGIN")),
+                  onTap: _onTapLogin,
+                ),
               ),
               Row(
                 children: <Widget>[
@@ -179,13 +185,25 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 children: <Widget>[
                   Spacer(),
-                  Text("viral", style: _selectableStyle(_vm.filter.sort == GallerySort.viral),),
+                  Text(
+                    "viral",
+                    style: _selectableStyle(_vm.filter.sort == GallerySort.viral),
+                  ),
                   Spacer(),
-                  Text("top", style: _selectableStyle(_vm.filter.sort == GallerySort.top),),
+                  Text(
+                    "top",
+                    style: _selectableStyle(_vm.filter.sort == GallerySort.top),
+                  ),
                   Spacer(),
-                  Text("time", style: _selectableStyle(_vm.filter.sort == GallerySort.time),),
+                  Text(
+                    "time",
+                    style: _selectableStyle(_vm.filter.sort == GallerySort.time),
+                  ),
                   Spacer(),
-                  Text("rising", style: _selectableStyle(_vm.filter.sort == GallerySort.rising),),
+                  Text(
+                    "rising",
+                    style: _selectableStyle(_vm.filter.sort == GallerySort.rising),
+                  ),
                   Spacer(),
                 ],
               ),
@@ -221,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: _pageView(context),
                     onLongPress: _onLongPress,
                     onTap: _fullScreen,
-                    onDoubleTap: ()=> this._onCommentsTapped(context),
+                    onDoubleTap: () => this._onCommentsTapped(context),
                   ),
                 ),
               ],
@@ -261,9 +279,15 @@ class _MyHomePageState extends State<MyHomePage> {
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
-          return AlbumPageContainer(item: currentItem, key: PageStorageKey(currentItem.id),);
+          return AlbumPageContainer(
+            item: currentItem,
+            key: PageStorageKey(currentItem.id),
+          );
         } else {
-          return GalleryImagePage(currentItem, key: PageStorageKey(currentItem.id),);
+          return GalleryImagePage(
+            currentItem,
+            key: PageStorageKey(currentItem.id),
+          );
         }
       },
       itemCount: _vm.items.length,
