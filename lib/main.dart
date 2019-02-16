@@ -49,6 +49,7 @@ class ReduxApp extends StatelessWidget {
 
 dynamic _middlewareList() {
   var middleWare = createImgurMiddleware();
+  //this ensures logging only happens on debug builds
   assert(() {
     middleWare.add(LoggingMiddleware.printer());
     return true;
