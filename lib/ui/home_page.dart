@@ -7,6 +7,7 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
+import 'package:imgsrc/ui/custom_routes.dart';
 import 'package:imgsrc/ui/gallery_album_page_container.dart';
 import 'package:imgsrc/ui/gallery_image_full_screen.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
@@ -51,25 +52,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onLongPress() {
     this._shareCurrentItem(shouldPop: false);
+  }
 
-//    showModalBottomSheet(
-//        context: context,
-//        builder: (BuildContext bc) {
-//          return Container(
-//            margin: EdgeInsets.fromLTRB(0, 0, 0, 25),
-//            child: new Wrap(
-//              children: <Widget>[
-//                new ListTile(
-//                    leading: new Icon(Icons.fullscreen), title: new Text('Fullscreen (zoomable)'), onTap: () { _fullScreen(shouldPop: true); }),
-//                new ListTile(
-//                  leading: new Icon(Icons.share),
-//                  title: new Text('Share'),
-//                  onTap: () => this._shareCurrentItem(shouldPop: true),
-//                ),
-//              ],
-//            ),
-//          );
-//        });
+  void _changeFilter() {
+
   }
 
   void _fullScreen({bool shouldPop = false}) {
@@ -81,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GalleryImageFullScreen(item: itemCurrentVisible, parentTitle: _vm.items[_pagePosition].title,)),
+      ScaleRoute(widget: GalleryImageFullScreen(item: itemCurrentVisible, parentTitle: _vm.items[_pagePosition].title,))
     );
   }
 
@@ -138,8 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: <Widget>[
-//          IconButton(icon: Icon(Icons.share), tooltip: 'Share', onPressed:() { this._shareCurrentItem();},),
-          IconButton(icon: Icon(Icons.zoom_out_map), onPressed:()=> _fullScreen(),)
+          IconButton(icon: Icon(Icons.filter_list), onPressed:()=> _changeFilter(),)
         ],
       ),
       drawer: Container(
@@ -207,18 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           )),
       body: _body(),
-//      floatingActionButton: Builder(builder: (BuildContext context) {
-//        return FloatingActionButton(
-//          onPressed: () => this._onCommentsTapped(context),
-//          tooltip: 'View Comments',
-//          child: Icon(Icons.message),
-//        );
-//      }),
-
-      bottomNavigationBar: BottomNavigationBar(items: [
-        BottomNavigationBarItem(icon: new Icon(Icons.album), title: Text("Gallery")),
-        BottomNavigationBarItem(icon: new Icon(Icons.photo), title: Text("My Saus")),
-      ]),
     );
   }
 
@@ -247,6 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: GestureDetector(
                     child: _pageView(context),
                     onLongPress: _onLongPress,
+                    onTap: _fullScreen,
                     onDoubleTap: ()=> this._onCommentsTapped(context),
                   ),
                 ),

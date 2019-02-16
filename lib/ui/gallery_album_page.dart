@@ -66,7 +66,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       } else {
         player = new VideoPlayer(controller);
       }
-      widgetToWrap = player;
+      widgetToWrap = Hero(tag:"gallery_video", child:player);
     } else {
       //look into why we have to use keys here.
       widgetToWrap = new GalleryImageView(imageUrl: imageUrl, key: Key(imageUrl),);

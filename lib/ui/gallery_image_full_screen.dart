@@ -13,34 +13,27 @@ class GalleryImageFullScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.black,
-        body: Stack(
-          overflow: Overflow.visible,
-          children: <Widget>[
-            PhotoView.customChild(
-                child: GalleryImagePage(item),
-                childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
-            SafeArea(
-                child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: kToolbarHeight,
-                child: AppBar(
-                  title: Text(item.title ?? this.parentTitle ?? ''),
-                  backgroundColor: Colors.transparent,
-            )))
-          ],
-        ));
+        body: GestureDetector(
+            onTap: () => _onSingleTap(context),
+            child: Stack(
+              overflow: Overflow.visible,
+              children: <Widget>[
+                PhotoView.customChild(
+                    child: GalleryImagePage(item),
+                    childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
+                SafeArea(
+                    child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: kToolbarHeight,
+                        child: AppBar(
+                          title: Text(item.title ?? this.parentTitle ?? ''),
+                          backgroundColor: Colors.transparent,
+                        )))
+              ],
+            )));
   }
 }
 
-/*(
- PhotoView.customChild(
-            child: GalleryImagePage(item),
-            childSize: Size(MediaQuery
-              .of(context)
-              .size
-              .width, MediaQuery
-              .of(context)
-              .size
-              .height))),
-      AppBar(title: Text(item.title ?? this.parentTitle ?? ''), toolbarOpacity: 1.0, backgroundColor: Colors.transparent,)
- */
+_onSingleTap(BuildContext context) {
+  Navigator.pop(context);
+}

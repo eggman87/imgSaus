@@ -44,7 +44,7 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
       _controller.initialize().then((_) {
         _controller.play();
       });
-      return player;
+      return Hero(tag: "gallery_video", child: player);
     } else {
       return GalleryImageView(imageUrl: imageUrl);
     }

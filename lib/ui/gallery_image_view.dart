@@ -68,9 +68,11 @@ class GalleryImageViewState extends State<GalleryImageView> {
         ),
       );
     } else {
-      return Image(
-          key: Key('$retryCount'),
-          image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy: _imageFetchStrategy));
+      return Hero(
+          tag: "gallery_image",
+          child: Image(
+              key: Key('$retryCount'),
+              image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy: _imageFetchStrategy)));
     }
   }
 }
