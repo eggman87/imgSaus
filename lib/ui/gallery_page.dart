@@ -7,32 +7,31 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
-import 'package:imgsrc/ui/custom_routes.dart';
 import 'package:imgsrc/ui/gallery_album_page_container.dart';
 import 'package:imgsrc/ui/gallery_image_full_screen.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
-import 'package:imgsrc/ui/home_page_container.dart';
+import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
 import 'package:share_extend/share_extend.dart';
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage(this.title, this.viewModel, {Key key}) : super(key: key);
+class GalleryPage extends StatefulWidget {
+  GalleryPage(this.title, this.viewModel, {Key key}) : super(key: key);
 
   final String title;
-  final HomeViewModel viewModel;
+  final GalleryViewModel viewModel;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _GalleryPageState extends State<GalleryPage> {
   //the below `_current` properties refer to state of the current index of the PageView
   int _pagePosition = 0;
 
   var _isLoading = false;
 
   //view model driven by store.
-  HomeViewModel _vm;
+  GalleryViewModel _vm;
 
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));

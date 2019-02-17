@@ -5,7 +5,7 @@ import 'package:imgsrc/data/analytics.dart';
 import 'package:imgsrc/middleware/imgur_middleware.dart';
 import 'package:imgsrc/reducers/app_state_reducer.dart';
 import 'package:imgsrc/model/app_state.dart';
-import 'package:imgsrc/ui/home_page_container.dart';
+import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux_logging/redux_logging.dart';
@@ -40,7 +40,7 @@ class ReduxApp extends StatelessWidget {
         navigatorObservers: <NavigatorObserver>[observer],
         initialRoute: '/',
         routes: {
-          '/': (context) => HomePageContainer(title: "imgSaus",)
+          '/': (context) => GalleryPageContainer(title: "imgSaus",)
         }
       ),
     );
