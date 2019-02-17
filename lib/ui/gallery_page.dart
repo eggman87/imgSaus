@@ -15,9 +15,8 @@ import 'package:imgsrc/ui/image_file_utils.dart';
 import 'package:share_extend/share_extend.dart';
 
 class GalleryPage extends StatefulWidget {
-  GalleryPage(this.title, this.viewModel, {Key key}) : super(key: key);
+  GalleryPage(this.viewModel, {Key key}) : super(key: key);
 
-  final String title;
   final GalleryViewModel viewModel;
 
   @override
@@ -25,7 +24,7 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  //the below `_current` properties refer to state of the current index of the PageView
+  //the below `_current` prope rties refer to state of the current index of the PageView
   int _pagePosition = 0;
 
   var _isLoading = false;
@@ -123,7 +122,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(_vm.filter.section.toString()),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),

@@ -9,9 +9,8 @@ import 'package:redux/redux.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryPageContainer extends StatelessWidget {
-  final String title;
 
-  GalleryPageContainer({Key key, this.title}) : super(key: key);
+  GalleryPageContainer({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +23,7 @@ class GalleryPageContainer extends StatelessWidget {
       },
       converter: (store) => GalleryViewModel.fromStore(store),
       builder: (context, vm) {
-        return GalleryPage(title, vm);
+        return GalleryPage(vm);
       },
     );
   }

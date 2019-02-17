@@ -33,5 +33,7 @@ class GalleryFilter {
   String toString() {
     return '{section=$section, sort=$sort, window=$window, page=$page}';
   }
+
+  static const IMGUR_FRONT_PAGE = GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0);
 }
 
