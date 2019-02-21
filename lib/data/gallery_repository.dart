@@ -15,13 +15,8 @@ class GalleryRepository {
 
   static Map<String, String> headers = {"Authorization": "Client-ID ${DotEnv().env['IMGUR_CLIENT_ID']}"};
 
-  Future<ParsedResponse<List<GalleryItem>>> getItems(
-      GallerySection section, GallerySort sort, GalleryWindow window, int page) async {
-    String sectionString = section.toString().split('.').last;
-    String sortString = sort.toString().split('.').last;
-    String windowString = window.toString().split('.').last;
-
-    String url = "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?count=100";
+  Future<ParsedResponse<List<GalleryItem>>> getItems(GalleryFilter filter) async {
+    String url = filter.toApiUrl();
     print("making request to $url");
     http.Response response = await http.get(url, headers: headers);
 
@@ -29,7 +24,7 @@ class GalleryRepository {
       return ParsedResponse(response.statusCode, null);
     }
 
-    List<dynamic> items = await compute(parseList, Parsable<GalleryItem>(response.body, "GalleryItem"));
+    List<dynamic> items = await compute(parseList, Parsable<GalleryItem>(response.body, "GalleryItem", hasSubKey: filter.hasSubKey(), subKey: filter.subKey()));
     return ParsedResponse(response.statusCode, items.cast());
   }
 

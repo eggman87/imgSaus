@@ -29,8 +29,9 @@ Middleware<AppState> _createFilterGallery(GalleryRepository repository) {
   return (Store<AppState> store, action, NextDispatcher next) {
     GalleryFilter filter = action.newFilter;
 
-    repository.getItems(filter.section, filter.sort, filter.window, filter.page).then((response) {
+    repository.getItems(filter).then((response) {
       if (response.isOk()) {
+        next(action);//update filter now that is successful.
         next(GalleryLoadedAction(response.body, filter));
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));

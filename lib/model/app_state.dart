@@ -20,7 +20,7 @@ class AppState {
       {this.isLoading = false,
       this.itemDetails = const {},
       this.galleryItems = const [],
-      this.galleryFilter = const GalleryFilter(GallerySection.hot, GallerySort.top, GalleryWindow.day, 0),
+      this.galleryFilter = const GalleryFilter(GallerySort.top, GalleryWindow.day, 0, section: GallerySection.hot),
       this.itemComments = const {},
       this.albumIndex = const {},
       this.videoControllers = const {},

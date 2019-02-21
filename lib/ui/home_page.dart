@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
               child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
                 Container(
                   child: Text(
-                    "GALLERIES",
+                    "hand picked galleries",
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
               child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
                 Container(
                   child: Text(
-                    "TAGS",
+                    "galleries by tag",
                     textAlign: TextAlign.left,
                     style: TextStyle(fontSize: 20, color: Colors.black),
                   ),
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                                   image: NetworkImage('https://i.imgur.com/${tag.backgroundHash}t.jpg'),
                                   fit: BoxFit.cover,
                                   child: InkWell(
-                                    onTap: () => {},
+                                    onTap: () => _openGallery(context, GalleryFilter(GallerySort.viral, GalleryWindow.all, 0, tagName: tag.name)),
                                   ),
                                 ),
                                 Container(

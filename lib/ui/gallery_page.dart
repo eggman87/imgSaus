@@ -122,7 +122,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_vm.filter.section.toString()),
+        title: Text(_vm.filter.title()),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
