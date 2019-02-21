@@ -7,6 +7,7 @@ import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:http/http.dart' as http;
+import 'package:imgsrc/model/gallery_tag.dart';
 
 
 class GalleryRepository {
@@ -56,6 +57,17 @@ class GalleryRepository {
     dynamic item = await compute(parseItem, Parsable<GalleryItem>(response.body, "GalleryItem"));
     return ParsedResponse(response.statusCode, item);
   }
+
+  Future<ParsedResponse<List<GalleryTag>>> getTags() async {
+    http.Response response = await http.get('https://api.imgur.com/3/tags', headers: headers);
+
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
+      return ParsedResponse(response.statusCode, null);
+    }
+
+    List<dynamic> tags = await compute(parseList, Parsable<GalleryTag>(response.body, GalleryTag.NAME, hasSubKey: true, subKey: "tags"));
+    return ParsedResponse(response.statusCode, tags.cast());
+  }
 }
 
 class ParsedResponse<T> {
@@ -74,7 +86,13 @@ class ParsedResponse<T> {
 }
 
 List<T> parseList<T>(Parsable<T> parsable) {
-  List<dynamic> list = jsonDecode(parsable.response)['data'];
+  List<dynamic> list;
+  if (parsable.hasSubKey) {
+    list = jsonDecode(parsable.response)['data'][parsable.subKey];
+  } else {
+    list = jsonDecode(parsable.response)['data'];
+  }
+
   print("[parse] ${list.length} of ${parsable.className} from the api");
   if (list.length > 0) {
     print("[parse]firstItem: ${list[0]}");
@@ -96,8 +114,10 @@ T parseItem<T>(Parsable<T> parsable) {
 class Parsable<T> {
   final String response;
   final String className;
+  final bool hasSubKey;
+  final String subKey;
 
-  Parsable(this.response, this.className);
+  Parsable(this.response, this.className, { this.hasSubKey = false, this.subKey = ''});
 }
 
 ///
@@ -108,5 +128,7 @@ dynamic jsonToItem(String className, dynamic itemJson) {
     return GalleryItem.fromJson(itemJson);
   } else if (className == "Comment") {
     return Comment.fromJson(itemJson);
+  } else if (className == GalleryTag.NAME) {
+    return GalleryTag.fromJson(itemJson);
   }
 }

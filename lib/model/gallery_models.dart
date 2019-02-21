@@ -35,5 +35,30 @@ class GalleryFilter {
   }
 
   static const IMGUR_FRONT_PAGE = GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0);
-}
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+          other is GalleryFilter &&
+              runtimeType == other.runtimeType &&
+              section == other.section &&
+              sort == other.sort &&
+              window == other.window &&
+              page == other.page;
+
+  bool isSameGallery(GalleryFilter other) =>
+              section == other.section &&
+              sort == other.sort &&
+              window == other.window;
+
+  bool isSamePage(GalleryFilter other) =>
+          page == other.page;
+
+  @override
+  int get hashCode =>
+      section.hashCode ^
+      sort.hashCode ^
+      window.hashCode ^
+      page.hashCode;
+
+}

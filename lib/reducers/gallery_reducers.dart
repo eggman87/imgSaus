@@ -1,12 +1,17 @@
 import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_models.dart';
+import 'package:imgsrc/model/gallery_tag.dart';
 import 'package:redux/redux.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:video_player/video_player.dart';
 
 final galleryReducer = combineReducers<List<GalleryItem>>([
   TypedReducer<List<GalleryItem>, GalleryLoadedAction>(_setLoadedGalleryItems),
+]);
+
+final galleryTagsReducer = combineReducers<List<GalleryTag>>([
+  TypedReducer<List<GalleryTag>, GalleryTagsLoadedAction>(_setGalleryTags),
 ]);
 
 final commentsReducer = combineReducers<Map<String, List<Comment>>>([
@@ -33,7 +38,15 @@ final videoControllerReducer = combineReducers<Map<String, VideoPlayerController
 ]);
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {
-  return List.from(items)..addAll(action.items);
+  if (action.filter.page == 0) {
+    return action.items;
+  } else {
+    return List.from(items)..addAll(action.items);
+  }
+}
+
+List<GalleryTag> _setGalleryTags(List<GalleryTag> tags, GalleryTagsLoadedAction action) {
+  return action.tags;
 }
 
 GalleryFilter _activeFilterReducer(GalleryFilter activeFilter, UpdateFilterAction action) {

@@ -15,12 +15,6 @@ class GalleryPageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, GalleryViewModel>(
-      onInit: (store) {
-        if (store.state.galleryItems.length < 1) {
-          store.dispatch(
-              UpdateFilterAction(GalleryFilter(GallerySection.hot, GallerySort.viral, GalleryWindow.day, 0)));
-        }
-      },
       converter: (store) => GalleryViewModel.fromStore(store),
       builder: (context, vm) {
         return GalleryPage(vm);

@@ -1,8 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_models.dart';
+import 'package:imgsrc/model/gallery_tag.dart';
 import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/home_page_container.dart';
 
@@ -44,15 +47,29 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       body: Container(
-        child: Row(
-          children: <Widget>[
-            Card(
-              child: Container(
+          child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+              color: Colors.grey.shade400,
+              child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                Container(
+                  child: Text(
+                    "GALLERIES",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                  padding: EdgeInsets.all(12),
+                )
+              ])),
+          Row(
+            children: <Widget>[
+              Container(
                 height: 180,
-                width: MediaQuery.of(context).size.width - 16,
+                width: 190,
                 child: Stack(children: <Widget>[
                   Ink.image(
-                    image: AssetImage("graphics/front_page.png"),
+                    image: AssetImage("graphics/front_page.jpg"),
                     fit: BoxFit.cover,
                     child: InkWell(
                       onTap: () => _openGallery(context, GalleryFilter.IMGUR_FRONT_PAGE),
@@ -61,36 +78,77 @@ class _HomePageState extends State<HomePage> {
                   _frontPageText()
                 ]),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+          Container(
+              color: Colors.grey.shade400,
+              child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                Container(
+                  child: Text(
+                    "TAGS",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                  padding: EdgeInsets.all(12),
+                )
+              ])),
+          SizedBox(
+              height: 120,
+              width: MediaQuery.of(context).size.width,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _vm.tags.length,
+                  itemBuilder: (context, position) {
+                    var tag = _vm.tags[position];
+
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        SizedBox(
+                            width: max((tag.displayName.length * 17).toDouble(), 120),
+                            child: Stack(
+                              children: <Widget>[
+                                Ink.image(
+                                  image: NetworkImage('https://i.imgur.com/${tag.backgroundHash}t.jpg'),
+                                  fit: BoxFit.cover,
+                                  child: InkWell(
+                                    onTap: () => {},
+                                  ),
+                                ),
+                                Container(
+                                  child: _tagText(tag),
+                                  alignment: Alignment.bottomRight,
+                                )
+                              ],
+                            ))
+                      ],
+                    );
+                  }))
+        ],
+      )),
     );
   }
 
   Widget _frontPageText() {
-    return Text(
-      "Front Page",
-      textAlign: TextAlign.right,
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 40, letterSpacing: 2, shadows: [
-        Shadow(
-            // bottomLeft
-            offset: Offset(-1.5, -1.5),
-            color: Colors.black),
-        Shadow(
-            // bottomRight
-            offset: Offset(1.5, -1.5),
-            color: Colors.black),
-        Shadow(
-            // topRight
-            offset: Offset(1.5, 1.5),
-            color: Colors.black),
-        Shadow(
-            // topLeft
-            offset: Offset(-1.5, 1.5),
-            color: Colors.black),
-      ]),
-    );
+    return Container(
+        color: Color(0x19000000),
+        child: Text(
+          "Front Page",
+          textAlign: TextAlign.right,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 40, letterSpacing: 2),
+        ));
+  }
+
+  Widget _tagText(GalleryTag tag) {
+    return SizedBox(
+        width: double.infinity,
+        child: Container(
+            color: Color(0x19000000),
+            child: Text(
+              tag.displayName,
+              textAlign: TextAlign.right,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 2),
+            )));
   }
 
   void _openGallery(BuildContext context, GalleryFilter filter) {

@@ -12,11 +12,13 @@ List<Middleware<AppState>> createImgurMiddleware([
   final filterItems = _createFilterGallery(repository);
   final loadComments = _loadCommentsForId(repository);
   final loadAlbumDetails = _loadAlbumForId(repository);
+  final loadGalleryTags = _loadGalleryTags(repository);
 
   return [
     TypedMiddleware<AppState, UpdateFilterAction>(filterItems),
     TypedMiddleware<AppState, LoadCommentsAction>(loadComments),
     TypedMiddleware<AppState, LoadAlbumImagesAction>(loadAlbumDetails),
+    TypedMiddleware<AppState, LoadGalleryTagsAction>(loadGalleryTags),
   ];
 }
 
@@ -29,7 +31,7 @@ Middleware<AppState> _createFilterGallery(GalleryRepository repository) {
 
     repository.getItems(filter.section, filter.sort, filter.window, filter.page).then((response) {
       if (response.isOk()) {
-        next(GalleryLoadedAction(response.body));
+        next(GalleryLoadedAction(response.body, filter));
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));
       }
@@ -77,6 +79,18 @@ Middleware<AppState> _loadCommentsForId(GalleryRepository repository) {
     repository.getComments(commentsAction.itemId, CommentSort.top).then((response) {
       if (response.isOk()) {
         next(CommentsLoadedAction(commentsAction.itemId, response.body));
+      } else {
+        next(ApiError(ERROR_BAD_RESPONSE));
+      }
+    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
+  };
+}
+
+Middleware<AppState> _loadGalleryTags(GalleryRepository repository) {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    repository.getTags().then((response) {
+      if (response.isOk()) {
+        next(GalleryTagsLoadedAction(response.body));
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));
       }

@@ -1,6 +1,7 @@
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
+import 'package:imgsrc/model/gallery_tag.dart';
 import 'package:video_player/video_player.dart';
 
 class UpdateFilterAction {
@@ -15,9 +16,10 @@ class UpdateFilterAction {
 }
 
 class GalleryLoadedAction {
+  final GalleryFilter filter;
   final List<GalleryItem> items;
 
-  GalleryLoadedAction(this.items);
+  GalleryLoadedAction(this.items, this.filter);
 
   @override
   String toString() {
@@ -79,6 +81,26 @@ class ItemDetailsLoadedAction {
   @override
   String toString() {
     return 'ItemDetailsLoadedAction {itemId=$itemId, imageCount=${this.item.images.length}}';
+  }
+}
+
+class LoadGalleryTagsAction {
+
+  @override
+  String toString() {
+    return 'LoadGalleryTagsAction {}';
+  }
+}
+
+class GalleryTagsLoadedAction {
+
+  final List<GalleryTag> tags;
+
+  GalleryTagsLoadedAction(this.tags);
+
+  @override
+  String toString() {
+    return 'GalleryTagsLoadedAction {tagsCount=${tags.length}';
   }
 }
 
