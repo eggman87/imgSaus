@@ -24,13 +24,9 @@ class GalleryPage extends StatefulWidget {
 }
 
 class _GalleryPageState extends State<GalleryPage> {
-  //the below `_current` prope rties refer to state of the current index of the PageView
-  int _pagePosition = 0;
-
-  var _isLoading = false;
-
   //view model driven by store.
   GalleryViewModel _vm;
+  int _pagePosition = 0;
 
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
@@ -122,7 +118,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_vm.filter.title()),
+        title: Text(_vm.isGalleryLoading ? 'loading':_vm.filter.title()),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -215,7 +211,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if (_isLoading || _vm.items.length == 0) {
+    if (_vm.isGalleryLoading || _vm.items.length == 0) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),

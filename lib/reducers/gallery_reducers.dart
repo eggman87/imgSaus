@@ -6,6 +6,10 @@ import 'package:redux/redux.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:video_player/video_player.dart';
 
+final isLoadingGalleryReducer = combineReducers<bool>([
+  TypedReducer<bool, IsLoadingAction>(_setIsLoading),
+]);
+
 final galleryReducer = combineReducers<List<GalleryItem>>([
   TypedReducer<List<GalleryItem>, GalleryLoadedAction>(_setLoadedGalleryItems),
 ]);
@@ -36,6 +40,13 @@ final videoControllerReducer = combineReducers<Map<String, VideoPlayerController
   TypedReducer<Map<String, VideoPlayerController>, SetVideoControllerAction>(_setVideoController),
   TypedReducer<Map<String, VideoPlayerController>, ClearVideoControllerAction>(_clearVideoController),
 ]);
+
+bool _setIsLoading(bool isLoading, IsLoadingAction action) {
+  if (isLoading != action.isLoading) {
+    return action.isLoading;
+  }
+  return isLoading;
+}
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {
   if (action.filter.page == 0) {

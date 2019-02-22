@@ -129,6 +129,12 @@ class ClearVideoControllerAction {
   ClearVideoControllerAction(this.itemId);
 }
 
+class IsLoadingAction {
+  final bool isLoading;
+
+  IsLoadingAction(this.isLoading);
+}
+
 class ApiError {
   final String message;
 

@@ -29,7 +29,9 @@ Middleware<AppState> _createFilterGallery(GalleryRepository repository) {
   return (Store<AppState> store, action, NextDispatcher next) {
     GalleryFilter filter = action.newFilter;
 
+    next(IsLoadingAction(true));
     repository.getItems(filter).then((response) {
+      next(IsLoadingAction(false));
       if (response.isOk()) {
         next(action);//update filter now that is successful.
         next(GalleryLoadedAction(response.body, filter));
@@ -64,7 +66,10 @@ Middleware<AppState> _loadAlbumForId(GalleryRepository repository) {
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));
       }
-    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
+    }).catchError((error) {
+      next(IsLoadingAction(false));
+      next(ApiError(ERROR_UNKNOWN));
+    });
   };
 }
 
@@ -98,3 +103,4 @@ Middleware<AppState> _loadGalleryTags(GalleryRepository repository) {
     }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
   };
 }
+

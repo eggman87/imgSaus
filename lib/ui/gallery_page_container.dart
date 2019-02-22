@@ -24,13 +24,14 @@ class GalleryPageContainer extends StatelessWidget {
 }
 
 class GalleryViewModel {
+  final bool isGalleryLoading;
   final List<GalleryItem> items;
   final GalleryFilter filter;
   final Map<String, GalleryItem> itemDetails;
   final Map<String, int> albumIndex;
   final Map<String, VideoPlayerController> videoControllers;
 
-  GalleryViewModel({@required this.items, @required this.filter, @required this.itemDetails, @required this.albumIndex, @required this.videoControllers});
+  GalleryViewModel({@required this.items, @required this.filter, @required this.itemDetails, @required this.albumIndex, @required this.videoControllers, @required this.isGalleryLoading});
 
   static GalleryViewModel fromStore(Store<AppState> store) {
     return GalleryViewModel(
@@ -38,7 +39,8 @@ class GalleryViewModel {
       filter: store.state.galleryFilter,
       itemDetails: store.state.itemDetails,
       albumIndex: store.state.albumIndex,
-      videoControllers: store.state.videoControllers
+      videoControllers: store.state.videoControllers,
+      isGalleryLoading: store.state.isLoadingGallery
     );
   }
 
