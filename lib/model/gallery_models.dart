@@ -12,7 +12,7 @@ class GalleryFilter {
   static const IMGUR_FRONT_PAGE = GalleryFilter(GallerySort.viral, GalleryWindow.day, 0, section: GallerySection.hot);
   static const IMGUR_TOP_MONTH = GalleryFilter(GallerySort.viral, GalleryWindow.month, 0, section: GallerySection.top);
   static const IMGUR_USER_SUB_NEW = GalleryFilter(GallerySort.time, GalleryWindow.day, 0, section: GallerySection.user);
-  static const IMGUR_USER_SUB_VIRAL = GalleryFilter(GallerySort.viral, GalleryWindow.day, 0, section: GallerySection.user);
+  static const IMGUR_USER_SUB_VIRAL = GalleryFilter(GallerySort.rising, GalleryWindow.day, 0, section: GallerySection.user);
 
   const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tag, this.subRedditName});
 

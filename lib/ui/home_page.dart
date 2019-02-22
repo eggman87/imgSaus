@@ -27,12 +27,14 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    handPickedGalleries.add(HandPickedGallery("front page", "graphics/keyboard_cat.gif", GalleryFilter.IMGUR_FRONT_PAGE));
+    handPickedGalleries
+        .add(HandPickedGallery("front page", "graphics/keyboard_cat.gif", GalleryFilter.IMGUR_FRONT_PAGE));
     handPickedGalleries
         .add(HandPickedGallery("usersub new", "graphics/arthur_fist.jpg", GalleryFilter.IMGUR_USER_SUB_NEW));
     handPickedGalleries
         .add(HandPickedGallery("usersub viral", "graphics/tips_hat.gif", GalleryFilter.IMGUR_USER_SUB_VIRAL));
-    handPickedGalleries.add(HandPickedGallery("top of month", "graphics/front_page.jpg", GalleryFilter.IMGUR_TOP_MONTH));
+    handPickedGalleries
+        .add(HandPickedGallery("top of month", "graphics/front_page.jpg", GalleryFilter.IMGUR_TOP_MONTH));
   }
 
   void _openGallery(BuildContext context, GalleryFilter filter) {
