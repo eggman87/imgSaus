@@ -1,15 +1,20 @@
+import 'package:imgsrc/model/gallery_tag.dart';
+
 class GalleryFilter {
 
   final GallerySection section;
   final GallerySort sort;
   final GalleryWindow window;
-  final String tagName;
+  final GalleryTag tag;
   final String subRedditName;
   final int page;
 
   static const IMGUR_FRONT_PAGE = GalleryFilter(GallerySort.viral, GalleryWindow.day, 0, section: GallerySection.hot);
+  static const IMGUR_TOP_MONTH = GalleryFilter(GallerySort.viral, GalleryWindow.month, 0, section: GallerySection.top);
+  static const IMGUR_USER_SUB_NEW = GalleryFilter(GallerySort.time, GalleryWindow.day, 0, section: GallerySection.user);
+  static const IMGUR_USER_SUB_VIRAL = GalleryFilter(GallerySort.viral, GalleryWindow.day, 0, section: GallerySection.user);
 
-  const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tagName, this.subRedditName});
+  const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tag, this.subRedditName});
 
   GalleryFilter copyWith({GallerySection section, GallerySort sort, GalleryWindow window, int page}) {
     return GalleryFilter(
@@ -20,11 +25,11 @@ class GalleryFilter {
   }
 
   bool hasSubKey() {
-    return this.tagName != null;
+    return this.tag != null;
   }
 
   String subKey() {
-    if (tagName != null) {
+    if (tag != null) {
       return 'items';
     } else {
       return '';
@@ -32,8 +37,8 @@ class GalleryFilter {
   }
 
   String title() {
-    if (this.tagName != null) {
-      return this.tagName;
+    if (this.tag != null) {
+      return this.tag.displayName;
     } else if (section != null) {
       return "Front Page";
     } else {
@@ -48,8 +53,8 @@ class GalleryFilter {
 
   String toApiUrl() {
     String sectionString;
-    if (tagName != null) {
-      sectionString = 't/$tagName';
+    if (tag != null) {
+      sectionString = 't/${tag.name}';
     } else if (subRedditName != null) {
       sectionString = 'r/$subRedditName';
     } else {
