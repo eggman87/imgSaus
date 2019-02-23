@@ -14,8 +14,9 @@ class GalleryFilter {
   static const IMGUR_USER_SUB_NEW = GalleryFilter(GallerySort.time, GalleryWindow.day, 0, section: GallerySection.user);
   static const IMGUR_USER_SUB_VIRAL = GalleryFilter(GallerySort.rising, GalleryWindow.day, 0, section: GallerySection.user);
 
-  static const SUB_REDDITS = ["pics","gifs", "foodporn","reactiongifs", "oldschoolcool", "funny", "gaming", "holdmybeer",
-  "aww", "outside", "historyporn", "videos", "mildlyinteresting", "animalsbeingjerks", "earthporn", "carporn"];
+  static const SUB_REDDITS = ["pics","gifs", "foodporn","reactiongifs", "funny", "oldschoolcool", "gaming", "holdmybeer",
+  "aww", "outside", "historyporn", "videos", "mildlyinteresting", "animalsbeingjerks", "earthporn", "carporn", "perfecttiming",
+  "roomporn", "tumblr", "techsupportgore", "itookapicture", "cringepics", "cringe" ];
 
 
   const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tag, this.subRedditName});
