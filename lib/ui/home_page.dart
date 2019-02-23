@@ -67,8 +67,9 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Container(
-          child: Column(
+      body: SingleChildScrollView(
+          child: Container(
+              child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
@@ -84,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                 )
               ])),
           SizedBox(
-            height: 190,
+            height: 175,
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
@@ -108,16 +109,43 @@ class _HomePageState extends State<HomePage> {
           SizedBox(
             height: 240,
             width: MediaQuery.of(context).size.width,
+            child: _vm.tags.length == 0
+                ? Container(color: Colors.black12, child: Center(child: CircularProgressIndicator()))
+                : StaggeredGridView.countBuilder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: _vm.tags.length,
+                    itemBuilder: itemBuilder(_vm.tags),
+                    crossAxisCount: 2,
+                    staggeredTileBuilder: (int index) =>
+                        new StaggeredTile.extent(1, tileWidthFromText(_vm.tags[index].displayName)),
+                  ),
+          ),
+          Container(
+              color: Colors.grey.shade400,
+              child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+                Container(
+                  child: Text(
+                    "subreddits",
+                    textAlign: TextAlign.left,
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                  ),
+                  padding: EdgeInsets.all(12),
+                )
+              ])),
+          SizedBox(
+            height: 240,
+            width: MediaQuery.of(context).size.width,
             child: StaggeredGridView.countBuilder(
               scrollDirection: Axis.horizontal,
-              itemCount: _vm.tags.length,
-              itemBuilder: itemBuilder(_vm.tags),
+              itemCount: GalleryFilter.SUB_REDDITS.length,
+              itemBuilder: (BuildContext context, int index) => _subredditTile(GalleryFilter.SUB_REDDITS[index]),
               crossAxisCount: 2,
-              staggeredTileBuilder: (int index) => new StaggeredTile.extent(1, tagWidth(_vm.tags[index])),
+              staggeredTileBuilder: (int index) =>
+                  new StaggeredTile.extent(1, tileWidthFromText(GalleryFilter.SUB_REDDITS[index])),
             ),
           ),
         ],
-      )),
+      ))),
     );
   }
 
@@ -130,13 +158,13 @@ class _HomePageState extends State<HomePage> {
         children: <Widget>[
           SizedBox(
               height: 120,
-              width: tagWidth(tag),
+              width: tileWidthFromText(tag.displayName),
               child: Ink.image(
                 image: NetworkImage('https://i.imgur.com/${tag.backgroundHash}b.jpg'),
                 fit: BoxFit.cover,
                 child: InkWell(
                     child: Container(
-                      child: _tagText(tag),
+                      child: _tileLabel(tag.displayName),
                       alignment: Alignment.bottomRight,
                     ),
                     onTap: () =>
@@ -147,15 +175,15 @@ class _HomePageState extends State<HomePage> {
     };
   }
 
-  double tagWidth(GalleryTag tag) {
-    return max((tag.displayName.length * 17).toDouble(), 120);
+  double tileWidthFromText(String text) {
+    return max((text.length * 17).toDouble(), 120);
   }
 
   SliverGridDelegate delegate() {
     return SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 0.0, crossAxisSpacing: 0.0);
   }
 
-  Widget _frontPageText(String label) {
+  Widget _galleryLabel(String label) {
     return Stack(
       children: <Widget>[
         Row(
@@ -167,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                 child: Text(
                   label,
                   textAlign: TextAlign.right,
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 23, letterSpacing: 2),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 2),
                 ),
               ),
             ),
@@ -179,16 +207,16 @@ class _HomePageState extends State<HomePage> {
 
   Widget _galleryCard(HandPickedGallery gallery) {
     return Container(
-      height: 200,
-      width: 190,
+      height: double.infinity,
+      width: 160,
       child: Stack(children: <Widget>[
         Ink.image(
-          height: 200,
-          width: 190,
+          height: double.infinity,
+          width: 180,
           image: AssetImage(gallery.galleryImage),
           fit: BoxFit.cover,
           child: InkWell(
-            child: _frontPageText(gallery.galleryName),
+            child: _galleryLabel(gallery.galleryName),
             onTap: () => _openGallery(context, gallery.galleryFilter),
           ),
         ),
@@ -196,13 +224,36 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _tagText(GalleryTag tag) {
+  Widget _subredditTile(String subreddit) {
+    var randomColor = Color((subreddit.hashCode * 0xFFFFFF).toInt() << 0).withOpacity(1.0);
+    var filter = GalleryFilter.fromSubredditName(subreddit);
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(
+            height: 120,
+            width: tileWidthFromText(subreddit),
+            child: Container(
+              color: randomColor,
+              child: InkWell(
+                  child: Container(
+                    child: _tileLabel(subreddit),
+                    alignment: Alignment.bottomRight,
+                  ),
+                  onTap: () => _openGallery(context, filter)),
+            ))
+      ],
+    );
+  }
+
+  Widget _tileLabel(String label) {
     return SizedBox(
         width: double.infinity,
         child: Container(
             color: Color(0x39000000),
             child: Text(
-              tag.displayName,
+              label,
               textAlign: TextAlign.right,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 2),
             )));

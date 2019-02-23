@@ -14,6 +14,10 @@ class GalleryFilter {
   static const IMGUR_USER_SUB_NEW = GalleryFilter(GallerySort.time, GalleryWindow.day, 0, section: GallerySection.user);
   static const IMGUR_USER_SUB_VIRAL = GalleryFilter(GallerySort.rising, GalleryWindow.day, 0, section: GallerySection.user);
 
+  static const SUB_REDDITS = ["pics","gifs", "foodporn","reactiongifs", "oldschoolcool", "funny", "gaming", "holdmybeer",
+  "aww", "outside", "historyporn", "videos", "mildlyinteresting", "animalsbeingjerks", "earthporn", "carporn"];
+
+
   const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tag, this.subRedditName});
 
   GalleryFilter copyWith({GallerySection section, GallerySort sort, GalleryWindow window, int page}) {
@@ -39,6 +43,8 @@ class GalleryFilter {
   String title() {
     if (this.tag != null) {
       return this.tag.displayName;
+    } else if (this.subRedditName != null) {
+      return this.subRedditName;
     } else if (section != null) {
       return "Front Page";
     } else {
@@ -65,6 +71,10 @@ class GalleryFilter {
     String windowString = window.toString().split('.').last;
 
     return "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?count=100";
+  }
+
+  static GalleryFilter fromSubredditName(String name) {
+    return GalleryFilter(GallerySort.time, GalleryWindow.week, 0, subRedditName: name);
   }
 }
 

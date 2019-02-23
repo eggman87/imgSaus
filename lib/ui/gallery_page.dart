@@ -33,6 +33,10 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   void _onCommentsTapped(BuildContext context) {
+    //subreddit galleries do not have comments
+    if (_vm.filter.subRedditName != null) {
+      return;
+    }
     GalleryItem currentItem = _currentGalleryItem();
     showModalBottomSheet<void>(
         context: context,
