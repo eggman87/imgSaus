@@ -7,6 +7,8 @@ class Comment {
 
   Comment({ this.id, this.comment, this.author, this.authorId, this.ups, this.downs, this.points, this.vote });
 
+  static const NAME = "Comment";
+
   final int id;
   final String comment;
   final String author;

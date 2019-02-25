@@ -4,6 +4,12 @@ part 'gallery_tag.g.dart';
 
 @JsonSerializable()
 class GalleryTag {
+
+  static const NAME = "GALLERY_TAG";
+  //subkey in api response
+  static const TAGS_SUB_KEY = "tags";
+  static const GALLERY_SUB_KEY = "items";
+
   final String id;
   final String name;
   @JsonKey(name: 'display_name')
@@ -20,6 +26,4 @@ class GalleryTag {
       _$GalleryTagFromJson(json);
 
   Map<String, dynamic> toJson() => _$GalleryTagToJson(this);
-
-  static final NAME = "GALLERY_TAG";
 }

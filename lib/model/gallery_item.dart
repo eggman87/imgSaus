@@ -15,6 +15,8 @@ class GalleryItem {
       this.mp4,
       this.imagesCount});
 
+  static const NAME = "GalleryItem";
+
   final String id;
   final String title;
   final String type;

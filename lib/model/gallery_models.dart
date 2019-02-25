@@ -29,15 +29,11 @@ class GalleryFilter {
     );
   }
 
-  bool hasSubKey() {
-    return this.tag != null;
-  }
-
   String subKey() {
     if (tag != null) {
-      return 'items';
+      return GalleryTag.GALLERY_SUB_KEY;
     } else {
-      return '';
+      return null;
     }
   }
 
@@ -71,7 +67,7 @@ class GalleryFilter {
     String sortString = sort.toString().split('.').last;
     String windowString = window.toString().split('.').last;
 
-    return "https://api.imgur.com/3/gallery/$sectionString/$sortString/$windowString/$page?count=100";
+    return "/gallery/$sectionString/$sortString/$windowString/$page?count=100";
   }
 
   static GalleryFilter fromSubredditName(String name) {

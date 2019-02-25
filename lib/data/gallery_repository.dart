@@ -13,10 +13,11 @@ import 'package:imgsrc/model/gallery_tag.dart';
 class GalleryRepository {
   const GalleryRepository();
 
+  static const BASE_URL = "https://api.imgur.com/3";
   static Map<String, String> headers = {"Authorization": "Client-ID ${DotEnv().env['IMGUR_CLIENT_ID']}"};
 
   Future<ParsedResponse<List<GalleryItem>>> getItems(GalleryFilter filter) async {
-    String url = filter.toApiUrl();
+    String url = BASE_URL + filter.toApiUrl();
     print("making request to $url");
     http.Response response = await http.get(url, headers: headers);
 
@@ -24,43 +25,43 @@ class GalleryRepository {
       return ParsedResponse(response.statusCode, null);
     }
 
-    List<dynamic> items = await compute(parseList, Parsable<GalleryItem>(response.body, "GalleryItem", hasSubKey: filter.hasSubKey(), subKey: filter.subKey()));
+    List<dynamic> items = await compute(parseList, Parsable<GalleryItem>(response.body, GalleryItem.NAME, subKey: filter.subKey()));
     return ParsedResponse(response.statusCode, items.cast());
   }
 
   Future<ParsedResponse<List<Comment>>> getComments(String galleryId, CommentSort sort) async {
     String commentSort = sort.toString().split('.').last;
-    String url = "https://api.imgur.com/3/gallery/$galleryId/comments/$commentSort";
+    String url = '$BASE_URL/gallery/$galleryId/comments/$commentSort';
     http.Response response = await http.get(url, headers: headers);
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
     }
 
-    List<dynamic> items = await compute(parseList, Parsable<Comment>(response.body, "Comment"));
+    List<dynamic> items = await compute(parseList, Parsable<Comment>(response.body, Comment.NAME));
     return ParsedResponse(response.statusCode, items.cast());
   }
 
   Future<ParsedResponse<GalleryItem>> getAlbumDetails(String galleryItemId) async {
-    String url = "https://api.imgur.com/3/gallery/album/$galleryItemId";
+    String url = "$BASE_URL/gallery/album/$galleryItemId";
     http.Response response = await http.get(url, headers: headers);
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
     }
 
-    dynamic item = await compute(parseItem, Parsable<GalleryItem>(response.body, "GalleryItem"));
+    dynamic item = await compute(parseItem, Parsable<GalleryItem>(response.body, GalleryItem.NAME));
     return ParsedResponse(response.statusCode, item);
   }
 
   Future<ParsedResponse<List<GalleryTag>>> getTags() async {
-    http.Response response = await http.get('https://api.imgur.com/3/tags', headers: headers);
+    http.Response response = await http.get('$BASE_URL/tags', headers: headers);
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
     }
 
-    List<dynamic> tags = await compute(parseList, Parsable<GalleryTag>(response.body, GalleryTag.NAME, hasSubKey: true, subKey: "tags"));
+    List<dynamic> tags = await compute(parseList, Parsable<GalleryTag>(response.body, GalleryTag.NAME, subKey: GalleryTag.TAGS_SUB_KEY));
     return ParsedResponse(response.statusCode, tags.cast());
   }
 }
@@ -82,7 +83,7 @@ class ParsedResponse<T> {
 
 List<T> parseList<T>(Parsable<T> parsable) {
   List<dynamic> list;
-  if (parsable.hasSubKey) {
+  if (parsable.subKey != null) {
     list = jsonDecode(parsable.response)['data'][parsable.subKey];
   } else {
     list = jsonDecode(parsable.response)['data'];
@@ -109,19 +110,18 @@ T parseItem<T>(Parsable<T> parsable) {
 class Parsable<T> {
   final String response;
   final String className;
-  final bool hasSubKey;
   final String subKey;
 
-  Parsable(this.response, this.className, { this.hasSubKey = false, this.subKey = ''});
+  Parsable(this.response, this.className, { this.subKey });
 }
 
 ///
 /// Slightly better than a function for each parser. We cannot pass a closure to a isolate.
 ///
 dynamic jsonToItem(String className, dynamic itemJson) {
-  if (className == "GalleryItem") {
+  if (className == GalleryItem.NAME) {
     return GalleryItem.fromJson(itemJson);
-  } else if (className == "Comment") {
+  } else if (className == Comment.NAME) {
     return Comment.fromJson(itemJson);
   } else if (className == GalleryTag.NAME) {
     return GalleryTag.fromJson(itemJson);
