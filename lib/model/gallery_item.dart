@@ -13,7 +13,9 @@ class GalleryItem {
       this.link,
       this.images,
       this.mp4,
-      this.imagesCount});
+      this.imagesCount,
+      this.width,
+      this.height});
 
   static const NAME = "GalleryItem";
 
@@ -31,6 +33,8 @@ class GalleryItem {
   final String mp4;
   @JsonKey(name: "images_count")
   final int imagesCount;
+  final double width;
+  final double height;
 
 
   @override

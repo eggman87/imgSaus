@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
@@ -76,10 +78,20 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
       } else {
         player = new VideoPlayer(controller);
       }
-      widgetToWrap = Hero(tag:"gallery_video", child:player);
+      var videoWidget = controller.value.initialized
+          ? Center(
+              child: AspectRatio(
+              aspectRatio: controller.value.aspectRatio,
+              child: Hero(tag: "gallery_video", child: player),
+            ))
+          : Container();
+      widgetToWrap = videoWidget;
     } else {
       //look into why we have to use keys here.
-      widgetToWrap = new GalleryImageView(imageUrl: imageUrl, key: Key(imageUrl),);
+      widgetToWrap = new GalleryImageView(
+        imageUrl: imageUrl,
+        key: Key(imageUrl),
+      );
     }
     return VerticalSwipeDetector(child: widgetToWrap, onSwipeUp: _onSwipeUp, onSwipeDown: _onSwipeDown);
   }
