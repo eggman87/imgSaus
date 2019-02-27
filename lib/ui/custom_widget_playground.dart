@@ -33,28 +33,26 @@ class BasicTabTitleBar extends StatefulWidget  {
 class _BasicTabTitleBarState extends State<BasicTabTitleBar> with TickerProviderStateMixin  {
 
   Animation<double> titleBarAnimation;
-  AnimationController _animationController;
-
   int _currentIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-//    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-  }
-
   _onTapping(int index, double maxWidth) {
-    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+    var animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 250));
 
     Tween tween = new Tween<double>(begin: _currentIndex * (maxWidth * (4 / 7)), end: index * (maxWidth * (4 / 7)));
 
-    titleBarAnimation = tween.chain(CurveTween(curve: Curves.decelerate)).animate(_animationController);
+    titleBarAnimation = tween.chain(CurveTween(curve: Curves.decelerate)).animate(animationController);
     titleBarAnimation.addListener(() {
       setState(() {
       });
     });
 
-    _animationController.forward();
+    titleBarAnimation.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        animationController.dispose();
+      }
+    });
+
+    animationController.forward();
 
     setState(() {
       _currentIndex = index;
