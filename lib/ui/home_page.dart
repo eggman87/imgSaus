@@ -19,22 +19,42 @@ class HomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   HomeViewModel _vm;
-  List<HandPickedGallery> handPickedGalleries = new List();
+  List<HandPickedGallery> _handPickedGalleries = new List();
+  AnimationController _animationController;
+  AnimationController _tagsAnimationController;
+  Animation<double> _scaleInAnimation;
+  Animation<double> _tagsScaleInAnimcation;
+  bool _hasStarted = false;
 
   @override
   void initState() {
     super.initState();
 
-    handPickedGalleries
+    _handPickedGalleries
         .add(HandPickedGallery("front page", "graphics/keyboard_cat.gif", GalleryFilter.IMGUR_FRONT_PAGE));
-    handPickedGalleries
+    _handPickedGalleries
         .add(HandPickedGallery("usersub new", "graphics/arthur_fist.jpg", GalleryFilter.IMGUR_USER_SUB_NEW));
-    handPickedGalleries
+    _handPickedGalleries
         .add(HandPickedGallery("usersub viral", "graphics/tips_hat.gif", GalleryFilter.IMGUR_USER_SUB_VIRAL));
-    handPickedGalleries
+    _handPickedGalleries
         .add(HandPickedGallery("top of month", "graphics/front_page.jpg", GalleryFilter.IMGUR_TOP_MONTH));
+
+    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _tagsAnimationController = AnimationController(vsync: this, duration: Duration(seconds: 2));
+
+    _scaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    _tagsScaleInAnimcation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Curves.easeInOut));
+
+    _animationController.forward();
+
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _animationController.dispose();
   }
 
   void _openGallery(BuildContext context, GalleryFilter filter) {
@@ -45,6 +65,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _vm = widget.viewModel;
+
+    if (!_hasStarted && _vm.tags.length > 0) {
+      _tagsAnimationController.forward();
+      _hasStarted = true;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -84,17 +109,16 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.all(12),
                 )
               ])),
-          SizedBox(
+          ScaleTransition(scale: _scaleInAnimation, child:SizedBox(
             height: 175,
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: handPickedGalleries.length,
+                itemCount: _handPickedGalleries.length,
                 itemBuilder: (context, position) {
-                  return _galleryCard(handPickedGalleries[position]);
+                  return _galleryCard(_handPickedGalleries[position]);
                 }),
-          ),
-          Container(
+          )), Container(
               color: Colors.grey.shade400,
               child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
                 Container(
@@ -106,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.all(12),
                 )
               ])),
-          SizedBox(
+          ScaleTransition(scale: _tagsScaleInAnimcation, child:SizedBox(
             height: 240,
             width: MediaQuery.of(context).size.width,
             child: _vm.tags.length == 0
@@ -119,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                     staggeredTileBuilder: (int index) =>
                         new StaggeredTile.extent(1, tileWidthFromText(_vm.tags[index].displayName)),
                   ),
-          ),
+          )),
           Container(
               color: Colors.grey.shade400,
               child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
