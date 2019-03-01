@@ -21,11 +21,14 @@ class GalleryFilter {
 
   const GalleryFilter(this.sort, this.window, this.page, {this.section, this.tag, this.subRedditName});
 
-  GalleryFilter copyWith({GallerySection section, GallerySort sort, GalleryWindow window, int page}) {
+  GalleryFilter copyWith({GallerySection section, GallerySort sort, GalleryWindow window, int page, GalleryTag tag, String subRedditName}) {
     return GalleryFilter(
       sort ?? this.sort,
       window ?? this.window,
       page ?? this.page,
+      section: section ?? this.section,
+      tag: tag ?? this.tag,
+      subRedditName: subRedditName ?? this.subRedditName
     );
   }
 

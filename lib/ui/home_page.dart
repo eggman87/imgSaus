@@ -24,8 +24,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
   List<HandPickedGallery> _handPickedGalleries = new List();
   AnimationController _animationController;
   AnimationController _tagsAnimationController;
-  Animation<double> _scaleInAnimation;
-  Animation<double> _tagsScaleInAnimcation;
+  Animation<Offset> _scaleInAnimation;
+  Animation<Offset> _tagsScaleInAnimation;
   bool _hasStarted = false;
 
   @override
@@ -41,12 +41,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     _handPickedGalleries
         .add(HandPickedGallery("top of month", "graphics/front_page.jpg", GalleryFilter.IMGUR_TOP_MONTH));
 
-    _animationController = AnimationController(vsync: this, duration: Duration(seconds: 1));
-    _tagsAnimationController = AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 750));
+    _tagsAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 750));
 
-    _scaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
-    _tagsScaleInAnimcation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Curves.easeInOut));
+    _scaleInAnimation = new Tween(begin: Offset(2, 0), end: Offset(0, 0)).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeIn));
+//    _scaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+//    _tagsScaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Curves.easeInOut));
 
+    _tagsScaleInAnimation = new Tween(begin: Offset(2, 0), end: Offset(0, 0)).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Interval(0, 1.0, curve: Curves.easeIn)));
     _animationController.forward();
 
   }
@@ -77,7 +79,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       ),
       drawer: Container(
         margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
-        color: Colors.grey,
+        color: Colors.black,
         child: ListView(
           children: <Widget>[
             UserAccountsDrawerHeader(
@@ -109,7 +111,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   padding: EdgeInsets.all(12),
                 )
               ])),
-          ScaleTransition(scale: _scaleInAnimation, child:SizedBox(
+          SlideTransition(position: _scaleInAnimation, child:SizedBox(
             height: 175,
             width: MediaQuery.of(context).size.width,
             child: ListView.builder(
@@ -130,11 +132,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                   padding: EdgeInsets.all(12),
                 )
               ])),
-          ScaleTransition(scale: _tagsScaleInAnimcation, child:SizedBox(
+          _hasStarted ? SlideTransition(position: _tagsScaleInAnimation, child:SizedBox(
             height: 240,
             width: MediaQuery.of(context).size.width,
             child: _vm.tags.length == 0
-                ? Container(color: Colors.black12, child: Center(child: CircularProgressIndicator()))
+                ? Container(color: Colors.black, child: Center(child: CircularProgressIndicator()))
                 : StaggeredGridView.countBuilder(
                     scrollDirection: Axis.horizontal,
                     itemCount: _vm.tags.length,
@@ -143,7 +145,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
                     staggeredTileBuilder: (int index) =>
                         new StaggeredTile.extent(1, tileWidthFromText(_vm.tags[index].displayName)),
                   ),
-          )),
+          )):Container(height:240, color: Colors.black, child: Center(child: CircularProgressIndicator())),
           Container(
               color: Colors.grey.shade400,
               child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
