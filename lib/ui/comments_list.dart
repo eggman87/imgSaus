@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:timeago/timeago.dart';
 
 class CommentsList extends StatelessWidget {
 
@@ -68,12 +69,13 @@ class CommentsList extends StatelessWidget {
                   ),
                   Container(
                     child: Row(children: <Widget>[
-                      Text(comment.author, style: TextStyle(color: Colors.green)),
+                      Text(comment.author, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                      Text(" ${format(comment.dateCreated, locale: "en_short")}", style: TextStyle(color: Colors.red.shade300, fontStyle: FontStyle.italic),),
                       Spacer(),
                       Text(
                         comment.points.toString(),
                         textAlign: TextAlign.right,
-                        style: TextStyle(fontStyle: FontStyle.italic, color: Colors.green),
+                        style: TextStyle(fontStyle: FontStyle.italic, color: Colors.red),
                       )
                     ]),
                     padding: EdgeInsets.fromLTRB(8, 2, 4, 4),

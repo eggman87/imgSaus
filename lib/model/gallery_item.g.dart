@@ -22,7 +22,10 @@ GalleryItem _$GalleryItemFromJson(Map<String, dynamic> json) {
       mp4: json['mp4'] as String,
       imagesCount: json['images_count'] as int,
       width: (json['width'] as num)?.toDouble(),
-      height: (json['height'] as num)?.toDouble());
+      height: (json['height'] as num)?.toDouble(),
+      dateCreated: json['datetime'] == null
+          ? null
+          : ModelUtils.dateFromJson(json['datetime'] as int));
 }
 
 Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
@@ -37,5 +40,6 @@ Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
       'mp4': instance.mp4,
       'images_count': instance.imagesCount,
       'width': instance.width,
-      'height': instance.height
+      'height': instance.height,
+      'datetime': instance.dateCreated?.toIso8601String()
     };

@@ -1,3 +1,4 @@
+import 'package:imgsrc/model/model_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'gallery_item.g.dart';
@@ -15,7 +16,8 @@ class GalleryItem {
       this.mp4,
       this.imagesCount,
       this.width,
-      this.height});
+      this.height,
+      this.dateCreated});
 
   static const NAME = "GalleryItem";
 
@@ -35,7 +37,8 @@ class GalleryItem {
   final int imagesCount;
   final double width;
   final double height;
-
+  @JsonKey(name: "datetime", fromJson: ModelUtils.dateFromJson)
+  final DateTime dateCreated;
 
   @override
   String toString() {

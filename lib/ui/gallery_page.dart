@@ -13,6 +13,7 @@ import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
 import 'package:share_extend/share_extend.dart';
+import 'package:timeago/timeago.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPage(this.viewModel, {Key key}) : super(key: key);
@@ -62,14 +63,14 @@ class _GalleryPageState extends State<GalleryPage> {
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GalleryImageFullScreen(
-                item: itemCurrentVisible,
-                onLongPress: this._shareCurrentItem,
-                parentId: _vm.items[_pagePosition].id,
-                parentTitle: _vm.items[_pagePosition].title,
-                videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])),
+      context,
+      MaterialPageRoute(
+          builder: (context) => GalleryImageFullScreen(
+              item: itemCurrentVisible,
+              onLongPress: this._shareCurrentItem,
+              parentId: _vm.items[_pagePosition].id,
+              parentTitle: _vm.items[_pagePosition].title,
+              videoPlayerController: _vm.videoControllers[itemCurrentVisible.id])),
     );
   }
 
@@ -122,7 +123,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_vm.isGalleryLoading ? 'loading':_vm.filter.title()),
+        title: Text(_vm.isGalleryLoading ? 'loading' : _vm.filter.title()),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -221,29 +222,42 @@ class _GalleryPageState extends State<GalleryPage> {
         child: Center(child: CircularProgressIndicator()),
       );
     } else {
+      GalleryItem item = _currentGalleryItem();
+
       return Container(
           color: Colors.black,
-          child: Center(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    _galleryItemTitle(),
-                    maxLines: 6,
-                    style: TextStyle(color: Colors.white),
-                  ),
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding:EdgeInsets.fromLTRB(10, 4, 10, 4),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment(-1, -1),
+                      child: Text(
+                        _galleryItemTitle(),
+                        maxLines: 6,
+                        style: TextStyle(fontSize: 17, fontWeight:FontWeight.bold, color: Colors.white),
+                      ),
+                    ),
+                    Row(
+                      children: <Widget>[
+                        Text(format(item.dateCreated), style: TextStyle(letterSpacing: 1.1, color: Colors.red),)
+                      ],
+                    ),
+                  ],
+                )
+              ),
+
+              Expanded(
+                child: GestureDetector(
+                  child: _pageView(context),
+                  onLongPress: _onLongPress,
+                  onTap: _fullScreen,
+                  onDoubleTap: () => this._onCommentsTapped(context),
                 ),
-                Expanded(
-                  child: GestureDetector(
-                    child: _pageView(context),
-                    onLongPress: _onLongPress,
-                    onTap: _fullScreen,
-                    onDoubleTap: () => this._onCommentsTapped(context),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ));
     }
   }

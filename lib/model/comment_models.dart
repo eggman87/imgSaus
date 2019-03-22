@@ -1,3 +1,4 @@
+import 'package:imgsrc/model/model_utils.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'comment_models.g.dart';
@@ -5,7 +6,7 @@ part 'comment_models.g.dart';
 @JsonSerializable()
 class Comment {
 
-  Comment({ this.id, this.comment, this.author, this.authorId, this.ups, this.downs, this.points, this.vote });
+  Comment({ this.id, this.comment, this.author, this.authorId, this.ups, this.downs, this.points, this.vote, this.dateCreated });
 
   static const NAME = "Comment";
 
@@ -18,6 +19,8 @@ class Comment {
   final int downs;
   final int points;
   final String vote;
+  @JsonKey(name: "datetime", fromJson: ModelUtils.dateFromJson)
+  final DateTime dateCreated;
 
   factory Comment.fromJson(Map<String, dynamic> json) => _$CommentFromJson(json);
 

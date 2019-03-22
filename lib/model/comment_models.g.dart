@@ -15,7 +15,10 @@ Comment _$CommentFromJson(Map<String, dynamic> json) {
       ups: json['ups'] as int,
       downs: json['downs'] as int,
       points: json['points'] as int,
-      vote: json['vote'] as String);
+      vote: json['vote'] as String,
+      dateCreated: json['datetime'] == null
+          ? null
+          : ModelUtils.dateFromJson(json['datetime'] as int));
 }
 
 Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
@@ -26,5 +29,6 @@ Map<String, dynamic> _$CommentToJson(Comment instance) => <String, dynamic>{
       'ups': instance.ups,
       'downs': instance.downs,
       'points': instance.points,
-      'vote': instance.vote
+      'vote': instance.vote,
+      'datetime': instance.dateCreated?.toIso8601String()
     };
