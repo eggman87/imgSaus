@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:imgsrc/model/comment_models.dart';
@@ -6,10 +5,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:timeago/timeago.dart';
 
 class CommentsList extends StatelessWidget {
-
   final List<Comment> comments;
 
-  CommentsList({ Key key, @required this.comments });
+  CommentsList({Key key, @required this.comments});
 
   int _commentsLength() {
     if (comments != null) {
@@ -36,17 +34,17 @@ class CommentsList extends StatelessWidget {
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) => SimpleDialog(
-          contentPadding: EdgeInsets.zero,
-          children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
-              child: Container(
-                color: Colors.black,
-                child: _photoOrWebView(url),
-              ),
-            ),
-          ],
-        ));
+              contentPadding: EdgeInsets.zero,
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
+                  child: Container(
+                    color: Colors.black,
+                    child: _photoOrWebView(url),
+                  ),
+                ),
+              ],
+            ));
   }
 
   @override
@@ -70,7 +68,10 @@ class CommentsList extends StatelessWidget {
                   Container(
                     child: Row(children: <Widget>[
                       Text(comment.author, style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
-                      Text(" ${format(comment.dateCreated, locale: "en_short")}", style: TextStyle(color: Colors.red.shade300, fontStyle: FontStyle.italic),),
+                      Text(
+                        " ${format(comment.dateCreated, locale: "en_short")}",
+                        style: TextStyle(color: Colors.red.shade300, fontStyle: FontStyle.italic),
+                      ),
                       Spacer(),
                       Text(
                         comment.points.toString(),
