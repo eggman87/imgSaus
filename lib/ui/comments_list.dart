@@ -5,11 +5,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:timeago/timeago.dart';
 
 class CommentsList extends StatelessWidget {
-  List<CommentViewItem> commentItems;
+  final List<CommentViewItem> commentItems;
 
-  CommentsList({Key key, @required List<Comment> comments}) {
-    this.commentItems = _flattenComments(comments, 0);
-  }
+  CommentsList({Key key, @required List<Comment> comments}): this.commentItems = CommentViewItem._flattenComments(comments, 0);
 
   int _commentsLength() {
     if (commentItems.length > 0) {
@@ -108,8 +106,15 @@ class CommentsList extends StatelessWidget {
           itemCount: _commentsLength(),
         ));
   }
+}
 
-  List<CommentViewItem> _flattenComments(List<Comment> comments, int indentLevel) {
+class CommentViewItem {
+  final Comment comment;
+  final int indentLevel;
+
+  CommentViewItem(this.comment, this.indentLevel);
+
+  static List<CommentViewItem> _flattenComments(List<Comment> comments, int indentLevel) {
     if (comments == null || comments.length == 0) {
       return List();
     }
@@ -123,11 +128,4 @@ class CommentsList extends StatelessWidget {
     }
     return flattenedComments;
   }
-}
-
-class CommentViewItem {
-  final Comment comment;
-  final int indentLevel;
-
-  CommentViewItem(this.comment, this.indentLevel);
 }
