@@ -77,23 +77,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       appBar: AppBar(
         title: Text('imgSaus'),
       ),
-      drawer: Container(
-        margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
-        color: Colors.black,
-        child: ListView(
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text("Tap To Login"),
-              accountEmail: Text(""),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.redAccent,
-                child: Icon(Icons.person),
-              ),
-            ),
-            ListTile()
-          ],
-        ),
-      ),
       body: SingleChildScrollView(
           child: Container(
               child: Column(

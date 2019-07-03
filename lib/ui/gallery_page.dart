@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
@@ -28,6 +30,7 @@ class _GalleryPageState extends State<GalleryPage> {
   //view model driven by store.
   GalleryViewModel _vm;
   int _pagePosition = 0;
+  Offset _fabPosition = Offset(40,40);
 
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
@@ -131,86 +134,16 @@ class _GalleryPageState extends State<GalleryPage> {
           )
         ],
       ),
-      drawer: Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 120, 0),
-          color: Colors.white,
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              DrawerHeader(
-                decoration: BoxDecoration(color: Theme.of(context).colorScheme.background),
-                child: GestureDetector(
-                  child: Center(child: Text("TAP TO LOGIN")),
-                  onTap: _onTapLogin,
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Visibility(
-                      visible: _vm.items.length > 0,
-                      child: Text("  Currently viewing ${_pagePosition + 1}/${_vm.items.length}"))
-                ],
-              ),
-              ListTile(
-                title: Text(
-                  "SECTION",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Spacer(),
-                  Text(
-                    "hot",
-                    style: _selectableStyle(_vm.filter.section == GallerySection.hot),
-                  ),
-                  Spacer(),
-                  Text(
-                    "top",
-                    style: _selectableStyle(_vm.filter.section == GallerySection.top),
-                  ),
-                  Spacer(),
-                  Text(
-                    "User",
-                    style: _selectableStyle(_vm.filter.section == GallerySection.user),
-                  ),
-                  Spacer(),
-                ],
-              ),
-              ListTile(
-                title: Text(
-                  "SORT",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-              Row(
-                children: <Widget>[
-                  Spacer(),
-                  Text(
-                    "viral",
-                    style: _selectableStyle(_vm.filter.sort == GallerySort.viral),
-                  ),
-                  Spacer(),
-                  Text(
-                    "top",
-                    style: _selectableStyle(_vm.filter.sort == GallerySort.top),
-                  ),
-                  Spacer(),
-                  Text(
-                    "time",
-                    style: _selectableStyle(_vm.filter.sort == GallerySort.time),
-                  ),
-                  Spacer(),
-                  Text(
-                    "rising",
-                    style: _selectableStyle(_vm.filter.sort == GallerySort.rising),
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ],
-          )),
-      body: _body(),
+      body: WillPopScope(
+          child: _body(),
+          onWillPop: () async {
+            //prevent swiping back on iOS to take us back to home page, only go back on manual tap of back arrow.
+            if (Platform.isAndroid) {
+              return true;
+            } else {
+              return false;
+            }
+          }),
     );
   }
 
@@ -229,32 +162,32 @@ class _GalleryPageState extends State<GalleryPage> {
           child: Column(
             children: <Widget>[
               Container(
-                padding:EdgeInsets.fromLTRB(10, 4, 10, 4),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment(-1, -1),
-                      child: Text(
-                        _galleryItemTitle(),
-                        maxLines: 6,
-                        style: TextStyle(fontSize: 17, fontWeight:FontWeight.bold, color: Colors.white),
+                  padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment(-1, -1),
+                        child: Text(
+                          _galleryItemTitle(),
+                          maxLines: 6,
+                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                       ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Text(format(item.dateCreated), style: TextStyle(letterSpacing: 1.1, color: Colors.red),)
-                      ],
-                    ),
-                  ],
-                )
-              ),
-
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            format(item.dateCreated),
+                            style: TextStyle(letterSpacing: 1.1, color: Colors.red),
+                          )
+                        ],
+                      ),
+                    ],
+                  )),
               Expanded(
                 child: GestureDetector(
-                  child: _pageView(context),
+                  child: _pageWithCommentsFab(context),
                   onLongPress: _onLongPress,
                   onTap: _fullScreen,
-                  onDoubleTap: () => this._onCommentsTapped(context),
                 ),
               ),
             ],
@@ -284,6 +217,33 @@ class _GalleryPageState extends State<GalleryPage> {
       return title;
     }
     return "";
+  }
+
+  Widget _pageWithCommentsFab(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        _pageView(context),
+        Positioned(
+          right: _fabPosition.dx,
+          bottom: _fabPosition.dy,
+          child: Draggable(
+              feedback: FloatingActionButton(child: Icon(Icons.comment), onPressed: () {}),
+              child: FloatingActionButton(child: Icon(Icons.comment), onPressed: () => this._onCommentsTapped(context)),
+              childWhenDragging: widget,
+              onDragEnd: (details) {
+                final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
+                final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
+
+                print("[mateo] x= $x, y= $y");
+                if (x > 0 && y > 0) {
+                  setState(() {
+                    _fabPosition = Offset(x, y);
+                  });
+                }
+              }),
+        )
+      ],
+    );
   }
 
   PageView _pageView(BuildContext context) {
