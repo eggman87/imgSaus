@@ -229,7 +229,7 @@ class _GalleryPageState extends State<GalleryPage> {
           child: Draggable(
               feedback: FloatingActionButton(child: Icon(Icons.comment), onPressed: () {}),
               child: FloatingActionButton(child: Icon(Icons.comment), onPressed: () => this._onCommentsTapped(context)),
-              childWhenDragging: widget,
+              childWhenDragging: Container(),
               onDragEnd: (details) {
                 final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
                 final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
