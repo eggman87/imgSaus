@@ -69,7 +69,7 @@ class GalleryImageViewState extends State<GalleryImageView> {
       );
     } else {
       return Hero(
-          tag: "gallery_image",
+          tag: "$imageUrl",
           child: Image(
               key: Key('$retryCount'),
               image: NetworkImageWithRetry('$imageUrl?retryCount=$retryCount', fetchStrategy: _imageFetchStrategy)));

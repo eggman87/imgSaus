@@ -12,7 +12,7 @@ class CommentsList extends StatelessWidget {
   }
 
   int _commentsLength() {
-    if (commentItems != null && commentItems.length > 0) {
+    if (commentItems.length > 0) {
       return commentItems.length;
     } else {
       return 1;
