@@ -45,9 +45,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     _tagsAnimationController = AnimationController(vsync: this, duration: Duration(milliseconds: 750));
 
     _scaleInAnimation = new Tween(begin: Offset(2, 0), end: Offset(0, 0)).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeIn));
-//    _scaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
-//    _tagsScaleInAnimation = new Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Curves.easeInOut));
-
     _tagsScaleInAnimation = new Tween(begin: Offset(2, 0), end: Offset(0, 0)).animate(CurvedAnimation(parent: _tagsAnimationController, curve: Interval(0, 1.0, curve: Curves.easeIn)));
     _animationController.forward();
 

@@ -6,7 +6,6 @@ import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/data/analytics.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
-import 'package:imgsrc/model/gallery_models.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imgsrc/ui/comments_list_container.dart';
 import 'package:imgsrc/ui/gallery_album_page_container.dart';
@@ -56,7 +55,44 @@ class _GalleryPageState extends State<GalleryPage> {
     this._shareCurrentItem(shouldPop: false);
   }
 
-  void _changeFilter() {}
+  void _changeFilter() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Filter"),
+          content: Container(
+            height: 120,
+            width: 200,
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Text("current page: "),
+                    Expanded(child: TextFormField(initialValue: "${_vm.filter.page}"), )
+                  ],
+                )
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text("Update"),
+              onPressed: () {
+
+              },
+            )
+          ],
+        );
+      }
+    );
+  }
 
   void _fullScreen({bool shouldPop = false}) {
     if (shouldPop) {
@@ -109,16 +145,15 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   void _onPageChanged(BuildContext context, int position) {
+    if (position == _vm.items.length - 5) {
+      _loadNextPage(context);
+    }
+
     setState(() {
       _pagePosition = position;
     });
 
-    if (position == _vm.items.length - 5) {
-      _loadNextPage(context);
-    }
   }
-
-  void _onTapLogin() {}
 
   @override
   Widget build(BuildContext context) {
@@ -134,22 +169,14 @@ class _GalleryPageState extends State<GalleryPage> {
           )
         ],
       ),
-      body: WillPopScope(
-          child: _body(),
-          onWillPop: () async {
-            //prevent swiping back on iOS to take us back to home page, only go back on manual tap of back arrow.
-            if (Platform.isAndroid) {
-              return true;
-            } else {
-              return false;
-            }
-          }),
+      body: _body()
     );
   }
 
   //todo refactor to widget to avoid perf hit.
+  //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if (_vm.isGalleryLoading || _vm.items.length == 0) {
+    if (_vm.isGalleryLoading && _vm.items.length == 0) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),
@@ -178,6 +205,9 @@ class _GalleryPageState extends State<GalleryPage> {
                           Text(
                             format(item.dateCreated),
                             style: TextStyle(letterSpacing: 1.1, color: Colors.red),
+                          ),
+                          Text(
+                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
                           )
                         ],
                       ),
@@ -231,10 +261,10 @@ class _GalleryPageState extends State<GalleryPage> {
               child: FloatingActionButton(child: Icon(Icons.comment), onPressed: () => this._onCommentsTapped(context)),
               childWhenDragging: Container(),
               onDragEnd: (details) {
+                //40 and 56 are material constants, need to look for constants.
                 final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
                 final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
 
-                print("[mateo] x= $x, y= $y");
                 if (x > 0 && y > 0) {
                   setState(() {
                     _fabPosition = Offset(x, y);
@@ -249,7 +279,7 @@ class _GalleryPageState extends State<GalleryPage> {
   PageView _pageView(BuildContext context) {
     return PageView.builder(
       pageSnapping: true,
-      controller: PageController(),
+      controller: PageController(initialPage: _pagePosition),
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
