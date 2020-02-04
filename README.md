@@ -4,6 +4,8 @@
 
 imgSaus is a Flutter application that consumes the imgur api. This is a project being used to learn flutter and hopefully build a useful imgur client for iOS and Android. 
 
+![app](https://i.imgur.com/Dypbn9al.png)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
