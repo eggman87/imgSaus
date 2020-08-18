@@ -30,6 +30,8 @@ class _GalleryPageState extends State<GalleryPage> {
   GalleryViewModel _vm;
   int _pagePosition = 0;
   Offset _fabPosition = Offset(40,40);
+  final currentPageController = TextEditingController(text: "1");
+
 
   void _loadNextPage(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
@@ -69,7 +71,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 Row(
                   children: <Widget>[
                     Text("current page: "),
-                    Expanded(child: TextFormField(initialValue: "${_vm.filter.page}"), )
+                    Expanded(child: TextFormField(keyboardType: TextInputType.number, controller: currentPageController), )
                   ],
                 )
               ],
@@ -85,7 +87,8 @@ class _GalleryPageState extends State<GalleryPage> {
             FlatButton(
               child: Text("Update"),
               onPressed: () {
-
+                StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: int.parse(currentPageController.text) - 1)));
+                Navigator.pop(context);
               },
             )
           ],
@@ -121,13 +124,7 @@ class _GalleryPageState extends State<GalleryPage> {
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     Analytics.instance().logEvent(name: "shareCurrentItem", parameters: {'url': itemCurrentVisible.imageUrl()});
-    if (itemCurrentVisible.isVideo()) {
-      ShareExtend.share(
-          "from imgSaus: ${itemCurrentVisible.title ?? _vm.items[_pagePosition].title} ${itemCurrentVisible.imageUrl()}",
-          "text");
-    } else {
       _shareCurrentImage(itemCurrentVisible);
-    }
   }
 
   void _shareCurrentImage(GalleryItem item) {
@@ -161,7 +158,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_vm.isGalleryLoading ? 'loading' : _vm.filter.title()),
+        title: Text(_vm.isGalleryLoading ? 'loading' : _vm.filter.title() + " ${_vm.filter.page + 1}"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -194,6 +191,7 @@ class _GalleryPageState extends State<GalleryPage> {
                     children: <Widget>[
                       Container(
                         alignment: Alignment(-1, -1),
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
                         child: Text(
                           _galleryItemTitle(),
                           maxLines: 6,
@@ -206,9 +204,11 @@ class _GalleryPageState extends State<GalleryPage> {
                             format(item.dateCreated),
                             style: TextStyle(letterSpacing: 1.1, color: Colors.red),
                           ),
-                          Text(
-                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
-                          )
+//                          Text(
+//                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
+//                          )                          Text(
+//                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
+//                          )
                         ],
                       ),
                     ],
@@ -298,5 +298,10 @@ class _GalleryPageState extends State<GalleryPage> {
       itemCount: _vm.items.length,
       onPageChanged: (it) => this._onPageChanged(context, it),
     );
+  }
+  @override
+  void dispose() {
+    currentPageController.dispose();
+    super.dispose();
   }
 }

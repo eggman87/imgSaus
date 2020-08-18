@@ -13,11 +13,12 @@ class ImageFileUtils {
 
   Future<File> _localFile(String extension) async {
     final path = await _localPath;
-    return File('$path/temp_image');
+    return File('$path/temp_image.$extension');
   }
 
   Future<File> writeImageToFile(String imageUrl) async {
-    final file = await _localFile(imageUrl.split(".")[1]);
+    final splits = imageUrl.split(".");
+    final file = await _localFile(splits[splits.length - 1]);
 
     var response = await http.get(imageUrl);
     return file.writeAsBytes(response.bodyBytes);
