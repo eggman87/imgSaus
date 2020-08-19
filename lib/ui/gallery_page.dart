@@ -29,7 +29,7 @@ class _GalleryPageState extends State<GalleryPage> {
   //view model driven by store.
   GalleryViewModel _vm;
   int _pagePosition = 0;
-  Offset _fabPosition = Offset(40,40);
+  Offset _fabPosition = Offset(-1,40);
   final currentPageController = TextEditingController(text: "1");
 
 
@@ -252,6 +252,10 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   Widget _pageWithCommentsFab(BuildContext context) {
+    if (_fabPosition.dx == -1) {
+      _fabPosition = Offset((MediaQuery.of(context).size.width / 2) - 20,40);
+    }
+
     return Stack(
       children: <Widget>[
         _pageView(context),
