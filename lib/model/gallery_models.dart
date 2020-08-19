@@ -70,7 +70,7 @@ class GalleryFilter {
     String sortString = sort.toString().split('.').last;
     String windowString = window.toString().split('.').last;
 
-    return "/gallery/$sectionString/$sortString/$windowString/$page?count=100";
+    return "/gallery/$sectionString/$sortString/$windowString/$page";
   }
 
   static GalleryFilter fromSubredditName(String name) {

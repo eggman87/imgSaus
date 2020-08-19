@@ -17,8 +17,7 @@ class ImageFileUtils {
   }
 
   Future<File> writeImageToFile(String imageUrl) async {
-    final splits = imageUrl.split(".");
-    final file = await _localFile(splits[splits.length - 1]);
+    final file = await _localFile(imageUrl.split(".").last);
 
     var response = await http.get(imageUrl);
     return file.writeAsBytes(response.bodyBytes);

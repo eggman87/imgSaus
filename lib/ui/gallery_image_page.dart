@@ -10,12 +10,13 @@ import 'package:redux/redux.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImagePage extends StatefulWidget {
-  GalleryImagePage(this.item, {Key key, VideoPlayerController controller})
-      : this.controller = controller,
+  GalleryImagePage(this.item, {Key key, VideoPlayerController controller, bool initialSoundOn = false })
+      : this.controller = controller, this.initialSoundOn = initialSoundOn,
         super(key: key);
 
   final GalleryItem item;
   VideoPlayerController controller;
+  final bool initialSoundOn;
 
   @override
   _GalleryImagePageState createState() => _GalleryImagePageState();
@@ -24,6 +25,7 @@ class GalleryImagePage extends StatefulWidget {
 class _GalleryImagePageState extends State<GalleryImagePage> {
   VideoPlayerController _controller;
   Store<AppState> _store;
+  bool _soundOn = false;
 
   //did we create the controller? if so we are responsible for destroying it.
   bool _isVideoControllerOwner = false;
@@ -43,21 +45,41 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
     super.dispose();
   }
 
+  void toggleSound() {
+    //there is no way to read volume so we have to keep that state
+    if (_soundOn ) {
+      _soundOn = false;
+    } else {
+      _soundOn = true;
+    }
+
+    updateSoundBasedOnState();
+  }
+
+  void updateSoundBasedOnState() {
+    if (_soundOn ) {
+      _controller.setVolume(100);
+    } else {
+      _controller.setVolume(0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String imageUrl = widget.item.imageUrl();
 
     if (GalleryItem.isLinkVideo(imageUrl)) {
+      _soundOn = widget.initialSoundOn;
       if (widget.controller != null) {
         _controller = widget.controller;
+        updateSoundBasedOnState();
       } else {
         _controller = VideoPlayerController.network(imageUrl);
         _isVideoControllerOwner = true;
         _store = StoreProvider.of<AppState>(context);
         _store.dispatch(SetVideoControllerAction(widget.item.id, _controller));
         _controller.setLooping(true);
-        _controller.setVolume(0);
-
+        updateSoundBasedOnState();
         _controller.initialize().then((_) {
           setState(() {}); //necessary to trigger rebuild of controller aspect ratio.
           _controller.play();
@@ -69,7 +91,9 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
           ? Center(
               child: AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
-              child: Hero(tag: "gallery_video", child: player),
+              child: GestureDetector(
+                  onTap: this.toggleSound,
+                  child: Hero(tag: "gallery_video", child: player)),
             ))
           : Container();
     } else {

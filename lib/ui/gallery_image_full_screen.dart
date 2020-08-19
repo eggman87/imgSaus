@@ -18,7 +18,7 @@ class GalleryImageFullScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+     return WillPopScope(onWillPop: _onWillPop, child: Scaffold(
         backgroundColor: Colors.black,
         body: GestureDetector(
             onDoubleTap: () => _openComments(context),
@@ -31,6 +31,7 @@ class GalleryImageFullScreen extends StatelessWidget {
                     child: GalleryImagePage(
                       item,
                       controller: videoPlayerController,
+                      initialSoundOn: true,
                     ),
                     childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
                 SafeArea(
@@ -48,10 +49,16 @@ class GalleryImageFullScreen extends StatelessWidget {
                           ],
                         )))
               ],
-            )));
+            ))));
+  }
+
+  Future<bool> _onWillPop() async {
+    videoPlayerController.setVolume(0);
+    return true;
   }
 
   _onSingleTap(BuildContext context) {
+    videoPlayerController.setVolume(0);
     Navigator.pop(context);
   }
 

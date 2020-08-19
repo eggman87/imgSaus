@@ -104,6 +104,8 @@ class _GalleryPageState extends State<GalleryPage> {
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
+    _vm.videoControllers[itemCurrentVisible.id].setVolume(100);
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -217,7 +219,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 child: GestureDetector(
                   child: _pageWithCommentsFab(context),
                   onLongPress: _onLongPress,
-                  onTap: _fullScreen,
+                  onDoubleTap: _fullScreen,
                 ),
               ),
             ],
