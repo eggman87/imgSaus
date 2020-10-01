@@ -104,7 +104,9 @@ class _GalleryPageState extends State<GalleryPage> {
 
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
-    _vm.videoControllers[itemCurrentVisible.id].setVolume(100);
+    if (_vm.videoControllers[itemCurrentVisible.id] != null) {
+      _vm.videoControllers[itemCurrentVisible.id].setVolume(100);
+    }
 
     Navigator.push(
       context,
@@ -253,7 +255,9 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Widget _pageWithCommentsFab(BuildContext context) {
     if (_fabPosition.dx == -1) {
-      _fabPosition = Offset((MediaQuery.of(context).size.width / 2) - 20,40);
+      //           final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
+      //                 final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
+      _fabPosition = Offset((MediaQuery.of(context).size.width / 2) - 30, 40);
     }
 
     return Stack(

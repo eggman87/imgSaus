@@ -53,12 +53,16 @@ class GalleryImageFullScreen extends StatelessWidget {
   }
 
   Future<bool> _onWillPop() async {
-    videoPlayerController.setVolume(0);
+    if (videoPlayerController != null) {
+      videoPlayerController.setVolume(0);
+    }
     return true;
   }
 
   _onSingleTap(BuildContext context) {
-    videoPlayerController.setVolume(0);
+    if (videoPlayerController != null) {
+      videoPlayerController.setVolume(0);
+    }
     Navigator.pop(context);
   }
 

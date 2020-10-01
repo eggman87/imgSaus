@@ -28,8 +28,8 @@
 @import share_extend;
 #endif
 
-#if __has_include(<video_player/VideoPlayerPlugin.h>)
-#import <video_player/VideoPlayerPlugin.h>
+#if __has_include(<video_player/FLTVideoPlayerPlugin.h>)
+#import <video_player/FLTVideoPlayerPlugin.h>
 #else
 @import video_player;
 #endif
