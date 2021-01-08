@@ -49,7 +49,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "graphics/ez_icon.png"
+  image_path: "graphics/ez_icon_new.png"
 
 dependency_overrides:
   path_provider: ^1.6.11
