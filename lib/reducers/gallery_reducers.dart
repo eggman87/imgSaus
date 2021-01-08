@@ -52,7 +52,7 @@ List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedA
   if (action.filter.page == 0) {
     return action.items;
   } else {
-    return List.from(action.items)..addAll(items);
+    return List.from(items)..addAll(action.items);
   }
 }
 
