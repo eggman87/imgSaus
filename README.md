@@ -2,7 +2,7 @@
 
 [![Build Status](https://app.bitrise.io/app/6f8200fc255cb116/status.svg?token=YHfqEYVbGhDFnx4udCfW_w)](https://app.bitrise.io/app/6f8200fc255cb116)
 
-Download via the [Play Store](https://play.google.com/store/apps/details?id=com.eggman.imgsrc) or the App Store _(Under Review)_
+Download via the [Play Store](https://play.google.com/store/apps/details?id=com.eggman.imgsrc) or the [App Store](https://apps.apple.com/app/ImgSaus/id1451111117#?platform=iphone).
 
 
 
