@@ -184,6 +184,17 @@ class _GalleryPageState extends State<GalleryPage> {
       );
     } else {
       GalleryItem item = _currentGalleryItem();
+      if (item == null) {
+        return Container(
+          color: Colors.black,
+          padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
+          child: Center(
+              child: Text(
+            "Error loading gallery. imgur might be down or network connectivity might be limited.",
+            style: TextStyle(color: Colors.white), textAlign: TextAlign.center,
+          )),
+        );
+      }
 
       return Container(
           color: Colors.black,
@@ -263,26 +274,33 @@ class _GalleryPageState extends State<GalleryPage> {
     return Stack(
       children: <Widget>[
         _pageView(context),
-        Positioned(
-          right: _fabPosition.dx,
-          bottom: _fabPosition.dy,
-          child: Draggable(
-              feedback: FloatingActionButton(child: Icon(Icons.comment), onPressed: () {}),
-              child: FloatingActionButton(child: Icon(Icons.comment), onPressed: () => this._onCommentsTapped(context)),
-              childWhenDragging: Container(),
-              onDragEnd: (details) {
-                //40 and 56 are material constants, need to look for constants.
-                final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
-                final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
-
-                if (x > 0 && y > 0) {
-                  setState(() {
-                    _fabPosition = Offset(x, y);
-                  });
-                }
-              }),
-        )
+        _fabOrNothing()
       ],
+    );
+  }
+
+  Widget _fabOrNothing() {
+    if (_vm.filter.subRedditName != null) {
+      return Container();
+    }
+    return Positioned(
+      right: _fabPosition.dx,
+      bottom: _fabPosition.dy,
+      child: Draggable(
+          feedback: FloatingActionButton(child: Icon(Icons.comment), onPressed: () {}),
+          child: FloatingActionButton(child: Icon(Icons.comment), onPressed: () => this._onCommentsTapped(context)),
+          childWhenDragging: Container(),
+          onDragEnd: (details) {
+            //40 and 56 are material constants, need to look for constants.
+            final x = MediaQuery.of(context).size.width - details.offset.dx - 40;
+            final y = MediaQuery.of(context).size.height - details.offset.dy - 56;
+
+            if (x > 0 && y > 0) {
+              setState(() {
+                _fabPosition = Offset(x, y);
+              });
+            }
+          }),
     );
   }
 
