@@ -80,7 +80,7 @@ class _GalleryAlbumPageState extends State<GalleryAlbumPage> {
           ? Center(
               child: AspectRatio(
               aspectRatio: controller.value.aspectRatio,
-              child: Hero(tag: "gallery_video", child: player),
+              child: Hero(tag: "gallery_video_${images[albumPos].id}", child: player),
             ))
           : Container();
       widgetToWrap = videoWidget;

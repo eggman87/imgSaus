@@ -34,6 +34,11 @@ class GalleryImageFullScreen extends StatelessWidget {
                       initialSoundOn: true,
                     ),
                     childSize: Size(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height)),
+                Positioned(child: IconButton(
+                  icon: Icon(Icons.close_fullscreen),
+                  color: Colors.white,
+                  onPressed: ()=> {_onSingleTap(context) },
+                ), right: 8, bottom: 8, width: 62, height: 62,),
                 SafeArea(
                     child: Container(
                         width: MediaQuery.of(context).size.width,

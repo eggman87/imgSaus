@@ -319,6 +319,7 @@ class _GalleryPageState extends State<GalleryPage> {
           return GalleryImagePage(
             currentItem,
             key: PageStorageKey(currentItem.id),
+            shouldShowSoundIndicator: false,
             controller: _vm.videoControllers[currentItem.id],
           );
         }

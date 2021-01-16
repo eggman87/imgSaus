@@ -17,7 +17,8 @@ class GalleryItem {
       this.imagesCount,
       this.width,
       this.height,
-      this.dateCreated});
+      this.dateCreated,
+      this.hasSound});
 
   static const NAME = "GalleryItem";
 
@@ -39,6 +40,8 @@ class GalleryItem {
   final double height;
   @JsonKey(name: "datetime", fromJson: ModelUtils.dateFromJson)
   final DateTime dateCreated;
+  @JsonKey(name: "has_sound")
+  final bool hasSound;
 
   @override
   String toString() {

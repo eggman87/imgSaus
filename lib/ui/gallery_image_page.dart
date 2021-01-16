@@ -10,13 +10,14 @@ import 'package:redux/redux.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryImagePage extends StatefulWidget {
-  GalleryImagePage(this.item, {Key key, VideoPlayerController controller, bool initialSoundOn = false })
-      : this.controller = controller, this.initialSoundOn = initialSoundOn,
+  GalleryImagePage(this.item, {Key key, VideoPlayerController controller, bool initialSoundOn = false, bool shouldShowSoundIndicator = true })
+      : this.controller = controller, this.initialSoundOn = initialSoundOn, this.showSoundIndicator = shouldShowSoundIndicator,
         super(key: key);
 
   final GalleryItem item;
   VideoPlayerController controller;
   final bool initialSoundOn;
+  final bool showSoundIndicator;
 
   @override
   _GalleryImagePageState createState() => _GalleryImagePageState();
@@ -25,10 +26,16 @@ class GalleryImagePage extends StatefulWidget {
 class _GalleryImagePageState extends State<GalleryImagePage> {
   VideoPlayerController _controller;
   Store<AppState> _store;
-  bool _soundOn = false;
+  bool _soundOn;
 
   //did we create the controller? if so we are responsible for destroying it.
   bool _isVideoControllerOwner = false;
+
+
+  @override
+  void initState() {
+    _soundOn = widget.initialSoundOn;
+  }
 
   @override
   void dispose() {
@@ -46,14 +53,15 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
   }
 
   void toggleSound() {
-    //there is no way to read volume so we have to keep that state
-    if (_soundOn ) {
-      _soundOn = false;
-    } else {
-      _soundOn = true;
-    }
-
-    updateSoundBasedOnState();
+    this.setState(() {
+      //there is no way to read volume so we have to keep that state
+      if (_soundOn ) {
+        _soundOn = false;
+      } else {
+        _soundOn = true;
+      }
+      updateSoundBasedOnState();
+    });
   }
 
   void updateSoundBasedOnState() {
@@ -69,7 +77,7 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
     String imageUrl = widget.item.imageUrl();
 
     if (GalleryItem.isLinkVideo(imageUrl)) {
-      _soundOn = widget.initialSoundOn;
+
       if (widget.controller != null) {
         _controller = widget.controller;
         updateSoundBasedOnState();
@@ -91,10 +99,17 @@ class _GalleryImagePageState extends State<GalleryImagePage> {
           ? Center(
               child: AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
-              child: GestureDetector(
+              child: Stack(children: [
+                GestureDetector(
                   onTap: this.toggleSound,
-                  child: Hero(tag: "gallery_video", child: player)),
-            ))
+                  child: Hero(tag: "gallery_video_${widget.item.id}", child: player)),
+                widget.showSoundIndicator && widget.item.hasSound ? Positioned(child: IconButton(
+                  icon: Icon(this._soundOn ? Icons.volume_up_sharp:Icons.volume_off),
+                  color: Colors.white,
+                  onPressed: ()=> {this.toggleSound() },
+                ), left: 0, bottom: 0, width: 62, height: 62,): Container(),
+                ]
+            )))
           : Container();
     } else {
       return GalleryImageView(imageUrl: imageUrl);
