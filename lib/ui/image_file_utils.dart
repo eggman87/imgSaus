@@ -13,7 +13,7 @@ class ImageFileUtils {
 
   Future<File> _localFile(String extension) async {
     final path = await _localPath;
-    return File('$path/temp_image.$extension');
+    return File('$path/share.$extension');
   }
 
   Future<File> writeImageToFile(String imageUrl) async {

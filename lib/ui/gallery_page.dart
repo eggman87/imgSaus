@@ -134,7 +134,7 @@ class _GalleryPageState extends State<GalleryPage> {
   void _shareCurrentImage(GalleryItem item) {
     var imageFile = ImageFileUtils();
     imageFile.writeImageToFile(item.imageUrl()).then((it) {
-      ShareExtend.share(it.path, "image");
+      ShareExtend.share(it.path, "file");
     });
   }
 
