@@ -17,11 +17,13 @@ imgSaus is a Flutter application that consumes the imgur api. This is a project 
 This project uses DotEnv to manage secrets. This application requires two secrets to work properly. 
 
 Create a .env file at the project root and include: 
+```
 IMGUR_CLIENT_ID=
 IMGUR_CLIENT_SECRET=
+```
 
 To get a client id, generate one with imgur at https://api.imgur.com/oauth2/addclient 
 
-For the oauth callback url, use `com.eggman.imgsrc://oauth2redirect`. Once you have regisetered, enter the values for client id and secret in the .env file. 
+For the oauth callback url, use `com.eggman.imgsrc://oauth2redirect`. Once you have registered, enter the values for client id and secret in the .env file. 
 
 
