@@ -5,6 +5,7 @@ import 'package:imgsrc/reducers/gallery_reducers.dart';
 AppState appReducer(AppState state, action) {
   return AppState(
     isLoadingGallery: isLoadingGalleryReducer(state.isLoadingGallery, action),
+    currentAccount: accountReducer(state.currentAccount, action),
     galleryFilter: activeFilterReducer(state.galleryFilter, action),
     galleryItems: galleryReducer(state.galleryItems, action),
     itemComments: commentsReducer(state.itemComments, action),

@@ -6,6 +6,7 @@ import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:imgsrc/model/gallery_tag.dart';
+import 'package:imgsrc/ui/account_page_container.dart';
 import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/home_page_container.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -73,6 +74,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     return Scaffold(
       appBar: AppBar(
         title: Text('imgSaus'),
+        actions: [
+          IconButton(icon: Icon(Icons.account_circle_sharp), onPressed:this.goToAccount)
+        ],
       ),
       body: SingleChildScrollView(
           child: Container(
@@ -263,6 +267,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               textAlign: TextAlign.right,
               style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 20, letterSpacing: 2),
             )));
+  }
+
+  void goToAccount() {
+    StoreProvider.of<AppState>(context).dispatch(GetAccountAction());
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPageContainer()));
   }
 }
 

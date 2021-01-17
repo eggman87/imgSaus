@@ -1,4 +1,5 @@
 import 'package:imgsrc/action/actions.dart';
+import 'package:imgsrc/model/account.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:imgsrc/model/gallery_tag.dart';
@@ -41,11 +42,20 @@ final videoControllerReducer = combineReducers<Map<String, VideoPlayerController
   TypedReducer<Map<String, VideoPlayerController>, ClearVideoControllerAction>(_clearVideoController),
 ]);
 
+final accountReducer = combineReducers<Account>([
+  TypedReducer<Account, AccountLoadedAction>(_setLoadedAccount)
+]);
+
 bool _setIsLoading(bool isLoading, IsLoadingAction action) {
   if (isLoading != action.isLoading) {
     return action.isLoading;
   }
   return isLoading;
+}
+
+Account _setLoadedAccount(Account account, AccountLoadedAction action) {
+  //todo: possibly clear stuff if account changes.
+  return action.account;
 }
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {

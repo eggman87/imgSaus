@@ -3,11 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:imgsrc/model/account.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:imgsrc/model/gallery_tag.dart';
+
+import 'auth.dart';
 
 
 class GalleryRepository {
@@ -63,6 +66,19 @@ class GalleryRepository {
 
     List<dynamic> tags = await compute(parseList, Parsable<GalleryTag>(response.body, GalleryTag.NAME, subKey: GalleryTag.TAGS_SUB_KEY));
     return ParsedResponse(response.statusCode, tags.cast());
+  }
+
+  Future<ParsedResponse<Account>> getAccount() async {
+    String url = "$BASE_URL/account/me";
+
+    http.Response response = await Authentication.oauth2Helper.get(url, headers: headers);
+
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
+      return ParsedResponse(response.statusCode, null);
+    }
+
+    dynamic item = await compute(parseItem, Parsable<Account>(response.body, Account.NAME));
+    return ParsedResponse(response.statusCode, item);
   }
 }
 
@@ -125,5 +141,7 @@ dynamic jsonToItem(String className, dynamic itemJson) {
     return Comment.fromJson(itemJson);
   } else if (className == GalleryTag.NAME) {
     return GalleryTag.fromJson(itemJson);
+  } else if (className == Account.NAME) {
+    return Account.fromJson(itemJson);
   }
 }

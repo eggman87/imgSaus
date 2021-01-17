@@ -1,3 +1,4 @@
+import 'package:imgsrc/model/account.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -127,6 +128,16 @@ class ClearVideoControllerAction {
   final String itemId;
 
   ClearVideoControllerAction(this.itemId);
+}
+
+class GetAccountAction {
+
+}
+
+class AccountLoadedAction {
+  final Account account;
+
+  AccountLoadedAction(this.account);
 }
 
 class IsLoadingAction {

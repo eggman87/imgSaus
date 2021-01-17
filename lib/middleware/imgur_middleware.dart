@@ -13,12 +13,14 @@ List<Middleware<AppState>> createImgurMiddleware([
   final loadComments = _loadCommentsForId(repository);
   final loadAlbumDetails = _loadAlbumForId(repository);
   final loadGalleryTags = _loadGalleryTags(repository);
+  final loadAccount = _loadAccount(repository);
 
   return [
     TypedMiddleware<AppState, UpdateFilterAction>(filterItems),
     TypedMiddleware<AppState, LoadCommentsAction>(loadComments),
     TypedMiddleware<AppState, LoadAlbumImagesAction>(loadAlbumDetails),
     TypedMiddleware<AppState, LoadGalleryTagsAction>(loadGalleryTags),
+    TypedMiddleware<AppState, GetAccountAction>(loadAccount)
   ];
 }
 
@@ -104,3 +106,14 @@ Middleware<AppState> _loadGalleryTags(GalleryRepository repository) {
   };
 }
 
+Middleware<AppState> _loadAccount(GalleryRepository repository) {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    repository.getAccount().then((response) {
+      if (response.isOk()) {
+        next(AccountLoadedAction(response.body));
+      } else {
+        next(ApiError(ERROR_BAD_RESPONSE));
+      }
+    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
+  };
+}

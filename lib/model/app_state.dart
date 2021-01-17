@@ -4,8 +4,11 @@ import 'package:imgsrc/model/gallery_models.dart';
 import 'package:imgsrc/model/gallery_tag.dart';
 import 'package:video_player/video_player.dart';
 
+import 'account.dart';
+
 class AppState {
   final bool isLoadingGallery;
+  final Account currentAccount;
   final GalleryFilter galleryFilter;
   final List<GalleryItem> galleryItems;
   final Map<String, List<Comment>> itemComments;
@@ -17,14 +20,17 @@ class AppState {
   final List<GalleryTag> galleryTags;
 
   AppState(
-      {this.isLoadingGallery = false,
-      this.itemDetails = const {},
-      this.galleryItems = const [],
-      this.galleryFilter = const GalleryFilter(GallerySort.top, GalleryWindow.day, 0, section: GallerySection.hot),
-      this.itemComments = const {},
-      this.albumIndex = const {},
-      this.videoControllers = const {},
-      this.galleryTags = const []});
+      {
+        this.isLoadingGallery = false,
+        this.currentAccount,
+        this.itemDetails = const {},
+        this.galleryItems = const [],
+        this.galleryFilter = const GalleryFilter(GallerySort.top, GalleryWindow.day, 0, section: GallerySection.hot),
+        this.itemComments = const {},
+        this.albumIndex = const {},
+        this.videoControllers = const {},
+        this.galleryTags = const []
+      });
 
   factory AppState.loading() => AppState(isLoadingGallery: true);
 
