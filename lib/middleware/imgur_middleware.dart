@@ -14,13 +14,15 @@ List<Middleware<AppState>> createImgurMiddleware([
   final loadAlbumDetails = _loadAlbumForId(repository);
   final loadGalleryTags = _loadGalleryTags(repository);
   final loadAccount = _loadAccount(repository);
+  final loadAccountImages = _loadAccountImages(repository);
 
   return [
     TypedMiddleware<AppState, UpdateFilterAction>(filterItems),
     TypedMiddleware<AppState, LoadCommentsAction>(loadComments),
     TypedMiddleware<AppState, LoadAlbumImagesAction>(loadAlbumDetails),
     TypedMiddleware<AppState, LoadGalleryTagsAction>(loadGalleryTags),
-    TypedMiddleware<AppState, GetAccountAction>(loadAccount)
+    TypedMiddleware<AppState, GetAccountAction>(loadAccount),
+    TypedMiddleware<AppState, LoadAccountImagesAction>(loadAccountImages),
   ];
 }
 
@@ -111,6 +113,20 @@ Middleware<AppState> _loadAccount(GalleryRepository repository) {
     repository.getAccount().then((response) {
       if (response.isOk()) {
         next(AccountLoadedAction(response.body));
+      } else {
+        next(ApiError(ERROR_BAD_RESPONSE));
+      }
+    }).catchError((error) => next(ApiError(ERROR_UNKNOWN)));
+  };
+}
+
+Middleware<AppState> _loadAccountImages(GalleryRepository repository) {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    int page = action.page;
+
+    repository.getAccountImages(page).then((response) {
+      if (response.isOk()) {
+        next(AccountImagesLoadedAction(page, response.body));
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));
       }

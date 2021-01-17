@@ -1,3 +1,4 @@
+import 'package:imgsrc/model/account_image.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -9,6 +10,7 @@ import 'account.dart';
 class AppState {
   final bool isLoadingGallery;
   final Account currentAccount;
+  final List<AccountImage> accountImages;
   final GalleryFilter galleryFilter;
   final List<GalleryItem> galleryItems;
   final Map<String, List<Comment>> itemComments;
@@ -23,6 +25,7 @@ class AppState {
       {
         this.isLoadingGallery = false,
         this.currentAccount,
+        this.accountImages = const [],
         this.itemDetails = const {},
         this.galleryItems = const [],
         this.galleryFilter = const GalleryFilter(GallerySort.top, GalleryWindow.day, 0, section: GallerySection.hot),

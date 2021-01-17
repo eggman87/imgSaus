@@ -1,4 +1,5 @@
 import 'package:imgsrc/model/account.dart';
+import 'package:imgsrc/model/account_image.dart';
 import 'package:imgsrc/model/comment_models.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
@@ -138,6 +139,19 @@ class AccountLoadedAction {
   final Account account;
 
   AccountLoadedAction(this.account);
+}
+
+class LoadAccountImagesAction {
+  final int page;
+
+  LoadAccountImagesAction(this.page);
+}
+
+class AccountImagesLoadedAction {
+  final int page;
+  final List<AccountImage> images;
+
+  AccountImagesLoadedAction(this.page, this.images);
 }
 
 class IsLoadingAction {

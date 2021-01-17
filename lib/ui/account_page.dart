@@ -12,18 +12,11 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Account")),
-      body: _body(),
+      body: _body(context),
     );
-    if (viewModel.account != null) {
-      return Text(viewModel.account.url);
-    } else {
-      return Container(
-        color: Colors.blue,
-      );
-    }
   }
 
-  Widget _body() {
+  Widget _body(BuildContext context) {
     if (viewModel.account == null) {
       return Container();
     }
@@ -37,7 +30,11 @@ class AccountPage extends StatelessWidget {
         IntrinsicHeight(
           child: Stack(
             children: [
-              Image(image: NetworkImageWithRetry(cover)),
+              Image(
+                  width: MediaQuery.of(context).size.width,
+                  height: 240,
+                  fit: BoxFit.fill,
+                  image: NetworkImageWithRetry(cover)),
               Positioned(
                   bottom: 8,
                   left: 8,
@@ -54,9 +51,9 @@ class AccountPage extends StatelessWidget {
             ],
           ),
         ),
-        Expanded( child:
-          DefaultTabController(
-            length: 2,
+        Expanded(
+            child: DefaultTabController(
+                length: 2,
                 child: Container(
                     color: Colors.black26,
                     child: Column(
@@ -77,8 +74,7 @@ class AccountPage extends StatelessWidget {
                           pageTwo(),
                         ]))
                       ],
-                    ))
-          ))
+                    ))))
       ],
     );
   }

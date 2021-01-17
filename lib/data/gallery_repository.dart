@@ -9,6 +9,7 @@ import 'package:imgsrc/model/gallery_item.dart';
 import 'package:imgsrc/model/gallery_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:imgsrc/model/gallery_tag.dart';
+import 'package:imgsrc/model/account_image.dart';
 
 import 'auth.dart';
 
@@ -80,6 +81,19 @@ class GalleryRepository {
     dynamic item = await compute(parseItem, Parsable<Account>(response.body, Account.NAME));
     return ParsedResponse(response.statusCode, item);
   }
+
+  Future<ParsedResponse<List<AccountImage>>> getAccountImages(int page) async {
+    String url = "$BASE_URL/account/me/images/$page";
+
+    http.Response response = await Authentication.oauth2Helper.get(url, headers: headers);
+
+    if (!ParsedResponse.isOkCode(response.statusCode)) {
+      return ParsedResponse(response.statusCode, null);
+    }
+
+    List<dynamic> tags = await compute(parseList, Parsable<AccountImage>(response.body, AccountImage.NAME));
+    return ParsedResponse(response.statusCode, tags.cast());
+  }
 }
 
 class ParsedResponse<T> {
@@ -143,5 +157,7 @@ dynamic jsonToItem(String className, dynamic itemJson) {
     return GalleryTag.fromJson(itemJson);
   } else if (className == Account.NAME) {
     return Account.fromJson(itemJson);
+  } else if (className == AccountImage.NAME) {
+    return AccountImage.fromJson(itemJson);
   }
 }
