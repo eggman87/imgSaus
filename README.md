@@ -14,13 +14,14 @@ imgSaus is a Flutter application that consumes the imgur api. This is a project 
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project uses DotEnv to manage secrets. This application requires two secrets to work properly. 
 
-A few resources to get you started if this is your first Flutter project:
+Create a .env file at the project root and include: 
+IMGUR_CLIENT_ID=
+IMGUR_CLIENT_SECRET=
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
+To get a client id, generate one with imgur at https://api.imgur.com/oauth2/addclient 
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+For the oauth callback url, use `com.eggman.imgsrc://oauth2redirect`. Once you have regisetered, enter the values for client id and secret in the .env file. 
+
+
