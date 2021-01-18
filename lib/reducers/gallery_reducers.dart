@@ -71,7 +71,11 @@ List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedA
   if (action.filter.page == 0) {
     return action.items;
   } else {
-    return List.from(items)..addAll(action.items);
+    final mergedList = List.from(items)..addAll(action.items);
+    //we have to remove duplicates as items are added to front enough between pages.
+    final ids = mergedList.map((e) => e.id).toSet();
+    mergedList.retainWhere((element) => ids.remove(element.id));
+    return mergedList.cast();
   }
 }
 

@@ -31,6 +31,8 @@ class _GalleryPageState extends State<GalleryPage> {
   int _pagePosition = 0;
   Offset _fabPosition = Offset(-1,40);
   final currentPageController = TextEditingController(text: "1");
+  int jumpToIndex = -1;
+  final pageController = PageController();
 
 
   void _loadNextPage(BuildContext context) {
@@ -87,6 +89,8 @@ class _GalleryPageState extends State<GalleryPage> {
             FlatButton(
               child: Text("Update"),
               onPressed: () {
+                //jump to next page once we have loaded items.
+                jumpToIndex = _vm.items.length + 1;
                 StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: int.parse(currentPageController.text) - 1)));
                 Navigator.pop(context);
               },
@@ -156,9 +160,22 @@ class _GalleryPageState extends State<GalleryPage> {
 
   }
 
+  //todo: maybe we should clear current items when jumping...
+  void jumpToPageIfNecessary() {
+    if (jumpToIndex > 0 && _vm.items.length > jumpToIndex) {
+      setState(() {
+        pageController.jumpToPage(jumpToIndex);
+        _pagePosition = jumpToIndex;
+        jumpToIndex = -1;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _vm = widget.viewModel;
+
+    jumpToPageIfNecessary();
 
     return Scaffold(
       appBar: AppBar(
@@ -307,7 +324,7 @@ class _GalleryPageState extends State<GalleryPage> {
   PageView _pageView(BuildContext context) {
     return PageView.builder(
       pageSnapping: true,
-      controller: PageController(initialPage: _pagePosition),
+      controller: pageController,
       itemBuilder: (context, position) {
         GalleryItem currentItem = _vm.items[position];
         if (currentItem.isAlbum) {
