@@ -91,8 +91,8 @@ class GalleryRepository {
       return ParsedResponse(response.statusCode, null);
     }
 
-    List<dynamic> tags = await compute(parseList, Parsable<AccountImage>(response.body, AccountImage.NAME));
-    return ParsedResponse(response.statusCode, tags.cast());
+    List<dynamic> accountImages = await compute(parseList, Parsable<AccountImage>(response.body, AccountImage.NAME));
+    return ParsedResponse(response.statusCode, accountImages.cast());
   }
 }
 

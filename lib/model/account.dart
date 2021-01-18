@@ -30,4 +30,9 @@ class Account {
       _$AccountFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountToJson(this);
+
+  @override
+  String toString() {
+    return 'Account{$url}';
+  }
 }

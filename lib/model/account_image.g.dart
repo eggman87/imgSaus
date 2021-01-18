@@ -8,7 +8,7 @@ part of 'account_image.dart';
 
 AccountImage _$AccountImageFromJson(Map<String, dynamic> json) {
   return AccountImage(
-      id: json['id'] as int,
+      id: json['id'] as String,
       title: json['title'] as String,
       type: json['type'] as String,
       width: json['width'] as int,

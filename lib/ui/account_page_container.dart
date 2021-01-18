@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/model/account.dart';
+import 'package:imgsrc/model/account_image.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/ui/account_page.dart';
 import 'package:redux/redux.dart';
@@ -10,9 +10,6 @@ class AccountPageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AccountViewModel>(
-        onInit: (store) {
-          store.dispatch(LoadAccountImagesAction(0));
-        },
         builder: (context, vm) { return new AccountPage(vm);},
         converter: (store) => AccountViewModel.fromStore(store)
     );
@@ -22,11 +19,16 @@ class AccountPageContainer extends StatelessWidget {
 
 class AccountViewModel {
   final Account account;
+  final List<AccountImage> accountImages;
   final bool isLoading;
 
-  AccountViewModel({@required this.account, @required this.isLoading});
+  AccountViewModel({@required this.account, @required this.isLoading, this.accountImages});
 
   static AccountViewModel fromStore(Store<AppState> store) {
-    return AccountViewModel(account: store.state.currentAccount, isLoading: store.state.isLoadingGallery);
+    return AccountViewModel(
+        account: store.state.currentAccount,
+        isLoading: store.state.isLoadingGallery,
+        accountImages: store.state.accountImages
+    );
   }
 }

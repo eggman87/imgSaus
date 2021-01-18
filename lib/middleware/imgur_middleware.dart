@@ -113,6 +113,7 @@ Middleware<AppState> _loadAccount(GalleryRepository repository) {
     repository.getAccount().then((response) {
       if (response.isOk()) {
         next(AccountLoadedAction(response.body));
+        next(LoadAccountImagesAction(0));
       } else {
         next(ApiError(ERROR_BAD_RESPONSE));
       }

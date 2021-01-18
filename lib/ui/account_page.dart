@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image/network.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:imgsrc/model/account_image.dart';
 import 'package:imgsrc/ui/account_page_container.dart';
 
 class AccountPage extends StatelessWidget {
@@ -55,10 +57,12 @@ class AccountPage extends StatelessWidget {
             child: DefaultTabController(
                 length: 2,
                 child: Container(
-                    color: Colors.black26,
+                    color: Colors.black87,
                     child: Column(
                       children: [
                         TabBar(
+                          labelColor: Colors.white,
+                          indicatorColor: Colors.redAccent,
                           tabs: [
                             Tab(
                               text: "images",
@@ -70,7 +74,7 @@ class AccountPage extends StatelessWidget {
                         ),
                         Expanded(
                             child: TabBarView(children: [
-                          pageOne(),
+                          accountImagesGrid(),
                           pageTwo(),
                         ]))
                       ],
@@ -78,11 +82,35 @@ class AccountPage extends StatelessWidget {
       ],
     );
   }
-}
 
-Widget pageOne() {
-  // return Gridvi
-  return Container(color: Colors.black);
+  Widget accountImagesGrid() {
+    final images = viewModel.accountImages ?? [];
+
+    // return Container(color: Colors.black);
+    return StaggeredGridView.countBuilder(
+      crossAxisCount: 4,
+      itemCount: images.length,
+      itemBuilder: accountImageBuilder(images),
+      staggeredTileBuilder: (int index) =>
+          StaggeredTile.count(2, index.isEven ? 2 : 1),
+    );
+  }
+
+  Widget Function(BuildContext context, int index) accountImageBuilder(
+      List<AccountImage> images) {
+    return (context, position) {
+      final image = images[position];
+
+      final thumb = "http://i.imgur.com/${image.id}l.jpg";
+
+      return Container(
+        child: Image(
+            fit: BoxFit.cover,
+            image: NetworkImageWithRetry(thumb)
+        ),
+      );
+    };
+  }
 }
 
 Widget pageTwo() {

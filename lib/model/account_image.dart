@@ -15,7 +15,7 @@ class AccountImage {
     this.link
   });
 
-  final int id;
+  final String id;
   final String title;
   final String type;
   final int width;

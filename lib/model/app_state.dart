@@ -40,6 +40,8 @@ class AppState {
   @override
   String toString() {
     return '{isLoading=$isLoadingGallery, '
+        'currentAccount=$currentAccount,'
+        'accountImages=${accountImages.length}'
         'galleryItemCount=${galleryItems.length}, '
         'filter=$galleryFilter, '
         'itemCommentCount=${itemComments.length}, '
