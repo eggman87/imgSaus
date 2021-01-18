@@ -10,7 +10,7 @@ import 'account.dart';
 class AppState {
   final bool isLoadingGallery;
   final Account currentAccount;
-  final List<AccountImage> accountImages;
+  final LoadedAccountImages accountImages;
   final GalleryFilter galleryFilter;
   final List<GalleryItem> galleryItems;
   final Map<String, List<Comment>> itemComments;
@@ -25,7 +25,7 @@ class AppState {
       {
         this.isLoadingGallery = false,
         this.currentAccount,
-        this.accountImages = const [],
+        this.accountImages = const LoadedAccountImages([], 0, false),
         this.itemDetails = const {},
         this.galleryItems = const [],
         this.galleryFilter = const GalleryFilter(GallerySort.top, GalleryWindow.day, 0, section: GallerySection.hot),
@@ -41,7 +41,7 @@ class AppState {
   String toString() {
     return '{isLoading=$isLoadingGallery, '
         'currentAccount=$currentAccount,'
-        'accountImages=${accountImages.length}'
+        'accountImages=${accountImages.images.length}'
         'galleryItemCount=${galleryItems.length}, '
         'filter=$galleryFilter, '
         'itemCommentCount=${itemComments.length}, '

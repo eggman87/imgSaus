@@ -47,8 +47,8 @@ final accountReducer = combineReducers<Account>([
   TypedReducer<Account, AccountLoadedAction>(_setLoadedAccount)
 ]);
 
-final accountImagesReducer = combineReducers<List<AccountImage>>([
-  TypedReducer<List<AccountImage>, AccountImagesLoadedAction>(_setLoadedAccountImages)
+final accountImagesReducer = combineReducers<LoadedAccountImages>([
+  TypedReducer<LoadedAccountImages, AccountImagesLoadedAction>(_setLoadedAccountImages)
 ]);
 
 bool _setIsLoading(bool isLoading, IsLoadingAction action) {
@@ -63,9 +63,8 @@ Account _setLoadedAccount(Account account, AccountLoadedAction action) {
   return action.account;
 }
 
-List<AccountImage> _setLoadedAccountImages(List<AccountImage> existingImages, AccountImagesLoadedAction action) {
-  //todo: add paging logic
-  return action.images;
+LoadedAccountImages _setLoadedAccountImages(LoadedAccountImages existingImages, AccountImagesLoadedAction action) {
+  return LoadedAccountImages(List.from(existingImages.images)..addAll(action.images), action.page, action.images.length == 0);
 }
 
 List<GalleryItem> _setLoadedGalleryItems(List<GalleryItem> items, GalleryLoadedAction action) {

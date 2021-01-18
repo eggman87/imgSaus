@@ -30,3 +30,11 @@ class AccountImage {
 
   Map<String, dynamic> toJson() => _$AccountImageToJson(this);
 }
+
+class LoadedAccountImages {
+  const LoadedAccountImages(this.images, this.currentPage, this.hasLoadedAll);
+
+  final List<AccountImage> images;
+  final int currentPage;
+  final bool hasLoadedAll;
+}

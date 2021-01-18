@@ -7,6 +7,9 @@ import 'package:imgsrc/ui/account_page.dart';
 import 'package:redux/redux.dart';
 
 class AccountPageContainer extends StatelessWidget {
+
+  AccountPageContainer({Key key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AccountViewModel>(
@@ -19,7 +22,7 @@ class AccountPageContainer extends StatelessWidget {
 
 class AccountViewModel {
   final Account account;
-  final List<AccountImage> accountImages;
+  final LoadedAccountImages accountImages;
   final bool isLoading;
 
   AccountViewModel({@required this.account, @required this.isLoading, this.accountImages});
