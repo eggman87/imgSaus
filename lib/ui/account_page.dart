@@ -90,7 +90,7 @@ class AccountPageState extends State<AccountPage> {
         ),
         Expanded(
             child: DefaultTabController(
-                length: 2,
+                length: 4,
                 child: Container(
                     color: Colors.black87,
                     child: Column(
@@ -103,14 +103,23 @@ class AccountPageState extends State<AccountPage> {
                               text: "images",
                             ),
                             Tab(
+                                text: "favorites"
+                            ),
+                            Tab(
                               text: "albums",
-                            )
+                            ),
+                            Tab(
+                              text: "messages"
+                            ),
                           ],
                         ),
                         Expanded(
-                            child: TabBarView(children: [
-                              accountImagesGrid(),
-                              pageTwo(),
+                            child: TabBarView(
+                                children: [
+                                  accountImagesGrid(),
+                                  pageTwo(),
+                                  pageTwo(),
+                                  pageTwo()
                             ]))
                       ],
                     ))))
@@ -123,6 +132,7 @@ class AccountPageState extends State<AccountPage> {
 
     // return Container(color: Colors.black);
     return StaggeredGridView.countBuilder(
+      key: PageStorageKey('images'),
       crossAxisCount: 4,
       itemCount: images.length,
       itemBuilder: accountImageBuilder(images),
@@ -151,5 +161,5 @@ class AccountPageState extends State<AccountPage> {
 }
 
 Widget pageTwo() {
-  return Container(color: Colors.yellow);
+  return Container(color: Colors.black54);
 }
