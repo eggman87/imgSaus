@@ -33,6 +33,7 @@ class _GalleryPageState extends State<GalleryPage> {
   final currentPageController = TextEditingController(text: "1");
   int jumpToIndex = -1;
   final pageController = PageController();
+  final titleScrollController = ScrollController();
 
 
   void _loadNextPage(BuildContext context) {
@@ -155,6 +156,7 @@ class _GalleryPageState extends State<GalleryPage> {
     }
 
     setState(() {
+      titleScrollController.animateTo(0, duration: Duration(milliseconds: 500), curve: Curves.easeIn);
       _pagePosition = position;
     });
 
@@ -224,10 +226,27 @@ class _GalleryPageState extends State<GalleryPage> {
                       Container(
                         alignment: Alignment(-1, -1),
                         margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                        child: Text(
-                          _galleryItemTitle(),
-                          maxLines: 6,
-                          style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                        child: Container(
+                            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .12),
+                            child: SingleChildScrollView(
+                              controller: titleScrollController,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _galleryItemTitle(item),
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(_galleryItemDescription(item),
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                          color: Colors.white))
+                                ],
+                              ))
                         ),
                       ),
                       Row(
@@ -265,9 +284,8 @@ class _GalleryPageState extends State<GalleryPage> {
     }
   }
 
-  String _galleryItemTitle() {
+  String _galleryItemTitle(GalleryItem item) {
     if (_vm.items.length > 0) {
-      GalleryItem item = _currentGalleryItem();
       String title = item.title;
       if (item.isAlbumWithMoreThanOneImage()) {
         GalleryItem itemDetails = _vm.itemDetails[item.id];
@@ -277,6 +295,26 @@ class _GalleryPageState extends State<GalleryPage> {
         }
       }
       return title;
+    }
+    return "";
+  }
+
+  String _galleryItemDescription(GalleryItem item) {
+    if (_vm.items.length > 0) {
+      if (item.isAlbumWithMoreThanOneImage()) {
+        GalleryItem itemDetails = _vm.itemDetails[item.id];
+        if (itemDetails != null) {
+          int currentPos = _vm.albumIndex[item.id] ?? 0;
+          final albumImage = itemDetails.images[currentPos];
+          if (albumImage != null && albumImage.description != null) {
+            return albumImage.description;
+          }
+        }
+      } else {
+        if (item.description != null) {
+          return item.description;
+        }
+      }
     }
     return "";
   }

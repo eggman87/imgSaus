@@ -5,25 +5,26 @@ part 'gallery_item.g.dart';
 
 @JsonSerializable()
 class GalleryItem {
-  GalleryItem(
-      {this.id,
-      this.title,
-      this.type,
-      this.animated,
-      this.isAlbum,
-      this.link,
-      this.images,
-      this.mp4,
-      this.imagesCount,
-      this.width,
-      this.height,
-      this.dateCreated,
-      this.hasSound});
+  GalleryItem({this.id,
+    this.title,
+    this.description,
+    this.type,
+    this.animated,
+    this.isAlbum,
+    this.link,
+    this.images,
+    this.mp4,
+    this.imagesCount,
+    this.width,
+    this.height,
+    this.dateCreated,
+    this.hasSound});
 
   static const NAME = "GalleryItem";
 
   final String id;
   final String title;
+  final String description;
   final String type;
   final bool animated;
 
