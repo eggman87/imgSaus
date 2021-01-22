@@ -62,7 +62,7 @@ class CommentsList extends StatelessWidget {
               CommentViewItem viewItem = commentItems[index];
               Comment comment = viewItem.comment;
 
-              final indentColorBase = max((-5 + viewItem.indentLevel).abs(), 1);
+              final indentColorBase = viewItem.indentLevel;//max((-5 + viewItem.indentLevel).abs(), 1);
               var levelColor = Color((indentColorBase * 0xFFEEEE).toInt() << 0)
                   .withOpacity(1.0);
 
@@ -105,9 +105,9 @@ class CommentsList extends StatelessWidget {
 
   Widget _commentBody(BuildContext context, Comment comment) {
     return Container(
-      child: Linkify(
+      child: SelectableLinkify(
         text: (comment.comment),
-        onOpen: (url) => _onUrlTapped(context, url),
+        onOpen: (link) => _onUrlTapped(context, link.url),
       ),
       padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       alignment: Alignment(-1.0, -1.0),

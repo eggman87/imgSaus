@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/data/analytics.dart';
@@ -15,6 +16,7 @@ import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:timeago/timeago.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPage(this.viewModel, {Key key}) : super(key: key);
@@ -37,7 +39,11 @@ class _GalleryPageState extends State<GalleryPage> {
 
 
   void _loadNextPage(BuildContext context) {
-    StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: _vm.filter.page + 1)));
+    _loadPage(context, _vm.filter.page + 1);
+  }
+
+  void _loadPage(BuildContext context, int pageToLoad) {
+    StoreProvider.of<AppState>(context).dispatch(UpdateFilterAction(_vm.filter.copyWith(page: pageToLoad)));
   }
 
   void _onCommentsTapped(BuildContext context) {
@@ -196,11 +202,30 @@ class _GalleryPageState extends State<GalleryPage> {
   //todo refactor to widget to avoid perf hit.
   //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if (_vm.isGalleryLoading && _vm.items.length == 0) {
+    if (_vm.isGalleryLoading) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),
       );
+    } else if (_vm.items.length == 0){
+      return Container(
+          color: Colors.black,
+          child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Unable to load gallery",
+                style: TextStyle(color: Colors.white),
+              ),
+              SizedBox(height: 10,),
+              ElevatedButton(
+                style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.red) ),
+                onPressed: () => _loadPage(context, _vm.filter.page),
+                child: Text("Retry", style: TextStyle(color: Colors.white)),
+              )
+            ],
+          )));
     } else {
       GalleryItem item = _currentGalleryItem();
       if (item == null) {
@@ -214,6 +239,8 @@ class _GalleryPageState extends State<GalleryPage> {
           )),
         );
       }
+
+      final description = _galleryItemDescription(item);
 
       return Container(
           color: Colors.black,
@@ -232,19 +259,20 @@ class _GalleryPageState extends State<GalleryPage> {
                               controller: titleScrollController,
                               child: Column(
                                 children: [
-                                  Text(
+                                  SelectableText(
                                     _galleryItemTitle(item),
+                                    textAlign: TextAlign.start,
                                     style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white),
                                   ),
-                                  SizedBox(height: 4),
-                                  Text(_galleryItemDescription(item),
+                                  description != null ? SelectableLinkify(text: _galleryItemDescription(item),
                                       style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.normal,
-                                          color: Colors.white))
+                                          color: Colors.white),
+                                      onOpen: (link) => _onUrlTapped(context, link.url)) : SizedBox(height: 0,)
                                 ],
                               ))
                         ),
@@ -255,11 +283,6 @@ class _GalleryPageState extends State<GalleryPage> {
                             format(item.dateCreated),
                             style: TextStyle(letterSpacing: 1.1, color: Colors.red),
                           ),
-//                          Text(
-//                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
-//                          )                          Text(
-//                            " | ${_pagePosition + 1}/${_vm.items.length}", style: TextStyle(color: Colors.red),
-//                          )
                         ],
                       ),
                     ],
@@ -316,7 +339,7 @@ class _GalleryPageState extends State<GalleryPage> {
         }
       }
     }
-    return "";
+    return null;
   }
 
   Widget _pageWithCommentsFab(BuildContext context) {
@@ -388,4 +411,37 @@ class _GalleryPageState extends State<GalleryPage> {
     currentPageController.dispose();
     super.dispose();
   }
+
+  void _onUrlTapped(BuildContext context, String url) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) => SimpleDialog(
+          contentPadding: EdgeInsets.zero,
+          children: <Widget>[
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
+              child: Container(
+                color: Colors.black,
+                child: _photoOrWebView(url),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget _photoOrWebView(String url) {
+    String lowerUrl = url.toLowerCase();
+    if (lowerUrl.contains(".jpg") ||
+        (url.contains(".gif") && !url.contains(".gifv")) ||
+        url.contains(".png")) {
+      return Image.network(url);
+    } else {
+      return WebView(
+        initialUrl: url,
+        javascriptMode: JavascriptMode.unrestricted,
+      );
+    }
+  }
+
 }

@@ -59,8 +59,10 @@ class AccountPageState extends State<AccountPage> {
     }
 
     final account = viewModel.account;
-    final cover = account.cover ??
-        "https://i.imgur.com/SzQGbZV_d.jpg?maxwidth=2560&fidelity=grand";
+    final screenWidth = MediaQuery.of(context).size.width;
+    var coverUri = Uri.parse(account.cover ??
+        "https://i.imgur.com/SzQGbZV_d.jpg?maxwidth=2560&fidelity=grand");
+    coverUri = coverUri.replace(queryParameters: { "maxWidth": screenWidth.toString() });
 
     return Column(
       children: [
@@ -68,10 +70,10 @@ class AccountPageState extends State<AccountPage> {
           child: Stack(
             children: [
               Image(
-                  width: MediaQuery.of(context).size.width,
+                  width: screenWidth,
                   height: 240,
                   fit: BoxFit.fill,
-                  image: NetworkImageWithRetry(cover)),
+                  image: NetworkImageWithRetry(coverUri.toString())),
               Positioned(
                   bottom: 8,
                   left: 8,
@@ -161,5 +163,7 @@ class AccountPageState extends State<AccountPage> {
 }
 
 Widget pageTwo() {
-  return Container(color: Colors.black54);
+  return Container(color: Colors.black54, child: Center(
+    child: Text("Coming soon...", style: TextStyle(color: Colors.white))
+  ),);
 }
