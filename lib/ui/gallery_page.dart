@@ -36,6 +36,7 @@ class _GalleryPageState extends State<GalleryPage> {
   int jumpToIndex = -1;
   final pageController = PageController();
   final titleScrollController = ScrollController();
+  var isFirstLoad = true;
 
 
   void _loadNextPage(BuildContext context) {
@@ -71,20 +72,24 @@ class _GalleryPageState extends State<GalleryPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Filter"),
+          title: Text("Jump to Page"),
           content: Container(
-            height: 120,
-            width: 200,
+            height: 48,
             child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text("current page: "),
-                    Expanded(child: TextFormField(keyboardType: TextInputType.number, controller: currentPageController), )
-                  ],
-                )
-              ],
-            ),
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 220,
+                        child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            controller: currentPageController),
+                      )
+                    ],
+                  )
+                ],
+              ),
           ),
           actions: <Widget>[
             FlatButton(
@@ -94,7 +99,7 @@ class _GalleryPageState extends State<GalleryPage> {
               },
             ),
             FlatButton(
-              child: Text("Update"),
+              child: Text("Jump"),
               onPressed: () {
                 //jump to next page once we have loaded items.
                 jumpToIndex = _vm.items.length + 1;
@@ -131,6 +136,24 @@ class _GalleryPageState extends State<GalleryPage> {
     );
   }
 
+  void onPopupMenuSelected(Object value) {
+    if (value == SHARE_CONTENT) {
+      _shareCurrentItem();
+    } else if (value == SHARE_URL) {
+      _shareUrl();
+    }
+  }
+
+  static const String SHARE_URL = "Share URL";
+  static const String SHARE_CONTENT = "Share Content";
+
+  List<PopupMenuEntry<Object>> itemMenu(BuildContext context) {
+    final list = List<PopupMenuEntry<Object>>();
+    list.add(PopupMenuItem(child: Text("Share URL"), value: SHARE_URL,));
+    list.add(PopupMenuItem(child: Text("Share Content"), value: SHARE_CONTENT));
+    return list;
+  }
+
   void _shareCurrentItem({bool shouldPop = false}) {
     if (shouldPop) {
       Navigator.pop(context);
@@ -139,7 +162,7 @@ class _GalleryPageState extends State<GalleryPage> {
     var itemCurrentVisible = _vm.currentVisibleItem(_pagePosition);
 
     Analytics.instance().logEvent(name: "shareCurrentItem", parameters: {'url': itemCurrentVisible.imageUrl()});
-      _shareCurrentImage(itemCurrentVisible);
+    _shareCurrentImage(itemCurrentVisible);
   }
 
   void _shareCurrentImage(GalleryItem item) {
@@ -147,6 +170,11 @@ class _GalleryPageState extends State<GalleryPage> {
     imageFile.writeImageToFile(item.imageUrl()).then((it) {
       ShareExtend.share(it.path, "file");
     });
+  }
+  
+  void _shareUrl() {
+    final item = _currentGalleryItem();
+    ShareExtend.share(item.link, "text");
   }
 
   GalleryItem _currentGalleryItem() {
@@ -199,17 +227,10 @@ class _GalleryPageState extends State<GalleryPage> {
     );
   }
 
-  List<PopupMenuEntry<Object>> itemMenu(BuildContext context) {
-    final list = List<PopupMenuEntry<Object>>();
-    list.add(PopupMenuItem(child: Text("Share URL")));
-    list.add(PopupMenuItem(child: Text("Share Content")));
-    list.add(PopupMenuItem(child: Text("Open in Web")));
-    return list;
-  }
 
   //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if ((_vm.isGalleryLoading && _vm.items.length == 0) || (_vm.isGalleryLoading &&  _vm.filter.page == 0)) {
+    if ((_vm.isGalleryLoading && _vm.items.length == 0) || (_vm.isGalleryLoading && isFirstLoad)) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),
@@ -234,6 +255,7 @@ class _GalleryPageState extends State<GalleryPage> {
             ],
           )));
     } else {
+      isFirstLoad = false;
       GalleryItem item = _currentGalleryItem();
       if (item == null) {
         return Container(
@@ -329,6 +351,7 @@ class _GalleryPageState extends State<GalleryPage> {
                           PopupMenuButton(
                             padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                             itemBuilder: this.itemMenu,
+                            onSelected: onPopupMenuSelected,
                             icon: Icon(Icons.more_vert, color: Colors.white),
                           )
                         ],
