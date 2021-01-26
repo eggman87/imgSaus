@@ -75,6 +75,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       appBar: AppBar(
         title: Text('imgSaus'),
         actions: [
+          IconButton(icon: Icon(Icons.add), onPressed: this.addNewGallery,),
           IconButton(icon: Icon(Icons.account_circle_sharp), onPressed:this.goToAccount)
         ],
       ),
@@ -271,6 +272,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   void goToAccount() {
     StoreProvider.of<AppState>(context).dispatch(GetAccountAction());
+    Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPageContainer()));
+  }
+
+  void addNewGallery() async {
     Navigator.push(context, MaterialPageRoute(builder: (context) => AccountPageContainer()));
   }
 }

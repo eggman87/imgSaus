@@ -18,7 +18,10 @@ class GalleryItem {
     this.width,
     this.height,
     this.dateCreated,
-    this.hasSound});
+    this.hasSound,
+    this.accountUrl,
+    this.score
+  });
 
   static const NAME = "GalleryItem";
 
@@ -43,6 +46,9 @@ class GalleryItem {
   final DateTime dateCreated;
   @JsonKey(name: "has_sound")
   final bool hasSound;
+  @JsonKey(name: "account_url")
+  final String accountUrl;
+  final int score;
 
   @override
   String toString() {

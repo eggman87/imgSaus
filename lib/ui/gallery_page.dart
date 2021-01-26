@@ -192,17 +192,24 @@ class _GalleryPageState extends State<GalleryPage> {
           IconButton(
             icon: Icon(Icons.filter_list),
             onPressed: () => _changeFilter(),
-          )
+          ),
         ],
       ),
       body: _body()
     );
   }
 
-  //todo refactor to widget to avoid perf hit.
+  List<PopupMenuEntry<Object>> itemMenu(BuildContext context) {
+    final list = List<PopupMenuEntry<Object>>();
+    list.add(PopupMenuItem(child: Text("Share URL")));
+    list.add(PopupMenuItem(child: Text("Share Content")));
+    list.add(PopupMenuItem(child: Text("Open in Web")));
+    return list;
+  }
+
   //todo refactor to widget to avoid perf hit.
   Widget _body() {
-    if (_vm.isGalleryLoading) {
+    if ((_vm.isGalleryLoading && _vm.items.length == 0) || (_vm.isGalleryLoading &&  _vm.filter.page == 0)) {
       return Container(
         color: Colors.black,
         child: Center(child: CircularProgressIndicator()),
@@ -247,46 +254,87 @@ class _GalleryPageState extends State<GalleryPage> {
           child: Column(
             children: <Widget>[
               Container(
-                  padding: EdgeInsets.fromLTRB(10, 4, 10, 4),
                   child: Column(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment(-1, -1),
-                        margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                        child: Container(
-                            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * .12),
-                            child: SingleChildScrollView(
-                              controller: titleScrollController,
-                              child: Column(
-                                children: [
-                                  SelectableText(
-                                    _galleryItemTitle(item),
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white),
-                                  ),
-                                  description != null ? SelectableLinkify(text: _galleryItemDescription(item),
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.normal,
-                                          color: Colors.white),
-                                      onOpen: (link) => _onUrlTapped(context, link.url)) : SizedBox(height: 0,)
-                                ],
-                              ))
-                        ),
-                      ),
-                      Row(
+                children: <Widget>[
+                  Container(
+                    color: Colors.grey.shade800,
+                    padding: EdgeInsets.fromLTRB(8, 4, 10, 0),
+                    alignment: Alignment(-1, -1),
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    child: Container(
+                        constraints: BoxConstraints(
+                            maxHeight:
+                                MediaQuery.of(context).size.height * .12),
+                        child: SingleChildScrollView(
+                            controller: titleScrollController,
+                            child: Column(
+                              children: [
+                                SelectableText(
+                                  _galleryItemTitle(item),
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                description != null
+                                    ? SelectableLinkify(
+                                        text: _galleryItemDescription(item),
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                            color: Colors.white),
+                                        onOpen: (link) =>
+                                            _onUrlTapped(context, link.url))
+                                    : SizedBox(
+                                        height: 0,
+                                      )
+                              ],
+                            ))),
+                  ),
+                  Container(
+                      color: Colors.grey.shade800,
+                      padding: EdgeInsets.fromLTRB(8, 0, 0, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
+                          IntrinsicWidth(
+                              child: Text(
                             format(item.dateCreated),
-                            style: TextStyle(letterSpacing: 1.1, color: Colors.red),
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic),
+                          )),
+                          SizedBox(
+                            width: 4,
                           ),
+                          IntrinsicWidth(
+                            child: Text(
+                              "${item.score}",
+                              style: TextStyle(color: Colors.green),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          item.accountUrl != null ? Flexible(
+                              child: Text("${item.accountUrl}",
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.1,
+                                      color: Colors.white))) : Container(),
+                          PopupMenuButton(
+                            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                            itemBuilder: this.itemMenu,
+                            icon: Icon(Icons.more_vert, color: Colors.white),
+                          )
                         ],
-                      ),
-                    ],
-                  )),
+                      )),
+                ],
+              )),
               Expanded(
                 child: GestureDetector(
                   child: _pageWithCommentsFab(context),
@@ -324,16 +372,20 @@ class _GalleryPageState extends State<GalleryPage> {
 
   String _galleryItemDescription(GalleryItem item) {
     if (_vm.items.length > 0) {
+      int currentPos = _vm.albumIndex[item.id] ?? 0;
       if (item.isAlbumWithMoreThanOneImage()) {
         GalleryItem itemDetails = _vm.itemDetails[item.id];
         if (itemDetails != null) {
-          int currentPos = _vm.albumIndex[item.id] ?? 0;
           final albumImage = itemDetails.images[currentPos];
           if (albumImage != null && albumImage.description != null) {
             return albumImage.description;
           }
         }
       } else {
+        if (item.isAlbum == true && item.images[currentPos].description != null) {
+          return item.images[currentPos].description;
+        }
+        //todo: probably want to include root item description with album image descriptions.
         if (item.description != null) {
           return item.description;
         }
