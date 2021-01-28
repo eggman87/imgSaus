@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -8,9 +9,10 @@ import 'package:imgsrc/ui/comments_list.dart';
 import 'package:redux/redux.dart';
 
 class CommentsSheetContainer extends StatelessWidget {
-  CommentsSheetContainer({Key key, this.galleryItemId}) : super(key: key);
+  CommentsSheetContainer({Key key, this.galleryItemId, this.connectivity = ConnectivityResult.wifi }) : super(key: key);
 
   final String galleryItemId;
+  final ConnectivityResult connectivity;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class CommentsSheetContainer extends StatelessWidget {
         },
         converter:(store) => _CommentsSheetViewModel.fromStore(galleryItemId, store),
         builder: (context, vm) {
-          return new CommentsList(comments: vm.comments,);
+          return new CommentsList(comments: vm.comments, connectivity: connectivity,);
         }
     );
   }

@@ -1,15 +1,18 @@
-import 'dart:math';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:imgsrc/model/comment_models.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:imgsrc/ui/image_utils.dart';
+import 'package:imgsrc/ui/url_handler.dart';
 import 'package:timeago/timeago.dart';
+import 'package:connectivity/connectivity.dart';
 
 class CommentsList extends StatelessWidget {
   final List<CommentViewItem> commentItems;
+  final urlHandler = UrlHandler();
+  final ConnectivityResult connectivity;
 
-  CommentsList({Key key, @required List<Comment> comments})
+  CommentsList({Key key, @required List<Comment> comments, this.connectivity})
       : this.commentItems = CommentViewItem._flattenComments(comments, 0);
 
   int _commentsLength() {
@@ -18,38 +21,6 @@ class CommentsList extends StatelessWidget {
     } else {
       return 1;
     }
-  }
-
-  Widget _photoOrWebView(String url) {
-    String lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains(".jpg") ||
-        (url.contains(".gif") && !url.contains(".gifv")) ||
-        url.contains(".png")) {
-      return Image.network(url);
-    } else {
-      return WebView(
-        initialUrl: url,
-        javascriptMode: JavascriptMode.unrestricted,
-      );
-    }
-  }
-
-  void _onUrlTapped(BuildContext context, String url) {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => SimpleDialog(
-              contentPadding: EdgeInsets.zero,
-              children: <Widget>[
-                ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
-                  child: Container(
-                    color: Colors.black,
-                    child: _photoOrWebView(url),
-                  ),
-                ),
-              ],
-            ));
   }
 
   @override
@@ -81,7 +52,7 @@ class CommentsList extends StatelessWidget {
                       Expanded(
                         child: Column(
                           children: <Widget>[
-                            _commentBody(context, comment),
+                            _commentBodyWithInlineImages(context, comment),
                             _authorLine(comment),
                           ],
                         ),
@@ -107,11 +78,40 @@ class CommentsList extends StatelessWidget {
     return Container(
       child: SelectableLinkify(
         text: (comment.comment),
-        onOpen: (link) => _onUrlTapped(context, link.url),
+        onOpen: (link) => urlHandler.onUrlTapped(context, link.url),
       ),
       padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
       alignment: Alignment(-1.0, -1.0),
     );
+  }
+
+  Widget _commentBodyWithInlineImages(BuildContext context, Comment comment) {
+    final widgets = List<Widget>();
+    widgets.add(
+        SelectableLinkify(
+          text: (comment.comment),
+          onOpen: (link) => urlHandler.onUrlTapped(context, link.url),
+        )
+    );
+
+    if (connectivity == ConnectivityResult.wifi) {
+      final urls = ImageUtils.getImageUrlsFromString(comment.comment);
+      for (final url in urls) {
+        widgets.add(Align(
+          child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 200),
+              child: Image.network(url)),
+          alignment: Alignment(-1.0, -1.0),
+        ));
+      }
+    }
+
+    return Container(
+        padding: EdgeInsets.fromLTRB(8, 8, 8, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: widgets,
+    ));
   }
 
   //todo: figure out how to make this more dymnamic in flutter world

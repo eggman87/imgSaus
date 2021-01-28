@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -14,9 +13,9 @@ import 'package:imgsrc/ui/gallery_image_full_screen.dart';
 import 'package:imgsrc/ui/gallery_image_page.dart';
 import 'package:imgsrc/ui/gallery_page_container.dart';
 import 'package:imgsrc/ui/image_file_utils.dart';
+import 'package:imgsrc/ui/url_handler.dart';
 import 'package:share_extend/share_extend.dart';
 import 'package:timeago/timeago.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPage(this.viewModel, {Key key}) : super(key: key);
@@ -37,7 +36,19 @@ class _GalleryPageState extends State<GalleryPage> {
   final pageController = PageController();
   final titleScrollController = ScrollController();
   var isFirstLoad = true;
+  final urlHandler = UrlHandler();
+  ConnectivityResult connectivity = ConnectivityResult.wifi;
 
+  var connectivitySubscription;
+
+  @override
+  void initState() {
+    connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      this.connectivity = result;
+    });
+    super.initState();
+
+  }
 
   void _loadNextPage(BuildContext context) {
     _loadPage(context, _vm.filter.page + 1);
@@ -58,6 +69,7 @@ class _GalleryPageState extends State<GalleryPage> {
         builder: (BuildContext context) {
           return CommentsSheetContainer(
             galleryItemId: currentItem.id,
+            connectivity: connectivity,
             key: Key(currentItem.id),
           );
         });
@@ -218,7 +230,7 @@ class _GalleryPageState extends State<GalleryPage> {
         title: Text(_vm.isGalleryLoading ? 'loading' : _vm.filter.title() + " ${_vm.filter.page + 1}"),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: Icon(Icons.last_page),
             onPressed: () => _changeFilter(),
           ),
         ],
@@ -290,10 +302,10 @@ class _GalleryPageState extends State<GalleryPage> {
                         child: SingleChildScrollView(
                             controller: titleScrollController,
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SelectableText(
                                   _galleryItemTitle(item),
-                                  textAlign: TextAlign.start,
                                   style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -307,7 +319,7 @@ class _GalleryPageState extends State<GalleryPage> {
                                             fontWeight: FontWeight.normal,
                                             color: Colors.white),
                                         onOpen: (link) =>
-                                            _onUrlTapped(context, link.url))
+                                            urlHandler.onUrlTapped(context, link.url))
                                     : SizedBox(
                                         height: 0,
                                       )
@@ -367,14 +379,6 @@ class _GalleryPageState extends State<GalleryPage> {
               ),
             ],
           ));
-    }
-  }
-
-  TextStyle _selectableStyle(bool isSelected) {
-    if (isSelected) {
-      return TextStyle(color: Colors.green);
-    } else {
-      return TextStyle(color: Colors.black);
     }
   }
 
@@ -484,39 +488,8 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   void dispose() {
     currentPageController.dispose();
+    connectivitySubscription.cancel();
+
     super.dispose();
   }
-
-  void _onUrlTapped(BuildContext context, String url) {
-    showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) => SimpleDialog(
-          contentPadding: EdgeInsets.zero,
-          children: <Widget>[
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 400, maxWidth: 600),
-              child: Container(
-                color: Colors.black,
-                child: _photoOrWebView(url),
-              ),
-            ),
-          ],
-        ));
-  }
-
-  Widget _photoOrWebView(String url) {
-    String lowerUrl = url.toLowerCase();
-    if (lowerUrl.contains(".jpg") ||
-        (url.contains(".gif") && !url.contains(".gifv")) ||
-        url.contains(".png")) {
-      return Image.network(url);
-    } else {
-      return WebView(
-        initialUrl: url,
-        javascriptMode: JavascriptMode.unrestricted,
-      );
-    }
-  }
-
 }

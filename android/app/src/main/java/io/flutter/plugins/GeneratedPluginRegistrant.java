@@ -1,12 +1,14 @@
 package io.flutter.plugins;
 
 import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.connectivity.ConnectivityPlugin;
 import io.flutter.plugins.firebaseanalytics.FirebaseAnalyticsPlugin;
 import io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin;
 import com.it_nomads.fluttersecurestorage.FlutterSecureStoragePlugin;
 import com.linusu.flutter_web_auth.FlutterWebAuthPlugin;
 import io.flutter.plugins.pathprovider.PathProviderPlugin;
 import com.zt.shareextend.ShareExtendPlugin;
+import io.flutter.plugins.urllauncher.UrlLauncherPlugin;
 import io.flutter.plugins.videoplayer.VideoPlayerPlugin;
 import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 
@@ -18,12 +20,14 @@ public final class GeneratedPluginRegistrant {
     if (alreadyRegisteredWith(registry)) {
       return;
     }
+    ConnectivityPlugin.registerWith(registry.registrarFor("io.flutter.plugins.connectivity.ConnectivityPlugin"));
     FirebaseAnalyticsPlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebaseanalytics.FirebaseAnalyticsPlugin"));
     FlutterFirebaseCorePlugin.registerWith(registry.registrarFor("io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin"));
     FlutterSecureStoragePlugin.registerWith(registry.registrarFor("com.it_nomads.fluttersecurestorage.FlutterSecureStoragePlugin"));
     FlutterWebAuthPlugin.registerWith(registry.registrarFor("com.linusu.flutter_web_auth.FlutterWebAuthPlugin"));
     PathProviderPlugin.registerWith(registry.registrarFor("io.flutter.plugins.pathprovider.PathProviderPlugin"));
     ShareExtendPlugin.registerWith(registry.registrarFor("com.zt.shareextend.ShareExtendPlugin"));
+    UrlLauncherPlugin.registerWith(registry.registrarFor("io.flutter.plugins.urllauncher.UrlLauncherPlugin"));
     VideoPlayerPlugin.registerWith(registry.registrarFor("io.flutter.plugins.videoplayer.VideoPlayerPlugin"));
     WebViewFlutterPlugin.registerWith(registry.registrarFor("io.flutter.plugins.webviewflutter.WebViewFlutterPlugin"));
   }
