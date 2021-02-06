@@ -18,7 +18,10 @@ class GalleryRepository {
   const GalleryRepository();
 
   static const BASE_URL = "https://api.imgur.com/3";
-  static Map<String, String> headers = {"Authorization": "Client-ID ${DotEnv().env['IMGUR_CLIENT_ID']}"};
+  static Map<String, String> headers = {
+    "Authorization": "Client-ID ${DotEnv().env['IMGUR_CLIENT_ID']}",
+    "Content-Type": "application/json",
+    "Accept": "application/json" };
 
   Future<ParsedResponse<List<GalleryItem>>> getItems(GalleryFilter filter) async {
     String url = BASE_URL + filter.toApiUrl();
@@ -93,6 +96,15 @@ class GalleryRepository {
 
     List<dynamic> accountImages = await compute(parseList, Parsable<AccountImage>(response.body, AccountImage.NAME));
     return ParsedResponse(response.statusCode, accountImages.cast());
+  }
+
+  Future<ParsedResponse<bool>> reportComment(String commentId) async {
+    String url = "$BASE_URL/comment/$commentId/report";
+    var localHeaders = Map.from(headers);
+    localHeaders["Content-Type"] = "application/x-www-form-urlencoded";
+    http.Response response = await Authentication.oauth2Helper.post(url, body: "reason=5", headers: localHeaders.cast());
+
+    return ParsedResponse(response.statusCode, response.statusCode == 200);
   }
 }
 

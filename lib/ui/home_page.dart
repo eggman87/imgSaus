@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         title: Text('imgSaus'),
         actions: [
           // IconButton(icon: Icon(Icons.add), onPressed: this.addNewGallery,),
-          // IconButton(icon: Icon(Icons.account_circle_sharp), onPressed:this.goToAccount)
+          IconButton(icon: Icon(Icons.account_circle_sharp), onPressed:this.goToAccount)
         ],
       ),
       body: SingleChildScrollView(

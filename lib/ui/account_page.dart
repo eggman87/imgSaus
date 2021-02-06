@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_image/network.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -29,6 +30,13 @@ class AccountPageState extends State<AccountPage> {
   void initState() {
     super.initState();
 
+    //lock this page in portrait until we build a more flexible ui
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
+
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
         if (scrollController.position.pixels != 0) {
@@ -39,6 +47,22 @@ class AccountPageState extends State<AccountPage> {
       }
     });
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+  void login(BuildContext context) {
+    StoreProvider.of<AppState>(context).dispatch(GetAccountAction());
+  }
+
   @override
   Widget build(BuildContext context) {
     if (store == null) {
@@ -55,7 +79,18 @@ class AccountPageState extends State<AccountPage> {
     viewModel = widget.viewModel;
 
     if (viewModel.account == null) {
-      return Container();
+      return Container(
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Sign in required to view account"),
+              ElevatedButton(onPressed: ()=> this.login(context), child: Text("Try Again"))
+            ],
+          )
+        )
+      );
     }
 
     final account = viewModel.account;
@@ -92,7 +127,7 @@ class AccountPageState extends State<AccountPage> {
         ),
         Expanded(
             child: DefaultTabController(
-                length: 4,
+                length: 1,
                 child: Container(
                     color: Colors.black87,
                     child: Column(
@@ -104,24 +139,12 @@ class AccountPageState extends State<AccountPage> {
                             Tab(
                               text: "images",
                             ),
-                            Tab(
-                                text: "favorites"
-                            ),
-                            Tab(
-                              text: "albums",
-                            ),
-                            Tab(
-                              text: "messages"
-                            ),
                           ],
                         ),
                         Expanded(
                             child: TabBarView(
                                 children: [
                                   accountImagesGrid(),
-                                  pageTwo(),
-                                  pageTwo(),
-                                  pageTwo()
                             ]))
                       ],
                     ))))

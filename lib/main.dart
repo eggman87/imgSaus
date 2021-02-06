@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:imgsrc/data/analytics.dart';
@@ -14,6 +15,8 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
+  //uncomment to enable local proxying (charles for example)
+  //HttpOverrides.global = MyProxyHttpOverride();
   await DotEnv().load('.env');
   runApp(ReduxApp());
 }
@@ -57,4 +60,15 @@ dynamic _middlewareList() {
   return middleWare;
 }
 
+class LocalProxyHttpOverride extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext context) {
+    return super.createHttpClient(context)
+      ..findProxy = (uri) {
+        return "PROXY localhost:8888;";
+      }
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
 

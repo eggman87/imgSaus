@@ -43,6 +43,7 @@ class _GalleryPageState extends State<GalleryPage> {
 
   @override
   void initState() {
+    Connectivity().checkConnectivity().then((value) => this.connectivity = value );
     connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       this.connectivity = result;
     });
