@@ -7,7 +7,7 @@ description: A new Flutter application.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 1.0.4+6
+version: 1.0.5+7
 
 environment:
   sdk: ">=2.2.0 <3.0.0"
@@ -20,7 +20,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   json_annotation: ^2.0.0
-  http: ^0.12.0+1
+  http: ^0.12.0+12
   rxdart: ^0.20.0
   video_player: ^0.10.2+1
   flutter_linkify: 4.0.2
@@ -79,7 +79,8 @@ flutter:
 
   # one time code gen runner: flutter packages pub run build_runner build
   # watch code gen: flutter packages pub run build_runner watch
-
+  # release build (android): flutter build appbundle --no-tree-shake-icons
+  # release build (ios): product -> archive runner xcode project
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
 

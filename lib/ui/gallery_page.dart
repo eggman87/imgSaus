@@ -4,6 +4,7 @@ import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:imgsrc/action/actions.dart';
 import 'package:imgsrc/data/analytics.dart';
+import 'package:imgsrc/data/gallery_repository.dart';
 import 'package:imgsrc/model/app_state.dart';
 import 'package:imgsrc/model/gallery_item.dart';
 import 'package:flutter/foundation.dart';
@@ -38,6 +39,7 @@ class _GalleryPageState extends State<GalleryPage> {
   var isFirstLoad = true;
   final urlHandler = UrlHandler();
   ConnectivityResult connectivity = ConnectivityResult.wifi;
+  var votes = Map<String, String>();
 
   var connectivitySubscription;
 
@@ -154,17 +156,63 @@ class _GalleryPageState extends State<GalleryPage> {
       _shareCurrentItem();
     } else if (value == SHARE_URL) {
       _shareUrl();
+    } else if (value == UP_VOTE_CONTENT) {
+      _upvoteCurrentItem();
+    } else if (value == DOWN_VOTE_CONTENT) {
+      _downvoteCurrentItem();
     }
   }
 
   static const String SHARE_URL = "Share URL";
   static const String SHARE_CONTENT = "Share Content";
+  static const String UP_VOTE_CONTENT = "Upvote";
+  static const String DOWN_VOTE_CONTENT = "Downvote";
 
   List<PopupMenuEntry<Object>> itemMenu(BuildContext context) {
     final list = List<PopupMenuEntry<Object>>();
+    list.add(PopupMenuItem(child: Text("Upvote"), value: UP_VOTE_CONTENT));
+    list.add(PopupMenuItem(child: Text("Downvote"), value: DOWN_VOTE_CONTENT));
     list.add(PopupMenuItem(child: Text("Share URL"), value: SHARE_URL,));
     list.add(PopupMenuItem(child: Text("Share Content"), value: SHARE_CONTENT));
     return list;
+  }
+
+  //todo: move voting to action and reduce result to update vote on gallery item in state.
+  void _upvoteCurrentItem() {
+    var itemCurrentVisible = _currentGalleryItem();
+
+    var repo = GalleryRepository();
+    repo.voteForGalleryItem(itemCurrentVisible.id, "up").then((value) => {
+      setState(() {
+        votes[value] = "up";
+      })
+    });
+  }
+
+  void _downvoteCurrentItem() {
+    var itemCurrentVisible = _currentGalleryItem();
+
+    var repo = GalleryRepository();
+    repo.voteForGalleryItem(itemCurrentVisible.id, "down").then((value) => {
+      setState(() {
+        votes[value] = "down";
+      })
+    });
+  }
+
+  Widget _voteForCurrentItem() {
+    var itemCurrentVisible = _currentGalleryItem();
+
+    if (itemCurrentVisible.vote == "up" && votes[itemCurrentVisible.id] != "down"
+        || votes[itemCurrentVisible.id] == "up") {
+        return Icon(Icons.thumb_up, color: Colors.green.shade200,);
+    } else if (itemCurrentVisible.vote == "down" || votes[itemCurrentVisible.id] == "down") {
+      return Icon(Icons.thumb_down, color: Colors.red.shade200);
+    } else {
+      return SizedBox(
+        width: 4,
+      );
+    }
   }
 
   void _shareCurrentItem({bool shouldPop = false}) {
@@ -282,6 +330,7 @@ class _GalleryPageState extends State<GalleryPage> {
         );
       }
 
+      //todo: the description/author banner should be come a new widget in its own class
       final description = _galleryItemDescription(item);
 
       return Container(
@@ -341,9 +390,6 @@ class _GalleryPageState extends State<GalleryPage> {
                                 color: Colors.white,
                                 fontStyle: FontStyle.italic),
                           )),
-                          SizedBox(
-                            width: 4,
-                          ),
                           IntrinsicWidth(
                             child: Text(
                               "${item.score}",
@@ -373,7 +419,18 @@ class _GalleryPageState extends State<GalleryPage> {
               )),
               Expanded(
                 child: GestureDetector(
-                  child: _pageWithCommentsFab(context),
+                  child:
+                    Stack(
+                      overflow: Overflow.visible,
+                      clipBehavior: Clip.none,
+                      children: [
+                        _pageWithCommentsFab(context),
+                        Container(
+                          child: _voteForCurrentItem(),
+                          padding: EdgeInsets.fromLTRB(12, 12, 0, 0),
+                        ),
+                      ]
+                    ),
                   onLongPress: _onLongPress,
                   onDoubleTap: _fullScreen,
                 ),

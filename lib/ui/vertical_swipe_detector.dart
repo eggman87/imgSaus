@@ -28,29 +28,36 @@ class VerticalSwipeConfiguration {
   }
 }
 
-class VerticalSwipeDetector extends StatelessWidget {
+class VerticalSwipeDetector extends StatefulWidget {
+
   final Widget child;
   final Function() onSwipeUp;
   final Function() onSwipeDown;
   final VerticalSwipeConfiguration swipeConfiguration;
 
-  VerticalSwipeDetector(
-      {@required this.child,
-        this.onSwipeUp,
-        this.onSwipeDown,
-        VerticalSwipeConfiguration swipeConfiguration})
+  VerticalSwipeDetector({@required this.child,
+    this.onSwipeUp,
+    this.onSwipeDown,
+    VerticalSwipeConfiguration swipeConfiguration})
       : this.swipeConfiguration = swipeConfiguration == null
       ? VerticalSwipeConfiguration()
       : swipeConfiguration;
 
   @override
-  Widget build(BuildContext context) {
-    //Vertical drag details
-    DragStartDetails startVerticalDragDetails;
-    DragUpdateDetails updateVerticalDragDetails;
+  State<StatefulWidget> createState() {
+    return VerticalSwipeDetectorState();
+  }
+}
 
+class VerticalSwipeDetectorState extends State<VerticalSwipeDetector> {
+
+  DragStartDetails startVerticalDragDetails;
+  DragUpdateDetails updateVerticalDragDetails;
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      child: child,
+      child: widget.child,
       onVerticalDragStart: (dragDetails) {
         startVerticalDragDetails = dragDetails;
       },
@@ -69,20 +76,20 @@ class VerticalSwipeDetector extends StatelessWidget {
         if (dy < 0) dy = -dy;
         double positiveVelocity = velocity < 0 ? -velocity : velocity;
 
-        if (dx > swipeConfiguration.verticalSwipeMaxWidthThreshold) return;
-        if (dy < swipeConfiguration.verticalSwipeMinDisplacement) return;
-        if (positiveVelocity < swipeConfiguration.verticalSwipeMinVelocity)
+        if (dx > widget.swipeConfiguration.verticalSwipeMaxWidthThreshold) return;
+        if (dy < widget.swipeConfiguration.verticalSwipeMinDisplacement) return;
+        if (positiveVelocity < widget.swipeConfiguration.verticalSwipeMinVelocity)
           return;
 
         if (velocity < 0) {
           //Swipe Up
-          if (onSwipeUp != null) {
-            onSwipeUp();
+          if (widget.onSwipeUp != null) {
+            widget.onSwipeUp();
           }
         } else {
           //Swipe Down
-          if (onSwipeDown != null) {
-            onSwipeDown();
+          if (widget.onSwipeDown != null) {
+            widget.onSwipeDown();
           }
         }
       },

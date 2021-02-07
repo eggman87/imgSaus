@@ -29,7 +29,8 @@ GalleryItem _$GalleryItemFromJson(Map<String, dynamic> json) {
           : ModelUtils.dateFromJson(json['datetime'] as int),
       hasSound: json['has_sound'] as bool,
       accountUrl: json['account_url'] as String,
-      score: json['score'] as int);
+      score: json['score'] as int,
+      vote: json['vote'] as String);
 }
 
 Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
@@ -49,5 +50,6 @@ Map<String, dynamic> _$GalleryItemToJson(GalleryItem instance) =>
       'datetime': instance.dateCreated?.toIso8601String(),
       'has_sound': instance.hasSound,
       'account_url': instance.accountUrl,
-      'score': instance.score
+      'score': instance.score,
+      'vote': instance.vote
     };

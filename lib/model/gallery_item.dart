@@ -20,7 +20,8 @@ class GalleryItem {
     this.dateCreated,
     this.hasSound,
     this.accountUrl,
-    this.score
+    this.score,
+    this.vote
   });
 
   static const NAME = "GalleryItem";
@@ -49,6 +50,7 @@ class GalleryItem {
   @JsonKey(name: "account_url")
   final String accountUrl;
   final int score;
+  final String vote;
 
   @override
   String toString() {

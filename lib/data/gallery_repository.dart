@@ -26,7 +26,14 @@ class GalleryRepository {
   Future<ParsedResponse<List<GalleryItem>>> getItems(GalleryFilter filter) async {
     String url = BASE_URL + filter.toApiUrl();
     print("making request to $url");
-    http.Response response = await http.get(url, headers: headers);
+    var token = await Authentication.oauth2Helper.tokenStorage.getToken(null);
+
+    http.Response response;
+    if (token != null) {
+      response = await Authentication.oauth2Helper.get(url, headers: headers);
+    } else {
+      response = await http.get(url, headers: headers);
+    }
 
     if (!ParsedResponse.isOkCode(response.statusCode)) {
       return ParsedResponse(response.statusCode, null);
@@ -106,6 +113,18 @@ class GalleryRepository {
 
     return ParsedResponse(response.statusCode, response.statusCode == 200);
   }
+
+  Future<String> voteForGalleryItem(String itemId, String vote) async {
+    String url = "$BASE_URL/gallery/$itemId/vote/$vote";
+    http.Response response = await Authentication.oauth2Helper.post(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      return itemId;
+    } else {
+      return null;
+    }
+  }
+
 }
 
 class ParsedResponse<T> {
